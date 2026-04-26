@@ -59,6 +59,18 @@ export function useMockData() {
     return newTx;
   };
 
+  const updateTransactionStatus = (id: string, status: any) => {
+    const updated = transactions.map(tx => tx.id === id ? { ...tx, status } : tx);
+    setTransactions(updated);
+    localStorage.setItem('apexbridge_transactions', JSON.stringify(updated));
+  };
+
+  const deleteTransaction = (id: string) => {
+    const updated = transactions.filter(tx => tx.id !== id);
+    setTransactions(updated);
+    localStorage.setItem('apexbridge_transactions', JSON.stringify(updated));
+  };
+
   const addInvestment = (inv: Omit<Investment, 'id' | 'startDate' | 'status'>) => {
     const newInv: Investment = {
       ...inv,
@@ -72,5 +84,5 @@ export function useMockData() {
     return newInv;
   };
 
-  return { transactions, investments, addTransaction, addInvestment };
+  return { transactions, investments, addTransaction, addInvestment, updateTransactionStatus, deleteTransaction };
 }

@@ -137,18 +137,18 @@ export default function WithdrawPage() {
                 >
                   <div className="space-y-6">
                     <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2">Liquidation Quantum (USD)</label>
-                    <div className="relative group">
-                       <span className="absolute left-10 top-1/2 -translate-y-1/2 text-emerald-500 font-black italic text-5xl">$</span>
-                       <input
-                         type="number"
-                         required
-                         value={amount}
-                         max={user?.balance}
-                         onChange={(e) => setAmount(e.target.value)}
-                         className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[32px] py-16 pl-24 pr-10 text-6xl md:text-8xl font-black text-white focus:outline-none focus:border-emerald-500/40 transition-all placeholder:text-zinc-800 shadow-inner font-mono tracking-tighter"
-                         placeholder="0"
-                       />
-                    </div>
+                   <div className="relative group">
+                      <span className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 text-emerald-500 font-black italic text-4xl md:text-5xl">$</span>
+                      <input
+                        type="number"
+                        required
+                        value={amount}
+                        max={user?.balance}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[32px] py-12 md:py-16 pl-16 md:pl-24 pr-10 text-4xl md:text-8xl font-black text-white focus:outline-none focus:border-emerald-500/40 transition-all placeholder:text-zinc-800 shadow-inner font-mono tracking-tighter"
+                        placeholder="0"
+                      />
+                   </div>
                   </div>
 
                   <div className="bg-zinc-900/50 rounded-3xl p-8 border border-zinc-800">

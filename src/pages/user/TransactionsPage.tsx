@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useMockData } from '../../hooks/useMockData';
 import { formatCurrency } from '../../lib/utils';
 import { 
@@ -15,17 +15,34 @@ import {
   Globe,
   FileText,
   BadgeCheck,
-  ExternalLink
+  ExternalLink,
+  Ban,
+  Play,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function TransactionsPage() {
-  const { transactions } = useMockData();
+  const { transactions, updateTransactionStatus, deleteTransaction } = useMockData();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'deposit' | 'withdrawal' | 'investment'>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'approved' | 'pending' | 'failed'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'approved' | 'pending' | 'failed' | 'canceled'>('all');
   const [showAuditModal, setShowAuditModal] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(tx => {
@@ -37,6 +54,24 @@ export default function TransactionsPage() {
       return matchesSearch && matchesType && matchesStatus;
     });
   }, [transactions, searchQuery, activeFilter, statusFilter]);
+
+  const handleAction = (id: string, action: 'cancel' | 'resume' | 'delete') => {
+    setOpenMenuId(null);
+    if (action === 'delete') {
+      setConfirmDeleteId(id);
+    } else if (action === 'cancel') {
+      updateTransactionStatus(id, 'canceled');
+    } else if (action === 'resume') {
+      updateTransactionStatus(id, 'pending');
+    }
+  };
+
+  const performDelete = () => {
+    if (confirmDeleteId) {
+      deleteTransaction(confirmDeleteId);
+      setConfirmDeleteId(null);
+    }
+  };
 
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 pb-32">
@@ -104,10 +139,106 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      {/* Transactions Table */}
-      <div className="bg-[#0c0c0e] border border-zinc-800 rounded-[48px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative">
+      {/* Transactions Table / Mobile Cards */}
+      <div className="bg-[#0c0c0e] border border-zinc-800 rounded-[40px] md:rounded-[48px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative">
         <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
-        <div className="overflow-x-auto">
+        
+        {/* Mobile View: Cards */}
+        <div className="block lg:hidden divide-y divide-zinc-800/50">
+          {filteredTransactions.map((tx) => (
+            <div key={tx.id} className="p-8 space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center border",
+                    tx.type === 'deposit' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
+                    tx.type === 'withdrawal' ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-zinc-800 text-zinc-300 border-zinc-700"
+                  )}>
+                    {tx.type === 'deposit' ? <ArrowDownCircle size={16} /> : 
+                     tx.type === 'withdrawal' ? <ArrowUpCircle size={16} /> : <TrendingUp size={16} />}
+                  </div>
+                  <div>
+                    <span className="font-black text-white uppercase tracking-tighter italic block text-lg line-clamp-1">{tx.type}</span>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-700 mt-0.5">#{tx.id.toUpperCase()}</p>
+                  </div>
+                </div>
+                <div className="relative">
+                  <button 
+                    onClick={() => setOpenMenuId(openMenuId === tx.id ? null : tx.id)}
+                    className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-700 active:bg-zinc-800"
+                  >
+                    <MoreVertical size={16} />
+                  </button>
+                  <AnimatePresence>
+                    {openMenuId === tx.id && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.9, x: -10 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, x: -10 }}
+                        className="absolute right-0 top-12 z-50 w-48 bg-[#0c0c0e] border border-zinc-800 rounded-2xl p-2 shadow-2xl"
+                      >
+                        {tx.status === 'pending' && (
+                          <button 
+                            onClick={() => handleAction(tx.id, 'cancel')}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                          >
+                             <Ban size={14} className="text-orange-500" /> Cancel
+                          </button>
+                        )}
+                        {tx.status === 'canceled' && (
+                          <button 
+                            onClick={() => handleAction(tx.id, 'resume')}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                          >
+                             <Play size={14} className="text-emerald-500" /> Resume
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => handleAction(tx.id, 'delete')}
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-white hover:bg-red-500/20 transition-colors"
+                        >
+                           <Trash2 size={14} /> Delete
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/50">
+                  <p className="text-[8px] font-black uppercase text-zinc-600 tracking-widest mb-1.5">Quantum</p>
+                  <span className={cn(
+                    "font-black font-mono text-lg tracking-tighter block",
+                    tx.type === 'withdrawal' || tx.type === 'investment' ? "text-red-500" : "text-white"
+                  )}>
+                    {tx.type === 'withdrawal' || tx.type === 'investment' ? '-' : '+'}{formatCurrency(tx.amount)}
+                  </span>
+                </div>
+                <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/50">
+                  <p className="text-[8px] font-black uppercase text-zinc-600 tracking-widest mb-1.5">Status</p>
+                  <span className={cn(
+                    "text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md border inline-block",
+                    tx.status === 'approved' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" : 
+                    tx.status === 'pending' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" : 
+                    tx.status === 'canceled' ? "text-orange-500 border-orange-500/20 bg-orange-500/5" :
+                    "text-red-500 border-red-500/20 bg-red-500/5"
+                  )}>
+                    {tx.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-zinc-700">
+                <span>{tx.method || tx.plan || 'Clearing'}</span>
+                <span>{tx.date}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden lg:block">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-zinc-800/50 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">
@@ -158,15 +289,55 @@ export default function TransactionsPage() {
                     <span className={cn(
                       "text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border shadow-inner",
                       tx.status === 'approved' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" : 
-                      tx.status === 'pending' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" : "text-red-500 border-red-500/20 bg-red-500/5"
+                      tx.status === 'pending' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" : 
+                      tx.status === 'canceled' ? "text-orange-500 border-orange-500/20 bg-orange-500/5" :
+                      "text-red-500 border-red-500/20 bg-red-500/5"
                     )}>
                       {tx.status}
                     </span>
                   </td>
-                  <td className="px-10 py-8 text-right">
-                    <button className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-700 hover:text-white hover:border-zinc-500 transition-all shadow-inner">
+                  <td className="px-10 py-8 text-right relative overflow-visible">
+                    <button 
+                      onClick={() => setOpenMenuId(openMenuId === tx.id ? null : tx.id)}
+                      className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-700 hover:text-white hover:border-zinc-500 transition-all shadow-inner"
+                    >
                        <MoreVertical size={16} />
                     </button>
+                    
+                    <AnimatePresence>
+                      {openMenuId === tx.id && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                          ref={menuRef}
+                          className="absolute right-10 top-20 z-50 w-56 bg-[#0c0c0e] border border-zinc-800 rounded-3xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-emerald-500/10"
+                        >
+                           {tx.status === 'pending' && (
+                             <button 
+                               onClick={() => handleAction(tx.id, 'cancel')}
+                               className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
+                             >
+                                <Ban size={16} className="text-orange-500" /> Cancel Transaction
+                             </button>
+                           )}
+                           {tx.status === 'canceled' && (
+                             <button 
+                               onClick={() => handleAction(tx.id, 'resume')}
+                               className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
+                             >
+                                <Play size={16} className="text-emerald-500" /> Resume Transaction
+                             </button>
+                           )}
+                           <button 
+                             onClick={() => handleAction(tx.id, 'delete')}
+                             className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-red-500 hover:text-white hover:bg-red-500/20 transition-all"
+                           >
+                              <Trash2 size={16} /> Delete Entry
+                           </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </td>
                 </tr>
               ))}
@@ -184,6 +355,49 @@ export default function TransactionsPage() {
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {confirmDeleteId && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+             <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               onClick={() => setConfirmDeleteId(null)}
+               className="absolute inset-0 bg-black/95 backdrop-blur-md"
+             />
+             <motion.div
+               initial={{ opacity: 0, scale: 0.9, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.9, y: 20 }}
+               className="relative w-full max-w-md bg-[#0c0c0e] border border-zinc-800 rounded-[48px] p-12 text-center shadow-[0_0_100px_rgba(239,68,68,0.1)]"
+             >
+                <div className="w-20 h-20 bg-red-500/10 text-red-500 rounded-[32px] flex items-center justify-center mx-auto mb-8 border border-red-500/20">
+                   <AlertTriangle size={40} />
+                </div>
+                <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-serif mb-4">Purge Record?</h3>
+                <p className="text-zinc-500 text-sm font-medium leading-relaxed mb-10">
+                   You are about to permanently delete this transaction from the protocol ledger. This action cannot be reversed.
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                   <button 
+                     onClick={() => setConfirmDeleteId(null)}
+                     className="py-5 border border-zinc-800 rounded-[24px] text-[10px] font-black uppercase tracking-widest text-zinc-600 hover:bg-zinc-900"
+                   >
+                     Abort
+                   </button>
+                   <button 
+                     onClick={performDelete}
+                     className="py-5 bg-red-500 text-white rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-red-500/20 hover:bg-red-400"
+                   >
+                     Confirm Purge
+                   </button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Audit Report Modal */}
       <AnimatePresence>

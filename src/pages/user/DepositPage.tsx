@@ -162,19 +162,19 @@ export default function DepositPage() {
                 </div>
 
                 <div className="space-y-6">
-                  <div className="flex justify-between items-end text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">
+                  <div className="flex justify-between items-end text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic font-mono">
                     <label>Funding Quantum (USD)</label>
-                    <span className="text-emerald-500/60 flex items-center gap-2"><AlertCircle size={12} /> Min: $100.00</span>
+                    <span className="text-emerald-500/60 flex items-center gap-2"><AlertCircle size={12} /> Min: $100</span>
                   </div>
                   <div className="relative group">
-                    <span className="absolute left-10 top-1/2 -translate-y-1/2 text-emerald-500 text-3xl font-black italic">$</span>
+                    <span className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 text-emerald-500 text-3xl md:text-5xl font-black italic">$</span>
                     <input
                       type="number"
                       required
-                      placeholder="0.00"
+                      placeholder="0"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[32px] py-10 pl-16 pr-10 focus:outline-none focus:border-emerald-500/40 transition-all font-mono text-5xl md:text-6xl font-black text-white shadow-inner tracking-tighter"
+                      className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[32px] py-10 md:py-14 pl-14 md:pl-22 pr-8 focus:outline-none focus:border-emerald-500/40 transition-all font-mono text-4xl md:text-6xl font-black text-white shadow-inner tracking-tighter"
                     />
                   </div>
                 </div>
