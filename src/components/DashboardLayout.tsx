@@ -43,7 +43,7 @@ export default function DashboardLayout() {
           <div className="w-10 h-10 bg-brand-purple rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(75,47,168,0.2)] group-hover:scale-110 transition-transform duration-500">
              <TrendingUp size={20} className="text-black" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-white font-serif italic uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
+          <span className="text-xl font-bold tracking-tight text-white   uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
         </Link>
 
         <nav className="flex-1 space-y-1">
@@ -53,7 +53,7 @@ export default function DashboardLayout() {
               key={item.path}
               to={item.path}
               className={({ isActive }) => cn(
-                "flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 group text-[11px] font-black uppercase tracking-widest border",
+                "flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 group text-[11px] font-black uppercase border",
                 isActive 
                   ? "bg-zinc-800/40 text-brand-purple border-zinc-700 shadow-[0_4px_20px_rgba(0,0,0,0.3)]" 
                   : "text-zinc-500 border-transparent hover:bg-zinc-800/20 hover:text-white"
@@ -71,13 +71,13 @@ export default function DashboardLayout() {
               <img src={`https://i.pravatar.cc/100?u=${user?.name[0]}`} alt="user" className="w-full h-full grayscale" referrerPolicy="no-referrer" />
             </div>
             <div className="overflow-hidden">
-              <p className="text-xs font-black uppercase tracking-widest truncate text-white">{user?.name.split(' ')[0]}</p>
-              <p className="text-[9px] text-brand-purple/60 font-black uppercase tracking-widest mt-0.5">Tier 2 Private</p>
+              <p className="text-xs font-black uppercase truncate text-white">{user?.name.split(' ')[0]}</p>
+              <p className="text-[9px] text-brand-purple/60 font-black uppercase mt-0.5">Tier 2 Private</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-4 px-5 py-4 w-full text-left text-[11px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-400 hover:bg-red-400/5 rounded-2xl transition-all group"
+            className="flex items-center gap-4 px-5 py-4 w-full text-left text-[11px] font-black uppercase text-zinc-500 hover:text-red-400 hover:bg-red-400/5 rounded-2xl transition-all group"
           >
             <LogOut size={18} className="transition-transform group-hover:-translate-x-2" />
             Sign Out
@@ -91,7 +91,7 @@ export default function DashboardLayout() {
           <div className="w-9 h-9 bg-brand-purple rounded-xl flex items-center justify-center shadow-lg shadow-brand-purple/20">
             <TrendingUp size={18} className="text-black" />
           </div>
-          <span className="text-base font-bold tracking-tight text-white font-serif italic uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
+          <span className="text-base font-bold tracking-tight text-white uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
         </div>
         <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="w-11 h-11 flex items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 active:scale-95 transition-all">
           {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -108,14 +108,14 @@ export default function DashboardLayout() {
             className="lg:hidden fixed inset-0 z-40 bg-brand-black pt-32 px-6 overflow-y-auto"
           >
             <nav className="space-y-3 pb-20">
-              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-6 px-4 italic">Protocol Terminal</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-6 px-4">Protocol Terminal</p>
               {navItems.map((item) => (
                 <NavLink
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => cn(
-                    "flex items-center gap-4 px-6 py-5 rounded-[24px] text-sm font-black uppercase tracking-widest transition-all",
+                    "flex items-center gap-4 px-6 py-5 rounded-[24px] text-sm font-black uppercase transition-all",
                     isActive ? "bg-brand-purple text-black shadow-[0_10px_30px_rgba(75,47,168,0.2)] font-black" : "bg-zinc-900 border border-zinc-800 text-zinc-500"
                   )}
                 >
@@ -126,7 +126,7 @@ export default function DashboardLayout() {
               <div className="pt-8 mt-8 border-t border-zinc-800/50">
                  <button
                     onClick={handleLogout}
-                    className="flex justify-between items-center w-full px-6 py-5 bg-red-500/5 border border-red-500/20 rounded-[24px] text-red-500 text-sm font-black uppercase tracking-widest"
+                    className="flex justify-between items-center w-full px-6 py-5 bg-red-500/5 border border-red-500/20 rounded-[24px] text-red-500 text-sm font-black uppercase"
                  >
                     <span>Sign Out Terminal</span>
                     <LogOut size={20} />

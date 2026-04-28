@@ -34,8 +34,8 @@ export default function DashboardPage() {
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
              Capital Matrix Active
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white font-serif italic">
-            Portfolio <span className="text-zinc-600 italic">Core.</span>
+          <h1 className="text-4xl md:text-5xl font-black text-white">
+            Portfolio <span className="text-zinc-600">Core.</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium mt-2">Authenticated as <span className="text-white">{user?.name}</span> • Tier 2 Priority</p>
         </div>
@@ -54,11 +54,11 @@ export default function DashboardPage() {
               <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">Institutional Valuation</p>
               <div className="flex items-center gap-2 px-3 py-1 bg-brand-black-light border border-zinc-800 rounded-full">
                  <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
-                 <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Real-time</span>
+                 <span className="text-[9px] font-black text-zinc-400 uppercase ">Real-time</span>
               </div>
            </div>
            <div className="space-y-2">
-              <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-white font-mono break-all leading-none">{formatCurrency(user?.balance || 0)}</h2>
+              <h2 className="text-6xl md:text-8xl font-black  text-white font-mono break-all leading-none">{formatCurrency(user?.balance || 0)}</h2>
               <div className="flex items-center gap-4 text-brand-purple-hover font-black uppercase tracking-[0.2em] text-xs pt-4">
                  <span className="flex items-center gap-1"><TrendingUp size={14} /> +12.4%</span>
                  <span className="text-zinc-600">vs Benchmark</span>
@@ -84,7 +84,7 @@ export default function DashboardPage() {
               <div className="w-12 h-12 bg-brand-black/10 rounded-2xl flex items-center justify-center text-black mb-10 group-hover:rotate-12 transition-transform">
                  <Zap size={24} />
               </div>
-              <h3 className="text-2xl font-black text-black uppercase tracking-tighter leading-none italic">Velocity <br /> Liquidity.</h3>
+              <h3 className="text-2xl font-black text-black uppercase leading-none">Velocity <br /> Liquidity.</h3>
               <p className="text-black/50 text-[10px] font-black uppercase tracking-widest mt-4 leading-relaxed">Your capital is set to T+0 instant settlement protocol.</p>
            </div>
            <Link to="/user/deposit" className="w-full py-4 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-[10px] text-center hover:bg-zinc-800 transition-all flex items-center justify-center gap-2">
@@ -98,7 +98,7 @@ export default function DashboardPage() {
         {/* Active Deployments */}
         <section className="lg:col-span-7 space-y-6">
           <div className="flex justify-between items-end mb-4">
-            <h3 className="text-xl font-bold text-white font-serif italic">Active <span className="text-zinc-600">Deployments.</span></h3>
+            <h3 className="text-xl font-bold text-white">Active <span className="text-zinc-600">Deployments.</span></h3>
           </div>
           <div className="grid grid-cols-1 gap-4">
             {investments.map((inv) => (
@@ -112,7 +112,7 @@ export default function DashboardPage() {
                     <Layers size={28} />
                   </div>
                   <div>
-                    <h4 className="text-lg font-black text-white uppercase tracking-tighter italic">{inv.planName}</h4>
+                    <h4 className="text-lg font-black text-white uppercase">{inv.planName}</h4>
                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mt-1">Registry: #{inv.id.slice(0,8)}</p>
                   </div>
                 </div>
@@ -140,7 +140,7 @@ export default function DashboardPage() {
         {/* Ledger Proxy */}
         <section className="lg:col-span-5 space-y-6">
           <div className="flex justify-between items-end mb-4">
-            <h3 className="text-xl font-bold text-white font-serif italic">Ledger <span className="text-zinc-600">Proxy.</span></h3>
+            <h3 className="text-xl font-bold text-white">Ledger <span className="text-zinc-600">Proxy.</span></h3>
           </div>
           <div className="bg-brand-black-light rounded-[40px] border border-zinc-800 p-8 shadow-2xl relative overflow-hidden">
              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-purple/20 to-transparent" />
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                            {tx.type === 'deposit' ? <ArrowDownCircle size={18} /> : <ArrowUpCircle size={18} />}
                         </div>
                         <div>
-                           <p className="text-xs font-black uppercase tracking-widest text-zinc-100 italic">{tx.type} protocol</p>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-100 ">{tx.type} protocol</p>
                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mt-0.5">{tx.method || tx.plan}</p>
                         </div>
                      </div>

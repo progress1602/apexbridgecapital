@@ -97,12 +97,12 @@ export default function InvestPage() {
     return (
       <div className="space-y-12 animate-in fade-in duration-700 pb-32 font-sans">
         <div className="flex items-center justify-between">
-           <button onClick={() => setShowProgress(false)} className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors flex items-center gap-2">
+           <button onClick={() => setShowProgress(false)} className="text-[10px] font-black uppercase  text-zinc-500 hover:text-white transition-colors flex items-center gap-2">
               <HistoryIcon size={14} /> Close Terminal
            </button>
            <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-brand-purple animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand-purple italic">Live Syncing</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-purple ">Live Syncing</span>
            </div>
         </div>
 
@@ -117,14 +117,14 @@ export default function InvestPage() {
                    </div>
                    
                    <div className="space-y-2">
-                      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 italic">Deployment Active</p>
-                      <h3 className="text-4xl font-black text-white font-serif italic uppercase tracking-tighter">{inv.planName}</h3>
+                      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 ">Deployment Active</p>
+                      <h3 className="text-4xl font-black text-white  italic uppercase ">{inv.planName}</h3>
                    </div>
 
                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                       <div className="space-y-1">
                          <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Entry</p>
-                         <p className="text-xl font-bold text-white font-mono tracking-tighter">{formatCurrency(inv.amount)}</p>
+                         <p className="text-xl font-bold text-white font-mono ">{formatCurrency(inv.amount)}</p>
                       </div>
                       <div className="space-y-1">
                          <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Target ROI</p>
@@ -138,7 +138,7 @@ export default function InvestPage() {
 
                    <div className="space-y-4 pt-10 border-t border-zinc-800/50">
                       <div className="flex justify-between items-end mb-2">
-                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 font-serif italic">Liquidity Growth Matrix</p>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500  italic">Liquidity Growth Matrix</p>
                          <span className="text-brand-purple font-mono text-sm font-black">74.2%</span>
                       </div>
                       <div className="h-4 w-full bg-brand-black-light rounded-full border border-zinc-800 p-1">

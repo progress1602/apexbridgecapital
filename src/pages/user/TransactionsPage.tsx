@@ -81,8 +81,8 @@ export default function TransactionsPage() {
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Audit Trail
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white font-serif italic">
-            Ledger <span className="text-zinc-600 italic">History.</span>
+          <h1 className="text-4xl md:text-5xl font-black  text-white  ">
+            Ledger <span className="text-zinc-600 ">History.</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium mt-2 leading-relaxed max-w-xl">
              Immutable record of all protocol interactions, clearing, and settlement activities documented in real-time.
@@ -158,8 +158,8 @@ export default function TransactionsPage() {
                      tx.type === 'withdrawal' ? <ArrowUpCircle size={16} /> : <TrendingUp size={16} />}
                   </div>
                   <div>
-                    <span className="font-black text-white uppercase tracking-tighter italic block text-lg line-clamp-1">{tx.type}</span>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-700 mt-0.5">#{tx.id.toUpperCase()}</p>
+                    <span className="font-black text-white uppercase  italic block text-lg line-clamp-1">{tx.type}</span>
+                    <p className="text-[9px] font-black uppercase  text-zinc-700 mt-0.5">#{tx.id.toUpperCase()}</p>
                   </div>
                 </div>
                 <div className="relative">
@@ -376,7 +376,7 @@ export default function TransactionsPage() {
                 <div className="w-20 h-20 bg-red-500/10 text-red-500 rounded-[32px] flex items-center justify-center mx-auto mb-8 border border-red-500/20">
                    <AlertTriangle size={40} />
                 </div>
-                <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-serif mb-4">Purge Record?</h3>
+                <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter  mb-4">Purge Record?</h3>
                 <p className="text-zinc-500 text-sm font-medium leading-relaxed mb-10">
                    You are about to permanently delete this transaction from the protocol ledger. This action cannot be reversed.
                 </p>

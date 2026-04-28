@@ -75,7 +75,7 @@ export default function DepositPage() {
           <div className="absolute inset-0 bg-brand-purple/20 blur-2xl rounded-full" />
           <CheckCircle2 size={56} className="relative z-10" />
         </div>
-        <h1 className="text-4xl font-black uppercase text-white mb-6 tracking-tighter font-serif italic">Protocol Notified.</h1>
+        <h1 className="text-4xl font-black uppercase text-white mb-6   ">Protocol Notified.</h1>
         <p className="text-zinc-500 mb-12 px-10 leading-relaxed font-medium text-lg">Deposit request has been broadcasted to our audit nodes. Capital will be stationed into your balance following block confirmation.</p>
         <button 
           onClick={() => { setStep(1); setAmount(''); setIsSuccess(false); }}
@@ -95,8 +95,8 @@ export default function DepositPage() {
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Liquidity Inbound
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white font-serif italic">
-            Station <span className="text-zinc-600 italic">Capital.</span>
+          <h1 className="text-4xl md:text-5xl font-black  text-white  ">
+            Station <span className="text-zinc-600 ">Capital.</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium mt-2 leading-relaxed max-w-xl">
              Funding your brokerage terminal via encrypted institutional channels. T+1 global settlement standard.
@@ -147,8 +147,8 @@ export default function DepositPage() {
                             <m.icon size={24} />
                           </div>
                           <div className="text-left">
-                            <span className={cn("text-lg font-black uppercase tracking-tighter italic block", method.id === m.id ? "text-white" : "text-zinc-500")}>{m.name}</span>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mt-1">Instant Node Routing</p>
+                            <span className={cn("text-lg font-black uppercase  italic block", method.id === m.id ? "text-white" : "text-zinc-500")}>{m.name}</span>
+                            <p className="text-[9px] font-black uppercase  text-zinc-600 mt-1">Instant Node Routing</p>
                           </div>
                         </div>
                         {method.id === m.id && (

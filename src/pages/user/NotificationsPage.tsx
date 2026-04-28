@@ -72,8 +72,8 @@ export default function NotificationsPage() {
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Command Center
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white font-serif italic">
-            Intelligence <span className="text-zinc-600 italic">Feed.</span>
+          <h1 className="text-4xl md:text-5xl font-black  text-white  ">
+            Intelligence <span className="text-zinc-600 ">Feed.</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium mt-2 leading-relaxed max-w-xl">
              Real-time critical data streams, security telemetry, and protocol update logs managed by ApexBridge Capital AI.
@@ -142,7 +142,7 @@ export default function NotificationsPage() {
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                    <h3 className="font-black text-white text-2xl tracking-tighter uppercase italic">{notif.title}</h3>
+                    <h3 className="font-black text-white text-2xl  uppercase italic">{notif.title}</h3>
                     <span className="text-[10px] font-black text-zinc-700 uppercase tracking-[0.2em] font-mono bg-black/40 px-3 py-1 rounded-full border border-white/5 shadow-inner">{notif.date}</span>
                   </div>
                   <p className="text-[15px] text-zinc-400 leading-relaxed font-bold tracking-tight max-w-2xl">{notif.message}</p>
@@ -186,9 +186,9 @@ export default function NotificationsPage() {
             <div className="space-y-4 max-w-xl">
                <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-purple/10 rounded-full border border-brand-purple/20 mb-4">
                   <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
-                  <span className="text-[9px] font-black text-brand-purple uppercase tracking-widest">Premium Signal Intel</span>
+                  <span className="text-[9px] font-black text-brand-purple uppercase ">Premium Signal Intel</span>
                </div>
-               <h2 className="text-4xl md:text-5xl font-black tracking-tighter font-serif italic leading-none">Stay <span className="text-brand-purple">Liquid.</span> Stay <span className="text-zinc-600 underline decoration-zinc-800">Informed.</span></h2>
+               <h2 className="text-4xl md:text-5xl font-black tracking-tighter  italic leading-none">Stay <span className="text-brand-purple">Liquid.</span> Stay <span className="text-zinc-600 underline decoration-zinc-800">Informed.</span></h2>
                <p className="text-zinc-500 text-lg leading-relaxed font-medium">Activate specialized neural signals to receive real-time intelligence on institutional pivot points and whale settlement activities.</p>
             </div>
             <div className="shrink-0">

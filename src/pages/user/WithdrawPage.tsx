@@ -62,11 +62,11 @@ export default function WithdrawPage() {
           <div className="absolute inset-0 bg-brand-purple/20 blur-2xl rounded-full" />
           <Clock className="relative z-10" size={56} />
         </div>
-        <h1 className="text-4xl font-black uppercase text-white mb-6 tracking-tighter font-serif italic">Protocol Clearance.</h1>
-        <p className="text-zinc-500 mb-8 px-10 leading-relaxed font-medium text-lg italic">
+        <h1 className="text-4xl font-black uppercase text-white mb-6   ">Protocol Clearance.</h1>
+        <p className="text-zinc-500 mb-8 px-10 leading-relaxed font-medium text-lg ">
           Your transaction is currently <span className="text-white underline decoration-brand-purple/50">Awaiting Admin Approval</span>. 
           <br />
-          <span className="text-brand-purple/80 text-sm font-black uppercase tracking-widest mt-4 block">It may take up to 24 hours after withdrawal fee has been made.</span>
+          <span className="text-brand-purple/80 text-sm font-black uppercase  mt-4 block">It may take up to 24 hours after withdrawal fee has been made.</span>
         </p>
         
         <div className="bg-brand-black-light border border-zinc-800 rounded-[40px] p-10 mb-12 space-y-6 text-left shadow-2xl">
@@ -80,7 +80,7 @@ export default function WithdrawPage() {
            </div>
            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white border-t border-zinc-800/50 pt-6">
               <span>Net to Receive</span>
-              <span className="text-brand-purple text-xl font-mono tracking-tighter">{formatCurrency(netAmount)}</span>
+              <span className="text-brand-purple text-xl font-mono ">{formatCurrency(netAmount)}</span>
            </div>
         </div>
 
@@ -102,7 +102,7 @@ export default function WithdrawPage() {
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Liquidity Outbound
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white font-serif italic">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white  italic">
             Liquidate <span className="text-zinc-600 italic">Assets.</span>
           </h1>
         </div>
