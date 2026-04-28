@@ -20,8 +20,8 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#09090b] text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-emerald-500 shadow-lg shadow-emerald-500/20"></div>
+      <div className="min-h-screen flex items-center justify-center bg-brand-black text-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-brand-purple shadow-lg shadow-brand-purple/20"></div>
       </div>
     );
   }

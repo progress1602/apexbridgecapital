@@ -74,11 +74,11 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000 pb-32">
+    <div className="space-y-12 animate-in fade-in duration-1000 pb-32 font-sans">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
         <div>
-          <div className="flex items-center gap-2 text-emerald-500 font-black uppercase tracking-[0.4em] text-[10px] mb-4">
-             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
+             <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Audit Trail
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white font-serif italic">
@@ -90,7 +90,7 @@ export default function TransactionsPage() {
         </div>
         <button 
           onClick={() => setShowAuditModal(true)}
-          className="flex items-center gap-3 px-8 py-4 bg-white text-black border border-white rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all shadow-2xl active:scale-95"
+          className="flex items-center gap-3 px-8 py-4 bg-white text-black border border-white rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-purple-hover transition-all shadow-2xl active:scale-95"
         >
           <Download size={14} /> Comprehensive Audit Report
         </button>
@@ -99,13 +99,13 @@ export default function TransactionsPage() {
       {/* Filters/Search Hub */}
       <div className="flex flex-col md:flex-row gap-4 items-center">
         <div className="relative flex-1 group w-full">
-          <Search size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-emerald-500 transition-colors" />
+          <Search size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-brand-purple transition-colors" />
           <input 
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by hash, institution or transaction ID..." 
-            className="w-full bg-[#0c0c0e] border border-zinc-800 rounded-[28px] py-6 pl-16 pr-8 text-sm text-zinc-300 focus:outline-none focus:border-emerald-500/40 shadow-inner transition-all font-bold tracking-tight"
+            className="w-full bg-brand-black border border-zinc-800 rounded-[28px] py-6 pl-16 pr-8 text-sm text-zinc-300 focus:outline-none focus:border-brand-purple/40 shadow-inner transition-all font-bold tracking-tight"
           />
         </div>
         <div className="flex gap-3 w-full md:w-auto">
@@ -113,34 +113,34 @@ export default function TransactionsPage() {
              <select 
                value={activeFilter}
                onChange={(e) => setActiveFilter(e.target.value as any)}
-               className="w-full appearance-none px-12 py-6 bg-[#0c0c0e] border border-zinc-800 rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none focus:border-emerald-500/40 cursor-pointer"
+               className="w-full appearance-none px-12 py-6 bg-black border border-zinc-800 rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none focus:border-brand-purple/40 cursor-pointer"
              >
                <option value="all">All Layers</option>
                <option value="deposit">Deposits</option>
                <option value="withdrawal">Withdrawals</option>
                <option value="investment">Investments</option>
              </select>
-             <Filter size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none" />
+             <Filter size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-purple pointer-events-none" />
            </div>
            
            <div className="relative group flex-1 md:flex-none">
              <select 
                value={statusFilter}
                onChange={(e) => setStatusFilter(e.target.value as any)}
-               className="w-full appearance-none px-12 py-6 bg-[#0c0c0e] border border-zinc-800 rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none focus:border-emerald-500/40 cursor-pointer"
+               className="w-full appearance-none px-12 py-6 bg-black border border-zinc-800 rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none focus:border-brand-purple/40 cursor-pointer"
              >
                <option value="all">All Status</option>
                <option value="approved">Approved</option>
                <option value="pending">Pending</option>
                <option value="failed">Failed</option>
              </select>
-             <TrendingUp size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none" />
+             <TrendingUp size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-purple pointer-events-none" />
            </div>
         </div>
       </div>
 
       {/* Transactions Table / Mobile Cards */}
-      <div className="bg-[#0c0c0e] border border-zinc-800 rounded-[40px] md:rounded-[48px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative">
+      <div className="bg-black border border-zinc-800 rounded-[40px] md:rounded-[48px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative">
         <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
         
         {/* Mobile View: Cards */}
@@ -151,7 +151,7 @@ export default function TransactionsPage() {
                 <div className="flex items-center gap-4">
                   <div className={cn(
                     "w-10 h-10 rounded-xl flex items-center justify-center border",
-                    tx.type === 'deposit' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
+                    tx.type === 'deposit' ? "bg-brand-purple/10 text-brand-purple border-brand-purple/20" : 
                     tx.type === 'withdrawal' ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-zinc-800 text-zinc-300 border-zinc-700"
                   )}>
                     {tx.type === 'deposit' ? <ArrowDownCircle size={16} /> : 
@@ -165,7 +165,7 @@ export default function TransactionsPage() {
                 <div className="relative">
                   <button 
                     onClick={() => setOpenMenuId(openMenuId === tx.id ? null : tx.id)}
-                    className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-700 active:bg-zinc-800"
+                    className="w-10 h-10 rounded-full bg-brand-black-light border border-zinc-800 flex items-center justify-center text-zinc-700 active:bg-zinc-800"
                   >
                     <MoreVertical size={16} />
                   </button>
@@ -175,7 +175,7 @@ export default function TransactionsPage() {
                         initial={{ opacity: 0, scale: 0.9, x: -10 }}
                         animate={{ opacity: 1, scale: 1, x: 0 }}
                         exit={{ opacity: 0, scale: 0.9, x: -10 }}
-                        className="absolute right-0 top-12 z-50 w-48 bg-[#0c0c0e] border border-zinc-800 rounded-2xl p-2 shadow-2xl"
+                        className="absolute right-0 top-12 z-50 w-48 bg-black border border-zinc-800 rounded-2xl p-2 shadow-2xl"
                       >
                         {tx.status === 'pending' && (
                           <button 
@@ -190,7 +190,7 @@ export default function TransactionsPage() {
                             onClick={() => handleAction(tx.id, 'resume')}
                             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
                           >
-                             <Play size={14} className="text-emerald-500" /> Resume
+                             <Play size={14} className="text-brand-purple" /> Resume
                           </button>
                         )}
                         <button 
@@ -219,7 +219,7 @@ export default function TransactionsPage() {
                   <p className="text-[8px] font-black uppercase text-zinc-600 tracking-widest mb-1.5">Status</p>
                   <span className={cn(
                     "text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md border inline-block",
-                    tx.status === 'approved' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" : 
+                    tx.status === 'approved' ? "text-brand-purple border-brand-purple/20 bg-brand-purple/5" : 
                     tx.status === 'pending' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" : 
                     tx.status === 'canceled' ? "text-orange-500 border-orange-500/20 bg-orange-500/5" :
                     "text-red-500 border-red-500/20 bg-red-500/5"
@@ -254,12 +254,12 @@ export default function TransactionsPage() {
             <tbody className="divide-y divide-zinc-800/50 text-sm">
               {filteredTransactions.map((tx) => (
                 <tr key={tx.id} className="hover:bg-white/[0.015] transition-all group">
-                  <td className="px-10 py-8 font-mono text-[11px] text-zinc-600 font-bold tracking-widest group-hover:text-emerald-500/60 transition-colors">#{tx.id.toUpperCase()}</td>
+                  <td className="px-10 py-8 font-mono text-[11px] text-zinc-600 font-bold tracking-widest group-hover:text-brand-purple/60 transition-colors">#{tx.id.toUpperCase()}</td>
                   <td className="px-10 py-8">
                     <div className="flex items-center gap-4">
                       <div className={cn(
                         "w-10 h-10 rounded-xl flex items-center justify-center border transition-all group-hover:scale-110",
-                        tx.type === 'deposit' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : 
+                        tx.type === 'deposit' ? "bg-brand-purple/10 text-brand-purple border-brand-purple/20 shadow-[0_0_20px_rgba(75,47,168,0.1)]" : 
                         tx.type === 'withdrawal' ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]" : "bg-zinc-800 text-zinc-300 border-zinc-700"
                       )}>
                         {tx.type === 'deposit' ? <ArrowDownCircle size={16} /> : 
@@ -288,7 +288,7 @@ export default function TransactionsPage() {
                   <td className="px-10 py-8 text-center">
                     <span className={cn(
                       "text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border shadow-inner",
-                      tx.status === 'approved' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" : 
+                      tx.status === 'approved' ? "text-brand-purple border-brand-purple/20 bg-brand-purple/5" : 
                       tx.status === 'pending' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" : 
                       tx.status === 'canceled' ? "text-orange-500 border-orange-500/20 bg-orange-500/5" :
                       "text-red-500 border-red-500/20 bg-red-500/5"
@@ -311,7 +311,7 @@ export default function TransactionsPage() {
                           animate={{ opacity: 1, scale: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.9, y: 10 }}
                           ref={menuRef}
-                          className="absolute right-10 top-20 z-50 w-56 bg-[#0c0c0e] border border-zinc-800 rounded-3xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-emerald-500/10"
+                          className="absolute right-10 top-20 z-50 w-56 bg-black border border-zinc-800 rounded-3xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-brand-purple/10"
                         >
                            {tx.status === 'pending' && (
                              <button 
@@ -326,7 +326,7 @@ export default function TransactionsPage() {
                                onClick={() => handleAction(tx.id, 'resume')}
                                className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
                              >
-                                <Play size={16} className="text-emerald-500" /> Resume Transaction
+                                <Play size={16} className="text-brand-purple" /> Resume Transaction
                              </button>
                            )}
                            <button 
@@ -371,7 +371,7 @@ export default function TransactionsPage() {
                initial={{ opacity: 0, scale: 0.9, y: 20 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="relative w-full max-w-md bg-[#0c0c0e] border border-zinc-800 rounded-[48px] p-12 text-center shadow-[0_0_100px_rgba(239,68,68,0.1)]"
+               className="relative w-full max-w-md bg-black border border-zinc-800 rounded-[48px] p-12 text-center shadow-[0_0_100px_rgba(239,68,68,0.1)]"
              >
                 <div className="w-20 h-20 bg-red-500/10 text-red-500 rounded-[32px] flex items-center justify-center mx-auto mb-8 border border-red-500/20">
                    <AlertTriangle size={40} />
@@ -414,12 +414,12 @@ export default function TransactionsPage() {
                initial={{ opacity: 0, scale: 0.9, y: 20 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="relative w-full max-w-4xl bg-white text-zinc-900 rounded-[48px] overflow-hidden shadow-[0_0_100px_rgba(16,185,129,0.2)] flex flex-col max-h-[90vh]"
+               className="relative w-full max-w-4xl bg-white text-zinc-900 rounded-[48px] overflow-hidden shadow-[0_0_100px_rgba(75,47,168,0.2)] flex flex-col max-h-[90vh]"
              >
                 {/* Modal Header */}
                 <div className="p-8 border-b border-zinc-100 flex items-center justify-between bg-zinc-50">
                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                      <div className="w-12 h-12 bg-brand-purple rounded-2xl flex items-center justify-center shadow-lg shadow-brand-purple/20">
                          <ShieldCheck className="text-white" size={24} />
                       </div>
                       <div>
@@ -440,7 +440,7 @@ export default function TransactionsPage() {
                    {/* Official Letterhead Heading */}
                    <div className="flex justify-between items-start border-b-2 border-zinc-900 pb-12">
                       <div className="space-y-4">
-                         <div className="text-3xl font-black font-serif italic uppercase tracking-tighter">ApexBridge<span className="text-emerald-500">Capital</span></div>
+                         <div className="text-3xl font-black font-serif italic uppercase tracking-tighter">ApexBridge<span className="text-brand-purple">Capital</span></div>
                          <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest leading-loose">
                             Institutional Liquidity Hub<br />
                             Zürich, Switzerland • Registry No. 883.21<br />
@@ -458,14 +458,14 @@ export default function TransactionsPage() {
                       <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
                          <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-3">Net Asset Valuation</p>
                          <p className="text-3xl font-black italic tracking-tighter text-zinc-900">{formatCurrency(transactions.reduce((acc, tx) => acc + tx.amount, 0))}</p>
-                         <div className="mt-4 flex items-center gap-2 text-[9px] font-black text-emerald-600 uppercase">
+                         <div className="mt-4 flex items-center gap-2 text-[9px] font-black text-brand-purple uppercase">
                             <TrendingUp size={12} /> Positive Variance
                          </div>
                       </div>
                       <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
                          <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-3">Verified Operations</p>
                          <p className="text-3xl font-black italic tracking-tighter text-zinc-900">{transactions.length} Events</p>
-                         <div className="mt-4 flex items-center gap-2 text-[9px] font-black text-emerald-600 uppercase">
+                         <div className="mt-4 flex items-center gap-2 text-[9px] font-black text-brand-purple uppercase">
                             <BadgeCheck size={12} /> 100% Integrity
                          </div>
                       </div>
@@ -494,7 +494,7 @@ export default function TransactionsPage() {
                               <div className="flex-1">
                                  <div className="flex items-center justify-between mb-1">
                                     <h5 className="font-black text-xs uppercase tracking-widest">{item.label}</h5>
-                                    <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded">{item.status}</span>
+                                    <span className="text-[9px] font-black text-brand-purple uppercase tracking-widest bg-brand-purple/5 px-2 py-1 rounded">{item.status}</span>
                                  </div>
                                  <p className="text-[11px] text-zinc-500 font-bold tracking-tight leading-relaxed">{item.desc}</p>
                               </div>

@@ -65,11 +65,11 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-16 animate-in fade-in duration-1000 pb-32">
+    <div className="max-w-4xl mx-auto space-y-16 animate-in fade-in duration-1000 pb-32 font-sans">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
         <div>
-          <div className="flex items-center gap-2 text-emerald-500 font-black uppercase tracking-[0.4em] text-[10px] mb-4">
-             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
+             <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Command Center
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white font-serif italic">
@@ -81,7 +81,7 @@ export default function NotificationsPage() {
         </div>
         <button 
           onClick={markAllRead}
-          className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 hover:text-white transition-all border border-emerald-500/20 px-8 py-4 rounded-full hover:bg-emerald-500 shadow-xl shadow-emerald-500/5 active:scale-95"
+          className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-brand-purple hover:text-white transition-all border border-brand-purple/20 px-8 py-4 rounded-full hover:bg-brand-purple shadow-xl shadow-brand-purple/5 active:scale-95"
         >
           <CheckCircle size={14} /> Read All Intelligence
         </button>
@@ -102,7 +102,7 @@ export default function NotificationsPage() {
                "px-8 py-4 rounded-full text-[9px] font-black uppercase tracking-[0.3em] transition-all border shrink-0",
                filter === f.id 
                  ? "bg-white text-black border-white shadow-xl" 
-                 : "bg-[#0c0c0e] text-zinc-600 border-zinc-800 hover:border-zinc-700"
+                 : "bg-brand-black text-zinc-600 border-zinc-800 hover:border-zinc-700"
              )}
            >
              {f.label}
@@ -122,19 +122,19 @@ export default function NotificationsPage() {
               className={cn(
                 "p-8 md:p-10 rounded-[48px] border transition-all duration-500 relative group overflow-hidden",
                 notif.unread 
-                  ? "bg-[#0c0c0e]/80 border-emerald-500/30 shadow-[0_40px_100px_rgba(16,185,129,0.05)]" 
-                  : "bg-[#0c0c0e] border-zinc-800/50 hover:border-zinc-700"
+                  ? "bg-black/80 border-brand-purple/30 shadow-[0_40px_100px_rgba(75,47,168,0.05)]" 
+                  : "bg-black border-zinc-800/50 hover:border-zinc-700"
               )}
             >
               {notif.unread && (
-                <div className="absolute top-10 right-10 w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-pulse" />
+                <div className="absolute top-10 right-10 w-3 h-3 rounded-full bg-brand-purple shadow-[0_0_20px_rgba(75,47,168,0.5)] animate-pulse" />
               )}
               
               <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
                 <div className={cn(
                   "w-16 h-16 rounded-[24px] flex items-center justify-center shrink-0 shadow-2xl border transition-transform group-hover:scale-110 duration-500",
                   notif.type === 'security' ? "bg-red-500/10 text-red-500 border-red-500/10" :
-                  notif.type === 'transaction' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/10" : "bg-blue-500/10 text-blue-500 border-blue-500/10"
+                  notif.type === 'transaction' ? "bg-brand-purple/10 text-brand-purple border-brand-purple/10" : "bg-blue-500/10 text-blue-500 border-blue-500/10"
                 )}>
                   {notif.type === 'security' ? <ShieldCheck size={32} /> :
                    notif.type === 'transaction' ? <CheckCircle2 size={32} /> : <Info size={32} />}
@@ -150,7 +150,7 @@ export default function NotificationsPage() {
                   <div className="mt-8 flex items-center gap-6">
                     <button 
                       onClick={() => markRead(notif.id)}
-                      className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 hover:text-emerald-400 transition-colors bg-emerald-500/5 px-6 py-3 rounded-full border border-emerald-500/10 shadow-lg active:scale-95"
+                      className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-purple hover:text-brand-purple-hover transition-colors bg-brand-purple/5 px-6 py-3 rounded-full border border-brand-purple/10 shadow-lg active:scale-95"
                     >
                       {notif.unread ? 'Acknowledge' : 'Verified'}
                     </button>
@@ -169,7 +169,7 @@ export default function NotificationsPage() {
 
         {filteredNotifs.length === 0 && (
           <div className="py-32 text-center space-y-6">
-            <div className="w-24 h-24 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-800 shadow-inner">
+            <div className="w-24 h-24 rounded-full bg-brand-black-light border border-zinc-800 flex items-center justify-center mx-auto text-zinc-800 shadow-inner">
                <Mail size={48} />
             </div>
             <p className="text-[11px] text-zinc-700 font-black uppercase tracking-[0.4em] italic underline decoration-zinc-800 underline-offset-8">Intelligence buffer clear</p>
@@ -178,21 +178,21 @@ export default function NotificationsPage() {
       </div>
 
       {/* Subscription Card */}
-      <div className="mt-20 p-12 md:p-20 rounded-[72px] bg-[#0c0c0e] border border-emerald-500/20 text-white relative overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
-         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/[0.03] blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-[2000ms] pointer-events-none" />
-         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-500/[0.02] blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+      <div className="mt-20 p-12 md:p-20 rounded-[72px] bg-black border border-brand-purple/20 text-white relative overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
+         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-purple/[0.03] blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-[2000ms] pointer-events-none" />
+         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-purple/[0.02] blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
          
          <div className="relative z-10 space-y-8 flex flex-col md:flex-row md:items-center justify-between gap-10">
             <div className="space-y-4 max-w-xl">
-               <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 mb-4">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Premium Signal Intel</span>
+               <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-purple/10 rounded-full border border-brand-purple/20 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
+                  <span className="text-[9px] font-black text-brand-purple uppercase tracking-widest">Premium Signal Intel</span>
                </div>
-               <h2 className="text-4xl md:text-5xl font-black tracking-tighter font-serif italic leading-none">Stay <span className="text-emerald-500">Liquid.</span> Stay <span className="text-zinc-600 underline decoration-zinc-800">Informed.</span></h2>
+               <h2 className="text-4xl md:text-5xl font-black tracking-tighter font-serif italic leading-none">Stay <span className="text-brand-purple">Liquid.</span> Stay <span className="text-zinc-600 underline decoration-zinc-800">Informed.</span></h2>
                <p className="text-zinc-500 text-lg leading-relaxed font-medium">Activate specialized neural signals to receive real-time intelligence on institutional pivot points and whale settlement activities.</p>
             </div>
             <div className="shrink-0">
-               <button className="px-12 py-6 bg-emerald-500 text-black rounded-[32px] font-black text-[10px] uppercase tracking-[0.3em] hover:bg-emerald-400 transition-all hover:scale-110 active:scale-95 shadow-[0_20px_60px_rgba(16,185,129,0.3)]">Activate Alpha Signals</button>
+               <button className="px-12 py-6 bg-brand-purple text-black rounded-[32px] font-black text-[10px] uppercase tracking-[0.3em] hover:bg-brand-purple-hover transition-all hover:scale-110 active:scale-95 shadow-[0_20px_60px_rgba(75,47,168,0.3)]">Activate Alpha Signals</button>
             </div>
          </div>
       </div>

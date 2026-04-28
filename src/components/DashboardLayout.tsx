@@ -36,14 +36,14 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070708] text-zinc-100 flex font-sans selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-brand-black text-zinc-100 flex font-sans selection:bg-brand-purple/30">
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex w-72 flex-col border-r border-zinc-800/10 bg-[#0c0c0e] p-8 sticky top-0 h-screen">
+      <aside className="hidden lg:flex w-72 flex-col border-r border-zinc-800/10 bg-brand-black p-8 sticky top-0 h-screen">
         <Link to="/" className="flex items-center gap-3 mb-12 px-2 group">
-          <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.2)] group-hover:scale-110 transition-transform duration-500">
+          <div className="w-10 h-10 bg-brand-purple rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(75,47,168,0.2)] group-hover:scale-110 transition-transform duration-500">
              <TrendingUp size={20} className="text-black" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-white font-serif italic uppercase">ApexBridge<span className="text-emerald-500">Capital</span></span>
+          <span className="text-xl font-bold tracking-tight text-white font-serif italic uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
         </Link>
 
         <nav className="flex-1 space-y-1">
@@ -55,7 +55,7 @@ export default function DashboardLayout() {
               className={({ isActive }) => cn(
                 "flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 group text-[11px] font-black uppercase tracking-widest border",
                 isActive 
-                  ? "bg-zinc-800/40 text-emerald-400 border-zinc-700 shadow-[0_4px_20px_rgba(0,0,0,0.3)]" 
+                  ? "bg-zinc-800/40 text-brand-purple border-zinc-700 shadow-[0_4px_20px_rgba(0,0,0,0.3)]" 
                   : "text-zinc-500 border-transparent hover:bg-zinc-800/20 hover:text-white"
               )}
             >
@@ -72,7 +72,7 @@ export default function DashboardLayout() {
             </div>
             <div className="overflow-hidden">
               <p className="text-xs font-black uppercase tracking-widest truncate text-white">{user?.name.split(' ')[0]}</p>
-              <p className="text-[9px] text-emerald-500/60 font-black uppercase tracking-widest mt-0.5">Tier 2 Private</p>
+              <p className="text-[9px] text-brand-purple/60 font-black uppercase tracking-widest mt-0.5">Tier 2 Private</p>
             </div>
           </div>
           <button
@@ -86,25 +86,26 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Mobile Nav Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0c0c0e]/90 backdrop-blur-xl border-b border-zinc-800/50 px-6 py-4 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-brand-black border-b border-zinc-800/80 px-6 py-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <TrendingUp size={16} />
+          <div className="w-9 h-9 bg-brand-purple rounded-xl flex items-center justify-center shadow-lg shadow-brand-purple/20">
+            <TrendingUp size={18} className="text-black" />
           </div>
-          <span className="text-sm font-bold tracking-tight text-white font-serif italic uppercase">ApexBridge<span className="text-emerald-500">Capital</span></span>
+          <span className="text-base font-bold tracking-tight text-white font-serif italic uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-400 active:scale-95 transition-transform">
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="w-11 h-11 flex items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 active:scale-95 transition-all">
           {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            className="lg:hidden fixed inset-0 z-40 bg-[#070708] pt-28 px-6 overflow-y-auto"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="lg:hidden fixed inset-0 z-40 bg-brand-black pt-32 px-6 overflow-y-auto"
           >
             <nav className="space-y-3 pb-20">
               <p className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-6 px-4 italic">Protocol Terminal</p>
@@ -115,7 +116,7 @@ export default function DashboardLayout() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => cn(
                     "flex items-center gap-4 px-6 py-5 rounded-[24px] text-sm font-black uppercase tracking-widest transition-all",
-                    isActive ? "bg-emerald-500 text-black shadow-[0_10px_30px_rgba(16,185,129,0.2)] font-black" : "bg-zinc-900 border border-zinc-800 text-zinc-500"
+                    isActive ? "bg-brand-purple text-black shadow-[0_10px_30px_rgba(75,47,168,0.2)] font-black" : "bg-zinc-900 border border-zinc-800 text-zinc-500"
                   )}
                 >
                   <item.icon size={22} />
@@ -137,8 +138,8 @@ export default function DashboardLayout() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 flex flex-col p-5 lg:p-14 pt-24 lg:pt-14 bg-[#070708] relative">
-        <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <main className="flex-1 min-w-0 flex flex-col p-5 lg:p-14 pt-24 lg:pt-14 bg-brand-black relative">
+        <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-brand-purple/5 blur-[120px] rounded-full pointer-events-none" />
         <div className="max-w-7xl w-full mx-auto relative z-10">
           <Outlet />
         </div>

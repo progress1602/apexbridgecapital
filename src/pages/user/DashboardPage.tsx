@@ -30,8 +30,8 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
         <div>
-          <div className="flex items-center gap-2 text-emerald-500 font-black uppercase tracking-[0.4em] text-[10px] mb-4">
-             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
+             <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
              Capital Matrix Active
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white font-serif italic">
@@ -40,7 +40,7 @@ export default function DashboardPage() {
           <p className="text-zinc-500 text-sm font-medium mt-2">Authenticated as <span className="text-white">{user?.name}</span> • Tier 2 Priority</p>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/user/invest" className="px-8 py-4 bg-emerald-500 text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/10 active:scale-95">
+          <Link to="/user/invest" className="px-8 py-4 bg-brand-purple text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 active:scale-95">
             Deploy Capital
           </Link>
         </div>
@@ -48,18 +48,18 @@ export default function DashboardPage() {
 
       {/* Main Balance Bento */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 bg-[#0c0c0e] border border-zinc-800 p-10 rounded-[40px] shadow-2xl relative overflow-hidden group">
-           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
+        <div className="lg:col-span-8 bg-brand-black-light border border-zinc-800 p-10 rounded-[40px] shadow-2xl relative overflow-hidden group">
+           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-purple/5 blur-[100px] rounded-full pointer-events-none" />
            <div className="flex justify-between items-start mb-12">
               <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">Institutional Valuation</p>
-              <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
-                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <div className="flex items-center gap-2 px-3 py-1 bg-brand-black-light border border-zinc-800 rounded-full">
+                 <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
                  <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Real-time</span>
               </div>
            </div>
            <div className="space-y-2">
               <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-white font-mono break-all leading-none">{formatCurrency(user?.balance || 0)}</h2>
-              <div className="flex items-center gap-4 text-emerald-400 font-black uppercase tracking-[0.2em] text-xs pt-4">
+              <div className="flex items-center gap-4 text-brand-purple-hover font-black uppercase tracking-[0.2em] text-xs pt-4">
                  <span className="flex items-center gap-1"><TrendingUp size={14} /> +12.4%</span>
                  <span className="text-zinc-600">vs Benchmark</span>
               </div>
@@ -79,9 +79,9 @@ export default function DashboardPage() {
            </div>
         </div>
 
-        <div className="lg:col-span-4 bg-emerald-500 rounded-[40px] p-10 flex flex-col justify-between shadow-[0_20px_50px_rgba(16,185,129,0.1)] group">
+        <div className="lg:col-span-4 bg-brand-purple rounded-[40px] p-10 flex flex-col justify-between shadow-[0_20px_50px_rgba(75,47,168,0.1)] group">
            <div>
-              <div className="w-12 h-12 bg-black/10 rounded-2xl flex items-center justify-center text-black mb-10 group-hover:rotate-12 transition-transform">
+              <div className="w-12 h-12 bg-brand-black/10 rounded-2xl flex items-center justify-center text-black mb-10 group-hover:rotate-12 transition-transform">
                  <Zap size={24} />
               </div>
               <h3 className="text-2xl font-black text-black uppercase tracking-tighter leading-none italic">Velocity <br /> Liquidity.</h3>
@@ -105,10 +105,10 @@ export default function DashboardPage() {
               <motion.div 
                 key={inv.id} 
                 whileHover={{ y: -4 }}
-                className="p-8 bg-zinc-900 border border-zinc-800 rounded-[32px] flex flex-col sm:flex-row justify-between items-center gap-6 group transition-all hover:bg-[#0c0c0e] hover:border-emerald-500/30"
+                className="p-8 bg-brand-black-light border border-zinc-800 rounded-[32px] flex flex-col sm:flex-row justify-between items-center gap-6 group transition-all hover:bg-brand-black hover:border-brand-purple/30"
               >
                 <div className="flex items-center gap-6 w-full sm:w-auto">
-                  <div className="w-16 h-16 rounded-[24px] bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-emerald-500 group-hover:scale-105 transition-all shadow-inner">
+                  <div className="w-16 h-16 rounded-[24px] bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-brand-purple group-hover:scale-105 transition-all shadow-inner">
                     <Layers size={28} />
                   </div>
                   <div>
@@ -124,13 +124,13 @@ export default function DashboardPage() {
                    <div className="h-10 w-px bg-zinc-800 hidden sm:block" />
                    <div className="text-right">
                       <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-1 font-mono">Current ROI</p>
-                      <p className="text-2xl font-bold text-emerald-500 font-mono tracking-tighter">+{inv.roi}</p>
+                      <p className="text-2xl font-bold text-brand-purple font-mono tracking-tighter">+{inv.roi}</p>
                    </div>
                 </div>
               </motion.div>
             ))}
             {investments.length === 0 && (
-              <Link to="/user/invest" className="p-16 text-center border-2 border-dashed border-zinc-800 rounded-[40px] text-zinc-600 uppercase tracking-[0.2em] font-black text-xs hover:border-emerald-500/30 hover:text-zinc-400 transition-all">
+              <Link to="/user/invest" className="p-16 text-center border-2 border-dashed border-zinc-800 rounded-[40px] text-zinc-600 uppercase tracking-[0.2em] font-black text-xs hover:border-brand-purple/30 hover:text-zinc-400 transition-all">
                 Zero active positions. Initialize deployment?
               </Link>
             )}
@@ -142,15 +142,15 @@ export default function DashboardPage() {
           <div className="flex justify-between items-end mb-4">
             <h3 className="text-xl font-bold text-white font-serif italic">Ledger <span className="text-zinc-600">Proxy.</span></h3>
           </div>
-          <div className="bg-[#0c0c0e] rounded-[40px] border border-zinc-800 p-8 shadow-2xl relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+          <div className="bg-brand-black-light rounded-[40px] border border-zinc-800 p-8 shadow-2xl relative overflow-hidden">
+             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-purple/20 to-transparent" />
              <div className="space-y-px">
                 {recentTransactions.map((tx) => (
                   <div key={tx.id} className="flex justify-between items-center py-6 border-b border-zinc-800/50 last:border-0 group cursor-default">
                      <div className="flex gap-4 items-center">
                         <div className={cn(
                           "w-10 h-10 rounded-xl flex items-center justify-center text-zinc-500 border border-zinc-800 bg-zinc-900 group-hover:border-zinc-700 transition-colors",
-                          tx.status === 'approved' && "text-emerald-500/50"
+                          tx.status === 'approved' && "text-brand-purple/50"
                         )}>
                            {tx.type === 'deposit' ? <ArrowDownCircle size={18} /> : <ArrowUpCircle size={18} />}
                         </div>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
                         </div>
                      </div>
                      <div className="text-right">
-                        <p className={cn("text-base font-bold font-mono tracking-tighter", tx.type === 'withdrawal' ? 'text-zinc-400' : 'text-emerald-400')}>
+                        <p className={cn("text-base font-bold font-mono tracking-tighter", tx.type === 'withdrawal' ? 'text-zinc-400' : 'text-brand-purple-hover')}>
                           {tx.type === 'withdrawal' ? '-' : '+'}{formatCurrency(tx.amount)}
                         </p>
                         <p className="text-[8px] font-black uppercase tracking-widest text-zinc-700 mt-1">{tx.status}</p>
@@ -169,16 +169,18 @@ export default function DashboardPage() {
                 ))}
              </div>
              <Link to="/user/transactions" className="block w-full py-4 text-center text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors mt-4">
-               Audit Full Ledger
+                Audit Full Ledger
              </Link>
           </div>
 
-          <div className="bg-emerald-500/5 border border-emerald-500/10 p-8 rounded-[40px] relative overflow-hidden">
-             <div className="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/10 blur-2xl rounded-full" />
+          <div className="bg-brand-purple/5 border border-brand-purple/10 p-8 rounded-[40px] relative overflow-hidden">
+             <div className="absolute -right-4 -top-4 w-20 h-20 bg-brand-purple/10 blur-2xl rounded-full" />
              <div className="flex gap-6 items-start">
-                <Info size={24} className="text-emerald-500 shrink-0 mt-1" />
+                <div className="w-12 h-12 bg-black/10 rounded-2xl flex items-center justify-center text-black mb-10 group-hover:rotate-12 transition-transform">
+                  <Info size={24} className="text-brand-purple shrink-0" />
+                </div>
                 <div className="space-y-2">
-                   <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">Market Intelligence Pulse</h4>
+                   <h4 className="text-xs font-black uppercase tracking-widest text-brand-purple-hover">Market Intelligence Pulse</h4>
                    <p className="text-xs text-zinc-500 leading-relaxed font-medium">Your active capital is outperforming market benchmarks by <span className="text-white">4.2%</span>. Optimal node for rebalancing detected.</p>
                 </div>
              </div>
