@@ -5,6 +5,10 @@ interface User {
   name: string;
   email: string;
   balance: number;
+  phone?: string;
+  country?: string;
+  walletAddress?: string;
+  avatarUrl?: string;
 }
 
 interface AuthContextType {
@@ -12,6 +16,7 @@ interface AuthContextType {
   login: (email: string) => void;
   logout: () => void;
   updateBalance: (amount: number) => void;
+  updateProfile: (profile: Partial<User>) => void;
   isLoading: boolean;
 }
 
@@ -32,9 +37,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (email: string) => {
     const newUser = {
       id: Math.random().toString(36).substr(2, 9),
-      name: email.split('@')[0],
+      name: email.split('@')[0].toUpperCase(),
       email: email,
       balance: 10000, // Initial mock balance
+      phone: '+1 (555) 019-2834',
+      country: 'United States',
+      walletAddress: '0x71C27581B855A5100650A195EAD84CA6762C3A59',
     };
     setUser(newUser);
     localStorage.setItem('apexbridge_user', JSON.stringify(newUser));
@@ -53,8 +61,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateProfile = (profile: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...profile };
+      setUser(updatedUser);
+      localStorage.setItem('apexbridge_user', JSON.stringify(updatedUser));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateBalance, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateBalance, updateProfile, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

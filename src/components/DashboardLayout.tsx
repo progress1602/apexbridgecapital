@@ -10,7 +10,8 @@ import {
   LogOut,
   TrendingUp,
   Menu,
-  X
+  X,
+  User
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../lib/utils';
@@ -23,6 +24,7 @@ const navItems = [
   { icon: TrendingUp, label: 'Invest', path: '/user/invest' },
   { icon: History, label: 'Transactions', path: '/user/transactions' },
   { icon: Bell, label: 'Notifications', path: '/user/notifications' },
+  { icon: User, label: 'Profile', path: '/user/profile' },
 ];
 
 export default function DashboardLayout() {
@@ -66,15 +68,15 @@ export default function DashboardLayout() {
         </nav>
 
         <div className="mt-auto pt-8 border-t border-zinc-800/50">
-          <div className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 p-4 rounded-3xl mb-6 shadow-inner group hover:border-zinc-700 transition-colors cursor-pointer">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-zinc-800 shadow-xl group-hover:scale-105 transition-transform duration-500">
-              <img src={`https://i.pravatar.cc/100?u=${user?.name[0]}`} alt="user" className="w-full h-full grayscale" referrerPolicy="no-referrer" />
+          <Link to="/user/profile" className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 p-4 rounded-3xl mb-6 shadow-inner group hover:border-zinc-700 transition-colors">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-zinc-805 border-zinc-800 shadow-xl group-hover:scale-105 transition-transform duration-500 font-sans">
+              <img src={`https://i.pravatar.cc/100?u=${user?.name ? user.name[0] : 'a'}`} alt="user" className="w-full h-full grayscale" referrerPolicy="no-referrer" />
             </div>
             <div className="overflow-hidden">
-              <p className="text-xs font-black uppercase truncate text-white">{user?.name.split(' ')[0]}</p>
+              <p className="text-xs font-black uppercase truncate text-white">{user?.name ? user.name.split(' ')[0] : 'GUEST'}</p>
               <p className="text-[9px] text-brand-purple/60 font-black uppercase mt-0.5">Tier 2 Private</p>
             </div>
-          </div>
+          </Link>
           <button
             onClick={handleLogout}
             className="flex items-center gap-4 px-5 py-4 w-full text-left text-[11px] font-black uppercase text-zinc-500 hover:text-red-400 hover:bg-red-400/5 rounded-2xl transition-all group"

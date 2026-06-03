@@ -14,6 +14,7 @@ import WithdrawPage from './pages/user/WithdrawPage';
 import InvestPage from './pages/user/InvestPage';
 import TransactionsPage from './pages/user/TransactionsPage';
 import NotificationsPage from './pages/user/NotificationsPage';
+import ProfilePage from './pages/user/ProfilePage';
 
 export default function App() {
   const { user, isLoading } = useAuth();
@@ -42,6 +43,7 @@ export default function App() {
         <Route path="invest" element={<InvestPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
 
       {/* Fallback */}
