@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import UserAvatar from './UserAvatar';
 import { 
   LayoutDashboard, 
   ArrowDownCircle, 
@@ -13,9 +14,10 @@ import {
   X,
   User
 } from 'lucide-react';
-import { useState } from 'react';
-import { cn } from '../lib/utils';
+import { useState, useEffect } from 'react';
+import { cn, formatCurrency } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
+import { apiGetNotifications } from '../lib/graphql';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/user/dashboard' },
@@ -23,7 +25,7 @@ const navItems = [
   { icon: ArrowUpCircle, label: 'Withdraw', path: '/user/withdraw' },
   { icon: TrendingUp, label: 'Invest', path: '/user/invest' },
   { icon: History, label: 'Transactions', path: '/user/transactions' },
-  { icon: Bell, label: 'Notifications', path: '/user/notifications' },
+  { icon: Bell, label: 'Notifications', path: '/user/notifications', hasBadge: true },
   { icon: User, label: 'Profile', path: '/user/profile' },
 ];
 
@@ -31,6 +33,35 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnread = async () => {
+    try {
+      const notifs = await apiGetNotifications();
+      if (Array.isArray(notifs)) {
+        const count = notifs.filter(n => !n.isRead).length;
+        setUnreadCount(count);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    fetchUnread();
+    const handleFocus = () => fetchUnread();
+    const handleUpdate = () => fetchUnread();
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('apexbridge:notifications-updated', handleUpdate);
+    const interval = setInterval(fetchUnread, 10000);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('apexbridge:notifications-updated', handleUpdate);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -62,19 +93,27 @@ export default function DashboardLayout() {
               )}
             >
               <item.icon size={18} className={cn("transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3")} />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {item.hasBadge && unreadCount > 0 && (
+                <span className="px-2 py-0.5 text-[9px] font-black rounded-full bg-brand-purple text-white shadow-sm">
+                  {unreadCount}
+                </span>
+              )}
             </NavLink>
           ))}
         </nav>
 
         <div className="mt-auto pt-8 border-t border-zinc-800/50">
           <Link to="/user/profile" className="flex items-center gap-4 bg-zinc-900 border border-zinc-800 p-4 rounded-3xl mb-6 shadow-inner group hover:border-zinc-700 transition-colors">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-zinc-805 border-zinc-800 shadow-xl group-hover:scale-105 transition-transform duration-500 font-sans">
-              <img src={`https://i.pravatar.cc/100?u=${user?.name ? user.name[0] : 'a'}`} alt="user" className="w-full h-full grayscale" referrerPolicy="no-referrer" />
-            </div>
+            <UserAvatar 
+              src={user?.avatar} 
+              name={user?.name || user?.email} 
+              size="md"
+              className="border-2 border-brand-purple/40 shadow-xl group-hover:scale-105 transition-transform duration-500 shrink-0"
+            />
             <div className="overflow-hidden">
               <p className="text-xs font-black uppercase truncate text-white">{user?.name ? user.name.split(' ')[0] : 'GUEST'}</p>
-              <p className="text-[9px] text-brand-purple/60 font-black uppercase mt-0.5">Tier 2 Private</p>
+              <p className="text-[10px] text-emerald-400 font-mono font-bold mt-0.5">{formatCurrency(user?.balance || 0)}</p>
             </div>
           </Link>
           <button
@@ -95,9 +134,22 @@ export default function DashboardLayout() {
           </div>
           <span className="text-base font-bold tracking-tight text-white uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="w-11 h-11 flex items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 active:scale-95 transition-all">
-          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="flex items-center gap-3">
+          <Link to="/user/notifications" className="relative p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors">
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-purple text-white text-[9px] font-black rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </Link>
+          <span className="text-xs font-mono font-bold text-emerald-400 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl">
+            {formatCurrency(user?.balance || 0)}
+          </span>
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="w-11 h-11 flex items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 active:scale-95 transition-all">
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
@@ -122,7 +174,12 @@ export default function DashboardLayout() {
                   )}
                 >
                   <item.icon size={22} />
-                  {item.label}
+                  <span className="flex-1">{item.label}</span>
+                  {item.hasBadge && unreadCount > 0 && (
+                    <span className="px-2.5 py-1 text-[10px] font-black rounded-full bg-brand-purple text-white shadow-sm">
+                      {unreadCount}
+                    </span>
+                  )}
                 </NavLink>
               ))}
               <div className="pt-8 mt-8 border-t border-zinc-800/50">

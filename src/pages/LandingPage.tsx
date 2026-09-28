@@ -116,29 +116,36 @@ export default function LandingPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800/50 bg-brand-black backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-900/50 bg-black/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-24 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 md:gap-3 group relative z-50">
-            <div className="w-8 h-8 md:w-12 md:h-12 bg-brand-purple rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(75,47,168,0.3)] group-hover:scale-110 transition-transform duration-500 shrink-0">
-               <TrendingUp size={20} className="text-black md:size-6" />
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(147,51,234,0.3)] group-hover:scale-110 transition-transform duration-500 shrink-0">
+               <TrendingUp size={20} className="text-white md:size-6" />
             </div>
-            <span className="text-sm md:text-2xl font-black tracking-tight text-white   uppercase truncate">
-              ApexBridge<span className="text-brand-purple">Capital</span>
+            <span className="text-sm md:text-2xl font-black tracking-tight text-white uppercase truncate">
+              ApexBridge<span className="text-purple-500">Capital</span>
             </span>
           </Link>
           
-          <div className="hidden lg:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500">
-            <a href="#protocol" className="hover:text-brand-purple-hover transition-colors">Protocol</a>
-            <a href="#infrastructure" className="hover:text-brand-purple-hover transition-colors">Security</a>
-            <a href="#yield" className="hover:text-brand-purple-hover transition-colors">Yield Engines</a>
-            <a href="#partners" className="hover:text-brand-purple-hover transition-colors">Institutional</a>
+          <div className="hidden lg:flex items-center gap-8 text-[11px] font-extrabold uppercase tracking-[0.2em]">
+            <span className="relative text-purple-400 cursor-pointer">
+              Home
+              <span className="absolute left-1/2 -bottom-[6px] -translate-x-1/2 w-4 h-[3px] bg-purple-500 rounded-full" />
+            </span>
+            <a href="#protocol" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Markets</a>
+            <a href="#protocol" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Alpha Plans</a>
+            <a href="#infrastructure" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">About Us</a>
+            <a href="#yield" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Resources</a>
+            <a href="#partners" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Contact</a>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden lg:flex items-center gap-8">
-              <Link to="/login" className="text-[10px] font-black uppercase text-zinc-400 hover:text-white transition-colors">Portal Access</Link>
-              <Link to="/signup" className="px-7 py-3 bg-zinc-100 text-black text-[10px] font-black uppercase rounded-full hover:bg-brand-purple-hover border border-transparent transition-all duration-500 shadow-xl shadow-white/5 active:scale-95">
-                Open Account
+            <div className="hidden lg:flex items-center gap-4">
+              <Link to="/login" className="px-6 py-3 border border-zinc-800 hover:border-purple-500 hover:text-purple-400 text-white text-[11px] font-black uppercase rounded-lg transition-all tracking-widest text-center">
+                Login
+              </Link>
+              <Link to="/signup" className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-black uppercase rounded-lg transition-all duration-200 shadow-lg tracking-widest text-center">
+                Deploy Capital
               </Link>
             </div>
 
@@ -160,14 +167,16 @@ export default function LandingPage() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-0 z-40 lg:hidden bg-brand-black flex flex-col"
+              className="fixed inset-0 z-40 lg:hidden bg-black flex flex-col"
             >
-              <div className="relative z-10 flex bg-transparent flex-col pt-32 px-10 gap-10">
+              <div className="relative z-10 flex bg-transparent flex-col pt-32 px-10 gap-8">
                 {[
-                  { name: 'Protocol', href: '#protocol' },
-                  { name: 'Security', href: '#infrastructure' },
-                  { name: 'Yield Engines', href: '#yield' },
-                  { name: 'Institutional', href: '#partners' }
+                  { name: 'Home', href: '/' },
+                  { name: 'Markets', href: '#protocol' },
+                  { name: 'Alpha Plans', href: '#protocol' },
+                  { name: 'About Us', href: '#infrastructure' },
+                  { name: 'Resources', href: '#yield' },
+                  { name: 'Contact', href: '#partners' }
                 ].map((item, idx) => (
                   <motion.a
                     key={item.name}
@@ -176,7 +185,7 @@ export default function LandingPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + (idx * 0.05) }}
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-4xl font-black text-white uppercase hover:text-brand-purple transition-colors"
+                    className="text-3xl font-black text-white uppercase hover:text-purple-500 transition-colors"
                   >
                     {item.name}
                   </motion.a>
@@ -187,155 +196,207 @@ export default function LandingPage() {
                 <Link 
                   to="/login" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block w-full py-5 text-center text-zinc-400 text-sm font-black uppercase border border-zinc-800 rounded-2xl hover:text-white"
+                  className="block w-full py-5 text-center text-zinc-400 text-sm font-black uppercase border border-zinc-800 rounded-xl hover:text-white"
                 >
-                  Portal Access
+                  Login
                 </Link>
                 <Link 
                   to="/signup" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block w-full py-5 bg-brand-purple text-black text-center text-sm font-black uppercase rounded-2xl shadow-xl shadow-brand-purple/10"
+                  className="block w-full py-5 bg-purple-600 text-white text-center text-sm font-black uppercase rounded-xl shadow-xl shadow-purple-600/10"
                 >
-                  Open Account
+                  Deploy Capital
                 </Link>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
-
       {/* Hero Section */}
       <main className="relative z-10">
-        <section className="relative pt-32 md:pt-48 pb-20 px-6 overflow-hidden">
-          {/* Hero Mature Institutional Background Image */}            <div className="absolute inset-0 z-0">
+        <section className="relative pt-24 md:pt-40 pb-20 px-4 md:px-6 overflow-hidden bg-black flex flex-col justify-between">
+                    {/* Background Layer (vibrant & visible on both md and lg screens, matches image perfectly) */}
+          <div className="absolute inset-0 z-0 hidden md:block">
             <img 
-              src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop" 
-              alt="Institutional Capital" 
-              className="w-full h-full object-cover opacity-40 blur-[2px] scale-105"
+              src="https://res.cloudinary.com/progresshenry/image/upload/v1781474630/background_iuvp53.jpg" 
+              alt="Precision Capital Backdrop" 
+              className="w-full h-full object-cover object-[78%_center] lg:object-right opacity-100 filter contrast-[1.05]"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/80 to-transparent" />
-            <div className="absolute inset-0 bg-black/20" />
+            {/* Elegant black gradient mask to guarantee text readability without losing the background graphics */}
+            <div className="absolute inset-y-0 left-0 w-full md:w-3/5 bg-gradient-to-r from-black via-black/85 md:via-black/75 to-transparent pointer-events-none" />
           </div>
 
-          <div className="max-w-7xl mx-auto relative z-10">
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 items-center">
-            <div className="xl:col-span-7 space-y-8 md:space-y-12">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-brand-black-light/50 border border-brand-purple/20 text-brand-purple-hover text-[9px] font-black uppercase tracking-[0.3em] mb-8 shadow-inner">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-purple-hover opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-purple"></span>
-                  </span>
-                  Market Execution: Active
-                </div>
-                
-                <h1 className="text-3xl sm:text-6xl md:text-8xl font-black text-white leading-[0.9] md:leading-[0.85] text-balance uppercase">
-                  PRECISION <br className="hidden sm:block" />
-                  <span className="text-zinc-600 block mt-2">CAPITAL.</span>
-                </h1>
-                
-                <p className="text-zinc-400 text-base md:text-xl max-w-xl mt-6 md:mt-10 leading-relaxed font-bold tracking-tight">
-                  The sophisticated interface for deep liquidity management and diversified stakings. Join the private network of global allocators.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 md:gap-5 mt-8 md:mt-12">
-                  <Link to="/signup" className="flex items-center justify-center gap-3 px-6 md:px-10 py-4 md:py-5 bg-brand-purple text-black rounded-xl md:rounded-2xl font-black uppercase text-[10px] md:text-[11px] hover:bg-brand-purple-hover transition-all shadow-2xl shadow-brand-purple/20 group">
-                    Deploy Capital Now
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform md:size-[18px]" />
-                  </Link>
-                  <button className="flex items-center justify-center gap-3 px-6 md:px-10 py-4 md:py-5 bg-zinc-900 border border-zinc-800 text-white rounded-xl md:rounded-2xl font-black uppercase text-[10px] md:text-[11px] hover:bg-zinc-800 transition-all">
-                    View Alpha Plans
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-6 pt-12 border-t border-zinc-800/50 mt-12">
-                   <div className="flex -space-x-3">
-                      {[1,2,3,4].map(i => (
-                        <div key={i} className="w-10 h-10 rounded-full border-2 border-black overflow-hidden bg-zinc-800">
-                           <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" className="w-full h-full grayscale opacity-70" referrerPolicy="no-referrer" />
-                        </div>
-                      ))}
-                   </div>
-                   <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em] leading-tight">
-                     Trusted by <span className="text-brand-purple font-black">12,400+</span> <br /> Institutional Partners
-                   </p>
-                </div>
-              </motion.div>
-            </div>
-
-            <div className="xl:col-span-5 relative">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="relative z-10"
-              >
-                {/* Floating Widget: Yield Calculator */}
-                <div className="bg-brand-black-light border border-zinc-800 p-6 md:p-8 rounded-[32px] md:rounded-[40px] shadow-[0_0_80px_rgba(0,0,0,0.5)] space-y-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-[9px] font-black uppercase tracking-[0.25em] text-zinc-400">Projection Terminal</h3>
-                    <div className="px-3 py-1 bg-brand-purple/10 border border-brand-purple/20 rounded-full text-brand-purple text-[8px] font-black uppercase">Live Alpha</div>
+          <div className="max-w-7xl mx-auto w-full relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+              
+              {/* Left Column matching image text layouts */}
+              <div className="md:col-span-7 space-y-7 md:space-y-9">
+                <motion.div
+                  initial={{ opacity: 0, x: -25 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="space-y-7 sm:space-y-8"
+                >
+                  {/* Badge */}
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-purple-500/20 rounded-full bg-black/40 backdrop-blur-sm">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                    </span>
+                    <span className="tracking-[0.25em] text-[10px] md:text-[11px] font-black uppercase text-purple-400">
+                      MARKET EXECUTION: ACTIVE
+                    </span>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-[8px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">
-                      <span>Principal Amount</span>
-                      <span className="text-brand-purple font-mono tracking-normal">${investment.toLocaleString()}</span>
-                    </div>
-                    <input 
-                      type="range" 
-                      min="1000" 
-                      max="100000" 
-                      step="1000"
-                      value={investment}
-                      onChange={(e) => setInvestment(Number(e.target.value))}
-                      className="w-full accent-brand-purple bg-zinc-800 rounded-lg cursor-pointer h-1.5 appearance-none"
-                    />
+                  {/* Heading */}
+                  <h1 className="text-5xl sm:text-7xl md:text-[85px] leading-[0.9] font-black text-white uppercase tracking-tight text-left">
+                    PRECISION <br />
+                    <span className="text-purple-500 font-black block mt-1">CAPITAL.</span>
+                  </h1>
+                  
+                  {/* Paragraph Info */}
+                  <p className="text-zinc-300 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed font-bold tracking-tight text-left">
+                    The sophisticated interface for deep liquidity management and diversified stakings. Join the private network of global allocators.
+                  </p>
+
+                  {/* Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 md:gap-5 pt-2">
+                    <Link to="/signup" className="flex items-center justify-center gap-2 px-9 py-4 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase text-[11px] tracking-widest rounded-lg transition-all duration-200 shadow-lg hover:shadow-purple-500/10 active:scale-95 shrink-0">
+                      DEPLOY CAPITAL NOW <ArrowRight size={14} />
+                    </Link>
+                    <a href="#protocol" className="flex items-center justify-center gap-2 px-9 py-4 bg-transparent border border-purple-600 hover:bg-purple-600/10 text-white font-black uppercase text-[11px] tracking-widest rounded-lg transition-all duration-200 active:scale-95 shrink-0">
+                      VIEW ALPHA PLANS
+                    </a>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl group hover:border-zinc-700 transition-all">
-                      <p className="text-[8px] text-zinc-500 font-black uppercase mb-2">Standard ROI</p>
-                      <p className="text-2xl font-bold text-white font-mono">${(investment * 1.12).toLocaleString()}<span className="text-[10px] text-brand-purple/50 block font-sans uppercase mt-1">+12%</span></p>
+                  {/* Mobile-only Optimized Woman Image Block (fully visible, styled with a purple rim, never overlapping text) */}
+                  <div className="md:hidden w-full relative rounded-2xl overflow-hidden border border-purple-500/20 shadow-2xl mt-6 bg-zinc-950">
+                    <div className="aspect-[1.4] sm:aspect-[1.8] w-full">
+                      <img 
+                        src="https://res.cloudinary.com/progresshenry/image/upload/v1781474630/background_iuvp53.jpg" 
+                        alt="ApexBridge Capital Portfolio representation" 
+                        className="w-full h-full object-cover object-[76%_center] filter contrast-[1.05]"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
-                    <div className="bg-brand-purple/5 border border-brand-purple/20 p-5 rounded-3xl relative overflow-hidden group hover:bg-brand-purple/10 transition-all">
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-brand-purple/10 blur-2xl rounded-full" />
-                      <p className="text-[8px] text-brand-purple font-black uppercase mb-2">Max Alpha</p>
-                      <p className="text-2xl font-bold text-white font-mono">${(investment * 1.32).toLocaleString()}<span className="text-[10px] text-brand-purple block font-sans uppercase mt-1">+32%</span></p>
+                    {/* Seamless bottom fade overlay */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
+                  </div>
+
+                  {/* Trust indicator overlapping avatars */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pt-5 border-t border-zinc-900/40">
+                    <div className="flex -space-x-3.5">
+                      {[
+                        { initials: 'MS', bg: 'from-purple-900/50 to-zinc-900' },
+                        { initials: 'YT', bg: 'from-zinc-800 to-zinc-900' },
+                        { initials: 'ER', bg: 'from-purple-950 to-zinc-900' },
+                        { initials: 'LF', bg: 'from-zinc-900 to-black' },
+                      ].map((partner, idx) => (
+                        <div 
+                          key={idx} 
+                          className={`w-11 h-11 rounded-full border-2 border-zinc-950 overflow-hidden bg-gradient-to-br ${partner.bg} shadow-md flex items-center justify-center text-[11px] font-black text-purple-300 font-mono`}
+                        >
+                          {partner.initials}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] sm:text-[11px] text-purple-400 font-black uppercase tracking-[0.2em]">TRUSTED BY 12,400+</p>
+                      <p className="text-[9px] text-zinc-500 font-extrabold uppercase tracking-wider">INSTITUTIONAL PARTNERS</p>
                     </div>
                   </div>
 
-                  <div className="pt-4 space-y-4">
-                     {[
-                       { label: 'Asset Protection', val: 'Active Isolation', icon: ShieldCheck },
-                       { label: 'Instant Liquidity', val: 'T+24 Settlement', icon: Zap }
-                     ].map((item, i) => (
-                       <div key={i} className="flex items-center justify-between px-5 py-4 bg-brand-black/50 rounded-2xl border border-zinc-900/50 hover:bg-zinc-900 transition-colors">
-                          <div className="flex items-center gap-3">
-                             <item.icon size={16} className="text-brand-purple" />
-                             <span className="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">{item.label}</span>
-                          </div>
-                          <span className="text-[10px] text-white font-black uppercase">{item.val}</span>
-                       </div>
-                     ))}
+                  {/* Email contact strip */}
+                  <div className="pt-2">
+                    <div className="w-full max-w-md border border-purple-500/20 bg-zinc-950/65 backdrop-blur-sm p-4 px-5 rounded-xl flex items-center justify-between text-xs font-semibold">
+                      <div className="flex items-center gap-3">
+                        <Mail size={16} className="text-purple-400" />
+                        <span className="text-purple-400 uppercase tracking-widest text-[10px] font-black">Email Us</span>
+                      </div>
+                      <div className="w-px h-4 bg-zinc-800" />
+                      <a href="mailto:apexbridgecapital1@gmail.com" className="text-zinc-300 font-bold tracking-tight text-[11px] hover:text-purple-400 transition-colors">
+                        apexbridgecapital1@gmail.com
+                      </a>
+                    </div>
                   </div>
 
-                  <Link to="/signup" className="block w-full py-5 bg-brand-purple text-black rounded-2xl font-black uppercase text-[10px] text-center hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/20 mt-6 active:scale-95">
-                    Authenticate Secure Access
-                  </Link>
-                </div>
+                </motion.div>
+              </div>
 
-                {/* Decorative Elements */}
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-brand-purple/10 blur-3xl rounded-full -z-10" />
-              </motion.div>
-            </div>
+              {/* On md and larger screens, this spacer ensures the background image of the woman remains perfectly visible on the right */}
+              <div className="md:col-span-5 h-[350px] md:h-[500px] lg:h-[550px] pointer-events-none hidden md:block" />
+
             </div>
           </div>
+
+          {/* Bottom Pillar Columns Row */}
+          <div className="border-t border-zinc-900/60 w-full mt-16 md:mt-24 pt-10 md:pt-12">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-0">
+              
+              {/* Enterprise Security */}
+              <div className="flex items-center gap-4 group md:pr-6 md:border-r border-zinc-800/40 pb-6 md:pb-0 border-b md:border-b-0 border-zinc-900/60">
+                <div className="w-12 h-12 rounded-full border border-purple-500/80 bg-purple-500/5 flex items-center justify-center text-purple-400 shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.15)] transition-transform duration-300 group-hover:scale-105">
+                  <Lock size={18} className="text-purple-500" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-[11px] sm:text-xs font-black tracking-wider text-white uppercase">
+                    ENTERPRISE SECURITY
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 font-normal leading-relaxed">
+                    Bank-grade security for your assets.
+                  </p>
+                </div>
+              </div>
+
+              {/* Deep Liquidity Access */}
+              <div className="flex items-center gap-4 group md:px-6 md:border-r border-zinc-800/40 pb-6 md:pb-0 border-b md:border-b-0 border-zinc-900/60">
+                <div className="w-12 h-12 rounded-full border border-purple-500/80 bg-purple-500/5 flex items-center justify-center text-purple-400 shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.15)] transition-transform duration-300 group-hover:scale-105">
+                  <TrendingUp size={18} className="text-purple-500" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-[11px] sm:text-xs font-black tracking-wider text-white uppercase">
+                    DEEP LIQUIDITY ACCESS
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 font-normal leading-relaxed">
+                    Access global liquidity pools seamlessly.
+                  </p>
+                </div>
+              </div>
+
+              {/* Diversified Stakings */}
+              <div className="flex items-center gap-4 group md:px-6 md:border-r border-zinc-800/40 pb-6 md:pb-0 border-b md:border-b-0 border-zinc-900/60">
+                <div className="w-12 h-12 rounded-full border border-purple-500/80 bg-purple-500/5 flex items-center justify-center text-purple-400 shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.15)] transition-transform duration-300 group-hover:scale-105">
+                  <Globe size={18} className="text-purple-500" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-[11px] sm:text-xs font-black tracking-wider text-white uppercase">
+                    DIVERSIFIED STAKINGS
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 font-normal leading-relaxed">
+                    Maximize returns with strategic allocations.
+                  </p>
+                </div>
+              </div>
+
+              {/* Private Network Access */}
+              <div className="flex items-center gap-4 group md:pl-6">
+                <div className="w-12 h-12 rounded-full border border-purple-500/80 bg-purple-500/5 flex items-center justify-center text-purple-400 shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.15)] transition-transform duration-300 group-hover:scale-105">
+                  <Users size={18} className="text-purple-500" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-[11px] sm:text-xs font-black tracking-wider text-white uppercase">
+                    PRIVATE NETWORK ACCESS
+                  </h4>
+                  <p className="text-[11px] text-zinc-400 font-normal leading-relaxed">
+                    Join a network of elite institutional allocators.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </section>
 
         {/* Institutional Backing / Partners */}

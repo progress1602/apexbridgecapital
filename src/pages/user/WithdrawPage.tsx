@@ -1,58 +1,65 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useMockData } from '../../hooks/useMockData';
 import { 
-  ArrowUpCircle, 
   Building2, 
   CreditCard, 
   ShieldCheck, 
   Loader2, 
-  CheckCircle2,
-  Lock,
-  Wallet,
-  ArrowRight,
-  TrendingUp,
-  AlertTriangle,
-  History,
-  Check,
-  Clock
+  Wallet, 
+  ArrowRight, 
+  TrendingUp, 
+  AlertTriangle, 
+  History, 
+  Check, 
+  Clock 
 } from 'lucide-react';
 import { cn, formatCurrency } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
+import { apiCreateWithdrawal } from '../../lib/graphql';
 
 export default function WithdrawPage() {
-  const { user, updateBalance } = useAuth();
-  const { addTransaction } = useMockData();
+  const { user, refreshUser } = useAuth();
   const [step, setStep] = useState(1);
+
+  React.useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
   const [amount, setAmount] = useState('');
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [accountName, setAccountName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fee = Number(amount) * 0.1;
-  const netAmount = Number(amount) - fee;
-  const totalDeduction = Number(amount);
+  const fee = Number(amount || 0) * 0.1;
+  const netAmount = Number(amount || 0) - fee;
+  const totalDeduction = Number(amount || 0);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || totalDeduction > user.balance) return;
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!user || totalDeduction > (user.balance || 0)) return;
 
     setIsSubmitting(true);
-    
-    // Simulate processing
-    setTimeout(() => {
-      updateBalance(-totalDeduction);
-      addTransaction({
-        type: 'withdrawal',
+    setErrorMessage(null);
+
+    try {
+      const destination = `${bankName} - ${accountNumber} (${accountName})`;
+      const res = await apiCreateWithdrawal({
         amount: totalDeduction,
-        status: 'pending',
-        method: bankName
+        destinationAddress: destination,
+        method: bankName || 'Bank Transfer',
       });
+
+      if (res && res.id) {
+        await refreshUser();
+        setIsSuccess(true);
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Withdrawal request failed.');
+    } finally {
       setIsSubmitting(false);
-      setIsSuccess(true);
-    }, 2500);
+    }
   };
 
   if (isSuccess) {
@@ -62,31 +69,31 @@ export default function WithdrawPage() {
           <div className="absolute inset-0 bg-brand-purple/20 blur-2xl rounded-full" />
           <Clock className="relative z-10" size={56} />
         </div>
-        <h1 className="text-4xl font-black uppercase text-white mb-6   ">Protocol Clearance.</h1>
-        <p className="text-zinc-500 mb-8 px-10 leading-relaxed font-medium text-lg ">
-          Your transaction is currently <span className="text-white underline decoration-brand-purple/50">Awaiting Admin Approval</span>. 
+        <h1 className="text-4xl font-black uppercase text-white mb-6">Protocol Clearance.</h1>
+        <p className="text-zinc-500 mb-8 px-10 leading-relaxed font-medium text-lg">
+          Your transaction is currently <span className="text-white underline decoration-brand-purple/50">Awaiting Multi-Sig Approval</span>. 
           <br />
-          <span className="text-brand-purple/80 text-sm font-black uppercase  mt-4 block">It may take up to 24 hours after withdrawal fee has been made.</span>
+          <span className="text-brand-purple/80 text-sm font-black uppercase mt-4 block">Disbursement scheduled upon node audit verification.</span>
         </p>
         
         <div className="bg-brand-black-light border border-zinc-800 rounded-[40px] p-10 mb-12 space-y-6 text-left shadow-2xl">
            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-zinc-500">
               <span>Total Liquidated</span>
-              <span className="text-white">{formatCurrency(Number(amount))}</span>
+              <span className="text-white font-mono">{formatCurrency(Number(amount))}</span>
            </div>
            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-zinc-500 border-t border-zinc-800/50 pt-6">
               <span>Settlement Interest (10%)</span>
-              <span className="text-red-500">-{formatCurrency(fee)}</span>
+              <span className="text-red-500 font-mono">-{formatCurrency(fee)}</span>
            </div>
            <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white border-t border-zinc-800/50 pt-6">
               <span>Net to Receive</span>
-              <span className="text-brand-purple text-xl font-mono ">{formatCurrency(netAmount)}</span>
+              <span className="text-brand-purple text-xl font-mono">{formatCurrency(netAmount)}</span>
            </div>
         </div>
 
         <button 
-          onClick={() => { setAmount(''); setStep(1); setIsSuccess(false); }}
-          className="px-12 py-5 bg-brand-purple text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-purple-hover transition-all shadow-2xl shadow-brand-purple/20 active:scale-95"
+          onClick={() => { setAmount(''); setBankName(''); setAccountNumber(''); setAccountName(''); setStep(1); setIsSuccess(false); }}
+          className="px-12 py-5 bg-brand-purple text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-purple-hover transition-all shadow-2xl shadow-brand-purple/20 active:scale-95 cursor-pointer"
         >
           Monitor Terminal
         </button>
@@ -102,7 +109,7 @@ export default function WithdrawPage() {
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Liquidity Outbound
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white  italic">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white italic">
             Liquidate <span className="text-zinc-600 italic">Assets.</span>
           </h1>
         </div>
@@ -126,6 +133,13 @@ export default function WithdrawPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         <div className="lg:col-span-8">
+           {errorMessage && (
+             <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-black uppercase flex items-center gap-3">
+               <AlertTriangle size={16} />
+               <span>{errorMessage}</span>
+             </div>
+           )}
+
            <AnimatePresence mode="wait">
                {step === 1 && (
                 <motion.div
@@ -143,7 +157,7 @@ export default function WithdrawPage() {
                         type="number"
                         required
                         value={amount}
-                        max={user?.balance}
+                        max={user?.balance || 0}
                         onChange={(e) => setAmount(e.target.value)}
                         className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[32px] py-12 md:py-16 pl-16 md:pl-24 pr-10 text-4xl md:text-8xl font-black text-white focus:outline-none focus:border-brand-purple/40 transition-all placeholder:text-zinc-800 shadow-inner font-mono tracking-tighter"
                         placeholder="0"
@@ -154,14 +168,14 @@ export default function WithdrawPage() {
                   <div className="bg-zinc-900/50 rounded-3xl p-8 border border-zinc-800">
                      <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-widest text-zinc-500 px-2 italic">
                         <span>Available for Liquidation</span>
-                        <span className="text-white">{formatCurrency(user?.balance || 0)}</span>
+                        <span className="text-white font-mono">{formatCurrency(user?.balance || 0)}</span>
                      </div>
                   </div>
 
                   <button 
                     disabled={!amount || Number(amount) < 20 || Number(amount) > (user?.balance || 0)}
                     onClick={() => setStep(2)}
-                    className="w-full py-8 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-xs hover:bg-brand-purple-hover transition-all disabled:opacity-30 flex items-center justify-center gap-4 group shadow-xl shadow-brand-purple/10"
+                    className="w-full py-8 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-xs hover:bg-brand-purple-hover transition-all disabled:opacity-30 flex items-center justify-center gap-4 group shadow-xl shadow-brand-purple/10 cursor-pointer"
                   >
                     Initiate Clearance <ArrowRight className="group-hover:translate-x-2 transition-transform" />
                   </button>
@@ -191,7 +205,7 @@ export default function WithdrawPage() {
                     </div>
                     <div className="space-y-4">
                       <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2 flex items-center gap-3">
-                         <CreditCard size={16} className="text-brand-purple" /> Account Number
+                         <CreditCard size={16} className="text-brand-purple" /> Account Number / Address
                       </label>
                       <input
                         type="text"
@@ -217,11 +231,11 @@ export default function WithdrawPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-6 pt-6">
-                     <button onClick={() => setStep(1)} className="flex-1 py-7 border border-zinc-800 rounded-[32px] text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:bg-zinc-800 transition-all">Back</button>
+                     <button onClick={() => setStep(1)} className="flex-1 py-7 border border-zinc-800 rounded-[32px] text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:bg-zinc-800 transition-all cursor-pointer">Back</button>
                      <button 
                        disabled={!bankName || !accountNumber || !accountName}
                        onClick={() => setStep(3)} 
-                       className="flex-[2] py-7 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-[10px] hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10"
+                       className="flex-[2] py-7 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-[10px] hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 cursor-pointer disabled:opacity-30"
                      >
                        Validate Credentials
                      </button>
@@ -241,7 +255,7 @@ export default function WithdrawPage() {
                      <div className="w-20 h-20 bg-brand-purple/10 text-brand-purple rounded-3xl flex items-center justify-center mx-auto border border-brand-purple/20">
                         <TrendingUp size={32} />
                      </div>
-                     <h2 className="text-3xl font-black text-white italic font-serif tracking-tighter uppercase">Audit Summary.</h2>
+                     <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase">Audit Summary.</h2>
                   </div>
 
                   <div className="bg-zinc-900 border border-zinc-800/50 rounded-[40px] overflow-hidden">
@@ -269,11 +283,11 @@ export default function WithdrawPage() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-6">
-                     <button onClick={() => setStep(2)} className="flex-1 py-7 border border-zinc-800 rounded-[32px] text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:bg-zinc-800 transition-all">Back</button>
+                     <button onClick={() => setStep(2)} className="flex-1 py-7 border border-zinc-800 rounded-[32px] text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:bg-zinc-800 transition-all cursor-pointer">Back</button>
                      <button 
-                       onClick={handleSubmit}
+                       onClick={() => handleSubmit()}
                        disabled={isSubmitting}
-                       className="flex-[2] py-7 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-[10px] hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 flex items-center justify-center gap-3"
+                       className="flex-[2] py-7 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-[10px] hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 flex items-center justify-center gap-3 cursor-pointer"
                      >
                        {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <>Broadcast for Approval <History size={16} /></>}
                      </button>
@@ -292,7 +306,7 @@ export default function WithdrawPage() {
                 {[
                   "Mandatory T+1 settlement delay.",
                   "Zero threshold for drift events.",
-                  "10% Protocol Maintenance Feed.",
+                  "10% Protocol Maintenance Fee.",
                   "AES-256 encrypted endpoints."
                 ].map((txt, i) => (
                   <li key={i} className="flex gap-4 items-start text-[11px] text-zinc-500 font-black uppercase tracking-widest leading-relaxed">
@@ -302,7 +316,7 @@ export default function WithdrawPage() {
                 ))}
               </ul>
               <div className="pt-8 border-t border-zinc-800 space-y-4">
-                 <p className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em] italic text-center">Liquidity Assurance Level</p>
+                 <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em] italic text-center">Liquidity Assurance Level</p>
                  <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
                     <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 2 }} className="h-full bg-brand-purple" />
                  </div>
@@ -313,4 +327,3 @@ export default function WithdrawPage() {
     </div>
   );
 }
-

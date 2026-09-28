@@ -1,5 +1,6 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import UserAvatar, { isUserUploadedAvatar } from '../../components/UserAvatar';
 import { 
   User, 
   Mail, 
@@ -12,12 +13,20 @@ import {
   Key, 
   Loader2, 
   CheckSquare, 
-  Info
+  Info,
+  DollarSign,
+  Camera,
+  Trash2,
+  Copy,
+  Check,
+  Terminal
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { getStoredToken } from '../../lib/graphql';
 
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
+  const [copiedToken, setCopiedToken] = useState(false);
   
   // Local state for fields
   const [name, setName] = useState(user?.name || '');
@@ -25,43 +34,113 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState(user?.phone || '');
   const [country, setCountry] = useState(user?.country || '');
   const [wallet, setWallet] = useState(user?.walletAddress || '');
+  const [currencyPreference, setCurrencyPreference] = useState(user?.currencyPreference || 'USD');
+  const [is2FAEnabled, setIs2FAEnabled] = useState(user?.is2FAEnabled ?? true);
   
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [is2FAEnabled, setIs2FAEnabled] = useState(true);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      if (typeof reader.result === 'string') {
+        const avatarData = reader.result;
+        if (user) {
+          try {
+            localStorage.setItem(`apexbridge_custom_avatar_${user.id || user.email}`, avatarData);
+          } catch {
+            // ignore
+          }
+        }
+        await updateProfile({ avatar: avatarData });
+      }
+      setIsUploadingAvatar(false);
+    };
+    reader.onerror = () => {
+      setIsUploadingAvatar(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (user) {
+      try {
+        localStorage.removeItem(`apexbridge_custom_avatar_${user.id || user.email}`);
+      } catch {
+        // ignore
+      }
+    }
+    await updateProfile({ avatar: '' });
+  };
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
+      setPhone(user.phone || '');
+      setCountry(user.country || '');
+      setWallet(user.walletAddress || '');
+      setCurrencyPreference(user.currencyPreference || 'USD');
+      if (user.is2FAEnabled !== undefined) {
+        setIs2FAEnabled(user.is2FAEnabled);
+      }
+    }
+  }, [user]);
 
   if (!user) return null;
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
     setSaveSuccess(false);
 
-    // Simulate saving delay
-    setTimeout(() => {
-      updateProfile({
+    try {
+      await updateProfile({
         name,
-        email,
         phone,
+        is2FAEnabled,
+        currencyPreference,
         country,
         walletAddress: wallet,
       });
-      setIsSaving(false);
       setIsEditing(false);
       setSaveSuccess(true);
-      
-      // Auto-dismiss success notification
       setTimeout(() => {
         setSaveSuccess(false);
       }, 4000);
-    }, 1200);
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggle2FA = async () => {
+    const nextState = !is2FAEnabled;
+    setIs2FAEnabled(nextState);
+    await updateProfile({
+      is2FAEnabled: nextState,
+    });
   };
 
   const formattedBalance = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(user.balance);
+  }).format(user.balance || 0);
 
   return (
     <div className="space-y-10">
@@ -72,15 +151,15 @@ export default function ProfilePage() {
             <User size={12} /> USER PROFILE
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white">
-            My <span className="text-zinc-650 text-zinc-650 text-zinc-600">Profile.</span>
+            My <span className="text-zinc-600">Profile.</span>
           </h1>
-          <p className="text-zinc-500 text-sm font-medium mt-2">Manage your personal details and account settings.</p>
+          <p className="text-zinc-500 text-sm font-medium mt-2">Manage your personal details and account settings via GraphQL protocol.</p>
         </div>
         
         {!isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="px-6 py-3.5 bg-brand-purple text-black font-black uppercase text-[11px] rounded-2xl flex items-center gap-2 hover:bg-brand-purple-hover active:scale-95 transition-all shadow-lg shadow-brand-purple/20 border border-brand-purple/30 font-sans"
+            className="px-6 py-3.5 bg-brand-purple text-black font-black uppercase text-[11px] rounded-2xl flex items-center gap-2 hover:bg-brand-purple-hover active:scale-95 transition-all shadow-lg shadow-brand-purple/20 border border-brand-purple/30 font-sans cursor-pointer"
           >
             <Edit3 size={14} /> Edit Profile
           </button>
@@ -94,7 +173,7 @@ export default function ProfilePage() {
           className="p-5 rounded-[24px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center gap-4 text-xs font-black uppercase tracking-wider font-sans"
         >
           <CheckCircle size={20} className="shrink-0" />
-          <span>Profile updated successfully.</span>
+          <span>Profile updated successfully in GraphQL backend.</span>
         </motion.div>
       )}
 
@@ -108,19 +187,47 @@ export default function ProfilePage() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-purple/5 blur-[50px] rounded-full pointer-events-none" />
             
             <div className="flex flex-col items-center text-center py-6">
-              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-brand-purple/40 shadow-xl mb-6 relative group-hover:scale-105 transition-transform duration-500">
-                <img 
-                  src={`https://i.pravatar.cc/200?u=${user.name}`} 
-                  alt="Identity Snapshot" 
-                  className="w-full h-full grayscale filter contrast-125" 
-                  referrerPolicy="no-referrer"
+              <div className="relative mb-6">
+                <UserAvatar 
+                  src={user.avatar} 
+                  name={user.name || user.email} 
+                  size="xl"
+                  className="border-2 border-brand-purple/40 shadow-2xl group-hover:scale-105 transition-transform duration-500"
                 />
+                <label 
+                  htmlFor="avatar-file-input"
+                  title="Upload profile picture"
+                  className="absolute -bottom-1 -right-1 w-9 h-9 bg-brand-purple hover:bg-brand-purple-hover text-black rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-transform active:scale-90 border-2 border-brand-black"
+                >
+                  {isUploadingAvatar ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Camera size={16} />
+                  )}
+                  <input
+                    id="avatar-file-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
+                </label>
               </div>
+
+              {isUserUploadedAvatar(user.avatar) && (
+                <button
+                  type="button"
+                  onClick={handleRemoveAvatar}
+                  className="text-[10px] font-bold text-zinc-500 hover:text-red-400 transition-colors uppercase tracking-wider mb-2 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 size={12} /> Remove Custom Photo
+                </button>
+              )}
               
               <h2 className="text-xl font-black text-white uppercase tracking-tight">{user.name}</h2>
-              <p className="text-brand-purple text-[10px] font-black uppercase mt-1">Verified Member</p>
+              <p className="text-brand-purple text-[10px] font-black uppercase mt-1">{user.tier || 'Tier 2 - Verified'}</p>
               
-              <span className="mt-4 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-500 text-[9px] font-bold">
+              <span className="mt-4 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-500 text-[9px] font-bold font-mono">
                 ID: #{user.id}
               </span>
             </div>
@@ -133,12 +240,16 @@ export default function ProfilePage() {
                 </span>
               </div>
               <div className="flex justify-between items-center text-[11px]">
-                <span className="text-zinc-500 font-bold uppercase">Account Tier</span>
-                <span className="text-white font-black uppercase">Premium Account</span>
+                <span className="text-zinc-500 font-bold uppercase">Role</span>
+                <span className="text-white font-black uppercase">{user.role || 'Investor'}</span>
               </div>
               <div className="flex justify-between items-center text-[11px]">
-                <span className="text-zinc-500 font-bold uppercase">Country</span>
-                <span className="text-white font-black uppercase">{user.country || 'Global'}</span>
+                <span className="text-zinc-500 font-bold uppercase">Account Tier</span>
+                <span className="text-white font-black uppercase">{user.tier || 'Tier 2 - Verified'}</span>
+              </div>
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-zinc-500 font-bold uppercase">Base Currency</span>
+                <span className="text-brand-purple font-black uppercase">{currencyPreference}</span>
               </div>
             </div>
           </div>
@@ -148,7 +259,7 @@ export default function ProfilePage() {
             <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Account Balance</p>
             <h3 className="text-3xl font-black text-white tracking-tight">{formattedBalance}</h3>
             <div className="mt-4 flex items-center gap-2 text-[10px] text-zinc-500 font-bold uppercase">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" /> Available Balance
+              <div className="w-2 h-2 rounded-full bg-emerald-500" /> Available Liquidity
             </div>
           </div>
 
@@ -165,7 +276,7 @@ export default function ProfilePage() {
               </div>
               <button 
                 type="button"
-                onClick={() => setIs2FAEnabled(!is2FAEnabled)}
+                onClick={handleToggle2FA}
                 className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-1 border cursor-pointer ${
                   is2FAEnabled ? 'bg-brand-purple/20 border-brand-purple' : 'bg-zinc-800 border-zinc-700'
                 }`}
@@ -181,11 +292,46 @@ export default function ProfilePage() {
               <Info size={16} className="text-brand-purple shrink-0 mt-0.5" />
               <div>
                 <p className="text-[10px] text-zinc-400 font-black uppercase">Identity Status</p>
-                <p className="text-[9.5px] text-zinc-650 leading-relaxed mt-1">
-                  Your account has been fully verified for dynamic transfers and premium investing.
+                <p className="text-[9.5px] text-zinc-400 leading-relaxed mt-1">
+                  Your account is secured with end-to-end encryption and verified for protocol operations.
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* GraphQL Playground Integration Card */}
+          <div className="bg-brand-black-light border border-zinc-800 p-8 rounded-[40px] space-y-4">
+            <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+              <Terminal size={14} className="text-brand-purple" /> GraphQL Playground Headers
+            </h4>
+            <p className="text-[9.5px] text-zinc-400 leading-relaxed">
+              To query <span className="font-mono text-brand-purple">userInvestments</span> or test <span className="font-mono text-brand-purple">createInvestment</span> on your GraphQL Playground, paste this in the <span className="text-white font-bold">HTTP Headers</span> tab:
+            </p>
+            <div className="bg-zinc-950 border border-zinc-800 p-3 rounded-xl font-mono text-[9px] text-zinc-300 break-all select-all">
+              {JSON.stringify({ Authorization: `Bearer ${getStoredToken() || '<YOUR_TOKEN>'}` }, null, 2)}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const token = getStoredToken();
+                if (token) {
+                  navigator.clipboard.writeText(JSON.stringify({ Authorization: `Bearer ${token}` }, null, 2));
+                  setCopiedToken(true);
+                  setTimeout(() => setCopiedToken(false), 2500);
+                }
+              }}
+              className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl text-[10px] font-black uppercase tracking-wider text-white transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            >
+              {copiedToken ? (
+                <>
+                  <Check size={14} className="text-emerald-400" /> Copied Playground Header!
+                </>
+              ) : (
+                <>
+                  <Copy size={14} className="text-brand-purple" /> Copy Playground Header JSON
+                </>
+              )}
+            </button>
           </div>
 
         </div>
@@ -198,10 +344,10 @@ export default function ProfilePage() {
             <div className="border-b border-zinc-800/60 pb-6 mb-8 flex justify-between items-center">
               <div>
                 <h3 className="text-lg font-black text-white uppercase tracking-tight">Profile Details</h3>
-                <p className="text-zinc-500 text-[10px] font-black uppercase mt-1">Update your account information</p>
+                <p className="text-zinc-500 text-[10px] font-black uppercase mt-1">GraphQL Synced Account Parameters</p>
               </div>
               
-              <div className="text-[10px] text-zinc-600 font-bold uppercase bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl">
+              <div className="text-[10px] text-zinc-400 font-bold uppercase bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl">
                 {isEditing ? 'EDITING' : 'SECURED'}
               </div>
             </div>
@@ -220,7 +366,7 @@ export default function ProfilePage() {
                       disabled={!isEditing}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white placeholder-zinc-650 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
+                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
                       placeholder="e.g. Alexander Gale"
                     />
                   </div>
@@ -234,11 +380,9 @@ export default function ProfilePage() {
                     <input
                       type="email"
                       required
-                      disabled={!isEditing}
+                      disabled
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white placeholder-zinc-650 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
-                      placeholder="e.g. contact@domain.com"
+                      className="w-full bg-zinc-900/60 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-zinc-400 focus:outline-none cursor-not-allowed opacity-75 font-mono"
                     />
                   </div>
                 </div>
@@ -253,9 +397,28 @@ export default function ProfilePage() {
                       disabled={!isEditing}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white placeholder-zinc-650 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
+                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50 font-mono"
                       placeholder="e.g. +1 (555) 019-2834"
                     />
+                  </div>
+                </div>
+
+                {/* Currency Preference */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest pl-1">Currency Preference</label>
+                  <div className="relative">
+                    <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+                    <select
+                      disabled={!isEditing}
+                      value={currencyPreference}
+                      onChange={(e) => setCurrencyPreference(e.target.value)}
+                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
+                    >
+                      <option value="USD">USD ($ - US Dollar)</option>
+                      <option value="EUR">EUR (€ - Euro)</option>
+                      <option value="GBP">GBP (£ - British Pound)</option>
+                      <option value="USDT">USDT (Tether USD)</option>
+                    </select>
                   </div>
                 </div>
 
@@ -269,32 +432,30 @@ export default function ProfilePage() {
                       disabled={!isEditing}
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
-                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white placeholder-zinc-650 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
+                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
                       placeholder="e.g. Switzerland"
                     />
                   </div>
                 </div>
 
-              </div>
+                {/* Secure Web3 Settlement Wallet */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center pl-1">
+                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Crypto Wallet Address</label>
+                  </div>
+                  <div className="relative">
+                    <Wallet size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+                    <input
+                      type="text"
+                      disabled={!isEditing}
+                      value={wallet}
+                      onChange={(e) => setWallet(e.target.value)}
+                      className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-mono text-white placeholder-zinc-500 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
+                      placeholder="0x..."
+                    />
+                  </div>
+                </div>
 
-              {/* Secure Web3 Settlement Wallet */}
-              <div className="space-y-2 pt-4">
-                <div className="flex justify-between items-center pl-1">
-                  <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Crypto Wallet Address</label>
-                  <span className="text-[9px] text-brand-purple font-black">DEFAULT WALLET</span>
-                </div>
-                <div className="relative">
-                  <Wallet size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
-                  <input
-                    type="text"
-                    disabled={!isEditing}
-                    value={wallet}
-                    onChange={(e) => setWallet(e.target.value)}
-                    className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-mono text-white placeholder-zinc-650 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50"
-                    placeholder="e.g. 0x0000000000000000000000000000000000000000"
-                  />
-                </div>
-                <p className="text-[9px] text-zinc-650 font-bold uppercase pl-1">All fund transfers and withdrawal requests default to this secure wallet address.</p>
               </div>
 
               {isEditing && (
@@ -306,11 +467,11 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="px-6 py-4 bg-brand-purple text-black font-black uppercase text-[11px] rounded-2xl flex items-center gap-2 hover:bg-brand-purple-hover active:scale-95 transition-all shadow-lg shadow-brand-purple/20 disabled:opacity-50 shrink-0 font-sans"
+                    className="px-6 py-4 bg-brand-purple text-black font-black uppercase text-[11px] rounded-2xl flex items-center gap-2 hover:bg-brand-purple-hover active:scale-95 transition-all shadow-lg shadow-brand-purple/20 disabled:opacity-50 shrink-0 font-sans cursor-pointer"
                   >
                     {isSaving ? (
                       <>
-                        <Loader2 size={14} className="animate-spin" /> Saving...
+                        <Loader2 size={14} className="animate-spin" /> Saving to GraphQL...
                       </>
                     ) : (
                       <>
@@ -321,15 +482,14 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => {
-                      // Reset values
                       setName(user.name);
                       setEmail(user.email);
                       setPhone(user.phone || '');
-                      setCountry(user.country || '');
-                      setWallet(user.walletAddress || '');
+                      setCountry(user.country || 'United States');
+                      setWallet(user.walletAddress || '0x71C27581B855A5100650A195EAD84CA6762C3A59');
                       setIsEditing(false);
                     }}
-                    className="px-6 py-4 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[11px] rounded-2xl hover:bg-zinc-800 active:scale-95 transition-all font-sans"
+                    className="px-6 py-4 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[11px] rounded-2xl hover:bg-zinc-800 active:scale-95 transition-all font-sans cursor-pointer"
                   >
                     Cancel
                   </button>

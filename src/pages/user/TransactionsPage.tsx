@@ -1,6 +1,11 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { useMockData } from '../../hooks/useMockData';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { formatCurrency } from '../../lib/utils';
+import { 
+  apiGetTransactions, 
+  GraphQLTransaction 
+} from '../../lib/graphql';
 import { 
   History, 
   ArrowDownCircle, 
@@ -9,392 +14,631 @@ import {
   Search, 
   Filter,
   Download,
-  MoreVertical,
   X,
   ShieldCheck,
   Globe,
   FileText,
   BadgeCheck,
   ExternalLink,
-  Ban,
-  Play,
-  Trash2,
-  AlertTriangle
+  Copy,
+  Check,
+  RefreshCw,
+  Info,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  LogIn
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function TransactionsPage() {
-  const { transactions, updateTransactionStatus, deleteTransaction } = useMockData();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [transactions, setTransactions] = useState<GraphQLTransaction[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'deposit' | 'withdrawal' | 'investment'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'approved' | 'pending' | 'failed' | 'canceled'>('all');
+  
+  const [selectedTx, setSelectedTx] = useState<GraphQLTransaction | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showAuditModal, setShowAuditModal] = useState(false);
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
 
+  // Clear legacy mock data from browser storage so it never pollutes the view
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpenMenuId(null);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    try {
+      localStorage.removeItem('apexbridge_transactions');
+    } catch {
+      // ignore
+    }
   }, []);
 
+  const loadTransactions = useCallback(async (isManualRefresh = false) => {
+    if (isManualRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    setFetchError(null);
+
+    try {
+      // Query backend with base variables as requested: { type: "", status: "", page: 1, limit: 100 }
+      const res = await apiGetTransactions({
+        type: '',
+        status: '',
+        page: 1,
+        limit: 100,
+      });
+
+      setTransactions(Array.isArray(res) ? res : []);
+    } catch (err: any) {
+      console.warn('Transactions query notice:', err);
+      setFetchError(err?.message || 'Unable to fetch transactions from server.');
+      setTransactions([]);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTransactions(false);
+
+    // Auto-refresh when returning to tab from playground
+    const handleFocus = () => {
+      loadTransactions(true);
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        loadTransactions(true);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Continuous 10-second polling to reflect real-time playground transactions
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        loadTransactions(true);
+      }
+    }, 10000);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(interval);
+    };
+  }, [loadTransactions]);
+
   const filteredTransactions = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
     return transactions.filter(tx => {
-      const matchesSearch = tx.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           (tx.method || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           (tx.plan || '').toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesType = activeFilter === 'all' || tx.type === activeFilter;
-      const matchesStatus = statusFilter === 'all' || tx.status === statusFilter;
+      const idMatch = (tx.id || '').toLowerCase().includes(query);
+      const planMatch = (tx.plan || '').toLowerCase().includes(query);
+      const typeMatch = (tx.type || '').toLowerCase().includes(query);
+      const statusMatch = (tx.status || '').toLowerCase().includes(query);
+      const matchesSearch = !query || idMatch || planMatch || typeMatch || statusMatch;
+
+      const txType = (tx.type || '').toLowerCase();
+      const matchesType = activeFilter === 'all' || txType === activeFilter;
+
+      const txStatus = (tx.status || '').toLowerCase();
+      let matchesStatus = false;
+      if (statusFilter === 'all') {
+        matchesStatus = true;
+      } else if (statusFilter === 'approved') {
+        matchesStatus = txStatus === 'approved' || txStatus === 'completed' || txStatus === 'success';
+      } else if (statusFilter === 'pending') {
+        matchesStatus = txStatus === 'pending' || txStatus === 'processing';
+      } else if (statusFilter === 'failed') {
+        matchesStatus = txStatus === 'failed' || txStatus === 'rejected';
+      } else if (statusFilter === 'canceled') {
+        matchesStatus = txStatus === 'canceled' || txStatus === 'cancelled';
+      } else {
+        matchesStatus = txStatus === statusFilter;
+      }
+
       return matchesSearch && matchesType && matchesStatus;
     });
   }, [transactions, searchQuery, activeFilter, statusFilter]);
 
-  const handleAction = (id: string, action: 'cancel' | 'resume' | 'delete') => {
-    setOpenMenuId(null);
-    if (action === 'delete') {
-      setConfirmDeleteId(id);
-    } else if (action === 'cancel') {
-      updateTransactionStatus(id, 'canceled');
-    } else if (action === 'resume') {
-      updateTransactionStatus(id, 'pending');
-    }
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => {
+      setCopiedId(null);
+    }, 2000);
   };
 
-  const performDelete = () => {
-    if (confirmDeleteId) {
-      deleteTransaction(confirmDeleteId);
-      setConfirmDeleteId(null);
+  const getStatusBadge = (status: string) => {
+    const s = (status || '').toLowerCase();
+    if (s === 'approved' || s === 'completed' || s === 'success') {
+      return (
+        <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border text-emerald-400 border-emerald-500/20 bg-emerald-500/10">
+          <CheckCircle2 size={11} /> {status}
+        </span>
+      );
     }
+    if (s === 'pending' || s === 'processing') {
+      return (
+        <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border text-amber-400 border-amber-500/20 bg-amber-500/10">
+          <Clock size={11} className="animate-spin text-amber-400" /> {status}
+        </span>
+      );
+    }
+    if (s === 'canceled' || s === 'cancelled') {
+      return (
+        <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border text-zinc-400 border-zinc-700 bg-zinc-800">
+          {status}
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border text-red-400 border-red-500/20 bg-red-500/10">
+        <XCircle size={11} /> {status || 'failed'}
+      </span>
+    );
   };
+
+  const getTypeIcon = (type: string) => {
+    const t = (type || '').toLowerCase();
+    if (t === 'deposit') {
+      return (
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+          <ArrowDownCircle size={18} />
+        </div>
+      );
+    }
+    if (t === 'withdrawal') {
+      return (
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center border bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+          <ArrowUpCircle size={18} />
+        </div>
+      );
+    }
+    return (
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center border bg-brand-purple/10 text-brand-purple border-brand-purple/20 shadow-[0_0_20px_rgba(124,58,237,0.1)]">
+        <TrendingUp size={18} />
+      </div>
+    );
+  };
+
+  const formatAmountSign = (type: string, amount: number) => {
+    const t = (type || '').toLowerCase();
+    const isNegative = t === 'withdrawal' || t === 'investment';
+    return {
+      prefix: isNegative ? '-' : '+',
+      colorClass: isNegative ? 'text-red-400' : 'text-emerald-400',
+    };
+  };
+
+  const totalVolume = transactions.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0);
+  const approvedVolume = transactions
+    .filter(tx => {
+      const s = (tx.status || '').toLowerCase();
+      return s === 'approved' || s === 'completed' || s === 'success';
+    })
+    .reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0);
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000 pb-32 font-sans">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
+    <div className="space-y-10 animate-in fade-in duration-500 pb-32 font-sans">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-zinc-800/60">
         <div>
-          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
-             <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
-             Audit Trail
+          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-3">
+             <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
+             Live Ledger Query Active
           </div>
-          <h1 className="text-4xl md:text-5xl font-black  text-white  ">
-            Ledger <span className="text-zinc-600 ">History.</span>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+            Ledger <span className="text-zinc-600">History.</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium mt-2 leading-relaxed max-w-xl">
-             Immutable record of all protocol interactions, clearing, and settlement activities documented in real-time.
+             Immutable record of all protocol transactions fetched live from the backend ledger.
           </p>
         </div>
-        <button 
-          onClick={() => setShowAuditModal(true)}
-          className="flex items-center gap-3 px-8 py-4 bg-white text-black border border-white rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-purple-hover transition-all shadow-2xl active:scale-95"
-        >
-          <Download size={14} /> Comprehensive Audit Report
-        </button>
+
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => loadTransactions(true)}
+            disabled={isLoading || isRefreshing}
+            className="flex items-center gap-2 px-5 py-4 bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] hover:text-white hover:border-zinc-700 transition-all active:scale-95 disabled:opacity-50"
+            title="Re-query live transactions from GraphQL backend"
+          >
+            <RefreshCw size={13} className={isRefreshing ? "animate-spin text-brand-purple" : ""} />
+            {isRefreshing ? 'Syncing...' : 'Refresh'}
+          </button>
+
+          <button 
+            onClick={() => setShowAuditModal(true)}
+            className="flex items-center gap-3 px-7 py-4 bg-white text-black border border-white rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all shadow-xl active:scale-95"
+          >
+            <Download size={14} /> Audit Report
+          </button>
+        </div>
       </div>
 
-      {/* Filters/Search Hub */}
+      {/* Query error alert if any */}
+      {fetchError && (
+        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <AlertTriangle size={16} className="text-red-400 shrink-0" />
+            <span>{fetchError}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {fetchError.toLowerCase().includes('unauthorized') && (
+              <button 
+                onClick={() => {
+                  logout();
+                  navigate('/login');
+                }}
+                className="px-3 py-1 bg-brand-purple text-black rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-brand-purple-hover flex items-center gap-1.5"
+              >
+                <LogIn size={12} /> Sign In
+              </button>
+            )}
+            <button 
+              onClick={() => loadTransactions(false)}
+              className="px-3 py-1 bg-red-500/20 text-white rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-red-500/30"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Filters & Search Controls */}
       <div className="flex flex-col md:flex-row gap-4 items-center">
         <div className="relative flex-1 group w-full">
-          <Search size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-brand-purple transition-colors" />
+          <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-brand-purple transition-colors pointer-events-none" />
           <input 
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by hash, institution or transaction ID..." 
-            className="w-full bg-brand-black border border-zinc-800 rounded-[28px] py-6 pl-16 pr-8 text-sm text-zinc-300 focus:outline-none focus:border-brand-purple/40 shadow-inner transition-all font-bold tracking-tight"
+            placeholder="Search by ID, operation, or plan..." 
+            className="w-full bg-brand-black border border-zinc-800 rounded-[22px] py-4 pl-14 pr-6 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-brand-purple/50 shadow-inner transition-all font-semibold"
           />
+          {searchQuery && (
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
+
         <div className="flex gap-3 w-full md:w-auto">
+           {/* Type Filter */}
            <div className="relative group flex-1 md:flex-none">
              <select 
                value={activeFilter}
                onChange={(e) => setActiveFilter(e.target.value as any)}
-               className="w-full appearance-none px-12 py-6 bg-black border border-zinc-800 rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none focus:border-brand-purple/40 cursor-pointer"
+               className="w-full appearance-none pl-11 pr-10 py-4 bg-brand-black border border-zinc-800 rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300 focus:outline-none focus:border-brand-purple/50 cursor-pointer"
              >
-               <option value="all">All Layers</option>
+               <option value="all">All Types</option>
                <option value="deposit">Deposits</option>
                <option value="withdrawal">Withdrawals</option>
                <option value="investment">Investments</option>
              </select>
-             <Filter size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-purple pointer-events-none" />
+             <Filter size={13} className="absolute left-5 top-1/2 -translate-y-1/2 text-brand-purple pointer-events-none" />
            </div>
            
+           {/* Status Filter */}
            <div className="relative group flex-1 md:flex-none">
              <select 
                value={statusFilter}
                onChange={(e) => setStatusFilter(e.target.value as any)}
-               className="w-full appearance-none px-12 py-6 bg-black border border-zinc-800 rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none focus:border-brand-purple/40 cursor-pointer"
+               className="w-full appearance-none pl-11 pr-10 py-4 bg-brand-black border border-zinc-800 rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300 focus:outline-none focus:border-brand-purple/50 cursor-pointer"
              >
                <option value="all">All Status</option>
                <option value="approved">Approved</option>
                <option value="pending">Pending</option>
                <option value="failed">Failed</option>
+               <option value="canceled">Canceled</option>
              </select>
-             <TrendingUp size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-purple pointer-events-none" />
+             <TrendingUp size={13} className="absolute left-5 top-1/2 -translate-y-1/2 text-brand-purple pointer-events-none" />
            </div>
         </div>
       </div>
 
-      {/* Transactions Table / Mobile Cards */}
-      <div className="bg-black border border-zinc-800 rounded-[40px] md:rounded-[48px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative">
-        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
-        
-        {/* Mobile View: Cards */}
-        <div className="block lg:hidden divide-y divide-zinc-800/50">
-          {filteredTransactions.map((tx) => (
-            <div key={tx.id} className="p-8 space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center border",
-                    tx.type === 'deposit' ? "bg-brand-purple/10 text-brand-purple border-brand-purple/20" : 
-                    tx.type === 'withdrawal' ? "bg-red-500/10 text-red-500 border-red-500/20" : "bg-zinc-800 text-zinc-300 border-zinc-700"
-                  )}>
-                    {tx.type === 'deposit' ? <ArrowDownCircle size={16} /> : 
-                     tx.type === 'withdrawal' ? <ArrowUpCircle size={16} /> : <TrendingUp size={16} />}
-                  </div>
-                  <div>
-                    <span className="font-black text-white uppercase  italic block text-lg line-clamp-1">{tx.type}</span>
-                    <p className="text-[9px] font-black uppercase  text-zinc-700 mt-0.5">#{tx.id.toUpperCase()}</p>
-                  </div>
-                </div>
-                <div className="relative">
-                  <button 
-                    onClick={() => setOpenMenuId(openMenuId === tx.id ? null : tx.id)}
-                    className="w-10 h-10 rounded-full bg-brand-black-light border border-zinc-800 flex items-center justify-center text-zinc-700 active:bg-zinc-800"
-                  >
-                    <MoreVertical size={16} />
-                  </button>
-                  <AnimatePresence>
-                    {openMenuId === tx.id && (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.9, x: -10 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, x: -10 }}
-                        className="absolute right-0 top-12 z-50 w-48 bg-black border border-zinc-800 rounded-2xl p-2 shadow-2xl"
-                      >
-                        {tx.status === 'pending' && (
-                          <button 
-                            onClick={() => handleAction(tx.id, 'cancel')}
-                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
-                          >
-                             <Ban size={14} className="text-orange-500" /> Cancel
-                          </button>
-                        )}
-                        {tx.status === 'canceled' && (
-                          <button 
-                            onClick={() => handleAction(tx.id, 'resume')}
-                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
-                          >
-                             <Play size={14} className="text-brand-purple" /> Resume
-                          </button>
-                        )}
-                        <button 
-                          onClick={() => handleAction(tx.id, 'delete')}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-white hover:bg-red-500/20 transition-colors"
-                        >
-                           <Trash2 size={14} /> Delete
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/50">
-                  <p className="text-[8px] font-black uppercase text-zinc-600 tracking-widest mb-1.5">Quantum</p>
-                  <span className={cn(
-                    "font-black font-mono text-lg tracking-tighter block",
-                    tx.type === 'withdrawal' || tx.type === 'investment' ? "text-red-500" : "text-white"
-                  )}>
-                    {tx.type === 'withdrawal' || tx.type === 'investment' ? '-' : '+'}{formatCurrency(tx.amount)}
-                  </span>
-                </div>
-                <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/50">
-                  <p className="text-[8px] font-black uppercase text-zinc-600 tracking-widest mb-1.5">Status</p>
-                  <span className={cn(
-                    "text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md border inline-block",
-                    tx.status === 'approved' ? "text-brand-purple border-brand-purple/20 bg-brand-purple/5" : 
-                    tx.status === 'pending' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" : 
-                    tx.status === 'canceled' ? "text-orange-500 border-orange-500/20 bg-orange-500/5" :
-                    "text-red-500 border-red-500/20 bg-red-500/5"
-                  )}>
-                    {tx.status}
-                  </span>
-                </div>
-              </div>
+      {/* Transactions Container */}
+      <div className="bg-black border border-zinc-800/80 rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl relative">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-purple/30 to-transparent pointer-events-none" />
 
-              <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-zinc-700">
-                <span>{tx.method || tx.plan || 'Clearing'}</span>
-                <span>{tx.date}</span>
+        {/* Loading Skeleton */}
+        {isLoading && (
+          <div className="p-10 space-y-4">
+            {[1, 2, 3, 4, 5].map((idx) => (
+              <div key={idx} className="h-16 rounded-2xl bg-zinc-900/50 border border-zinc-800/40 animate-pulse flex items-center justify-between px-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-zinc-800" />
+                  <div className="space-y-2">
+                    <div className="w-24 h-3 bg-zinc-800 rounded" />
+                    <div className="w-16 h-2 bg-zinc-800/60 rounded" />
+                  </div>
+                </div>
+                <div className="w-20 h-4 bg-zinc-800 rounded" />
+                <div className="w-16 h-6 bg-zinc-800 rounded-full" />
               </div>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && filteredTransactions.length === 0 && (
+          <div className="py-24 px-6 text-center flex flex-col items-center justify-center">
+            <div className="w-16 h-16 rounded-3xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-center text-zinc-600 mb-5 shadow-inner">
+               <History size={28} />
             </div>
-          ))}
-        </div>
+            <h3 className="text-white font-black uppercase text-sm tracking-[0.25em] mb-2">
+              No Ledger Records Found
+            </h3>
+            <p className="text-zinc-500 text-xs font-medium max-w-sm leading-relaxed mb-6">
+              {searchQuery || activeFilter !== 'all' || statusFilter !== 'all'
+                ? 'No live transactions match your specified filter parameters.'
+                : 'Your ledger is currently clear. Transactions initiated via deposits, capital plans, or withdrawals will reflect here immediately.'}
+            </p>
+            {(searchQuery || activeFilter !== 'all' || statusFilter !== 'all') && (
+              <button 
+                onClick={() => {
+                  setSearchQuery('');
+                  setActiveFilter('all');
+                  setStatusFilter('all');
+                }}
+                className="px-5 py-2.5 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-white"
+              >
+                Reset Filters
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Mobile View: Cards */}
+        {!isLoading && filteredTransactions.length > 0 && (
+          <div className="block lg:hidden divide-y divide-zinc-800/60">
+            {filteredTransactions.map((tx) => {
+              const { prefix, colorClass } = formatAmountSign(tx.type, tx.amount);
+              return (
+                <div key={tx.id} className="p-6 space-y-5 hover:bg-zinc-900/20 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3.5">
+                      {getTypeIcon(tx.type)}
+                      <div>
+                        <span className="font-black text-white uppercase italic block text-base leading-tight">
+                          {tx.type || 'Transaction'}
+                        </span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-[10px] font-mono font-bold text-zinc-500">
+                            #{String(tx.id).slice(0, 10)}
+                          </span>
+                          <button
+                            onClick={() => copyToClipboard(tx.id, tx.id)}
+                            className="text-zinc-600 hover:text-zinc-300 transition-colors"
+                            title="Copy ID"
+                          >
+                            {copiedId === tx.id ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      {getStatusBadge(tx.status)}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-zinc-900/60 p-3.5 rounded-2xl border border-zinc-800/50">
+                      <p className="text-[8px] font-black uppercase text-zinc-500 tracking-widest mb-1">Quantum</p>
+                      <span className={cn("font-black font-mono text-base tracking-tight block", colorClass)}>
+                        {prefix}{formatCurrency(tx.amount)}
+                      </span>
+                    </div>
+                    <div className="bg-zinc-900/60 p-3.5 rounded-2xl border border-zinc-800/50">
+                      <p className="text-[8px] font-black uppercase text-zinc-500 tracking-widest mb-1">Plan / Channel</p>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-zinc-300 truncate block">
+                        {tx.plan || tx.method || 'Standard Clearance'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[10px] font-mono text-zinc-600 pt-1">
+                    <span>{tx.date || 'Pending timestamp'}</span>
+                    <button 
+                      onClick={() => setSelectedTx(tx)}
+                      className="text-[9px] font-black uppercase tracking-wider text-brand-purple hover:underline"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Desktop View: Table */}
-        <div className="hidden lg:block">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-zinc-800/50 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">
-                <th className="px-10 py-8">Tx Hash</th>
-                <th className="px-10 py-8">Operation</th>
-                <th className="px-10 py-8">Gateway</th>
-                <th className="px-10 py-8">Timestamp</th>
-                <th className="px-10 py-8 text-right">Quantum</th>
-                <th className="px-10 py-8 text-center">Status</th>
-                <th className="px-10 py-8"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-800/50 text-sm">
-              {filteredTransactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-white/[0.015] transition-all group">
-                  <td className="px-10 py-8 font-mono text-[11px] text-zinc-600 font-bold tracking-widest group-hover:text-brand-purple/60 transition-colors">#{tx.id.toUpperCase()}</td>
-                  <td className="px-10 py-8">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center border transition-all group-hover:scale-110",
-                        tx.type === 'deposit' ? "bg-brand-purple/10 text-brand-purple border-brand-purple/20 shadow-[0_0_20px_rgba(75,47,168,0.1)]" : 
-                        tx.type === 'withdrawal' ? "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]" : "bg-zinc-800 text-zinc-300 border-zinc-700"
-                      )}>
-                        {tx.type === 'deposit' ? <ArrowDownCircle size={16} /> : 
-                         tx.type === 'withdrawal' ? <ArrowUpCircle size={16} /> : <TrendingUp size={16} />}
-                      </div>
-                      <div>
-                        <span className="font-black text-white uppercase tracking-tighter italic block text-lg leading-none">{tx.type}</span>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-700 mt-1">Validated</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-10 py-8">
-                    <span className="text-zinc-400 font-black uppercase tracking-widest text-[11px] px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-full italic">
-                      {tx.method || tx.plan || 'Clearing'}
-                    </span>
-                  </td>
-                  <td className="px-10 py-8 text-zinc-500 font-black uppercase tracking-widest text-[10px] font-mono">{tx.date}</td>
-                  <td className="px-10 py-8 text-right">
-                    <span className={cn(
-                      "font-black tabular-nums font-mono text-xl tracking-tighter",
-                      tx.type === 'withdrawal' || tx.type === 'investment' ? "text-red-500" : "text-white"
-                    )}>
-                      {tx.type === 'withdrawal' || tx.type === 'investment' ? '-' : '+'}{formatCurrency(tx.amount)}
-                    </span>
-                  </td>
-                  <td className="px-10 py-8 text-center">
-                    <span className={cn(
-                      "text-[9px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border shadow-inner",
-                      tx.status === 'approved' ? "text-brand-purple border-brand-purple/20 bg-brand-purple/5" : 
-                      tx.status === 'pending' ? "text-blue-500 border-blue-500/20 bg-blue-500/5" : 
-                      tx.status === 'canceled' ? "text-orange-500 border-orange-500/20 bg-orange-500/5" :
-                      "text-red-500 border-red-500/20 bg-red-500/5"
-                    )}>
-                      {tx.status}
-                    </span>
-                  </td>
-                  <td className="px-10 py-8 text-right relative overflow-visible">
-                    <button 
-                      onClick={() => setOpenMenuId(openMenuId === tx.id ? null : tx.id)}
-                      className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-700 hover:text-white hover:border-zinc-500 transition-all shadow-inner"
-                    >
-                       <MoreVertical size={16} />
-                    </button>
-                    
-                    <AnimatePresence>
-                      {openMenuId === tx.id && (
-                        <motion.div 
-                          initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                          ref={menuRef}
-                          className="absolute right-10 top-20 z-50 w-56 bg-black border border-zinc-800 rounded-3xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-brand-purple/10"
+        {!isLoading && filteredTransactions.length > 0 && (
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-zinc-800/60 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 bg-zinc-950/40">
+                  <th className="px-8 py-6">Transaction ID</th>
+                  <th className="px-8 py-6">Operation</th>
+                  <th className="px-8 py-6">Plan / Channel</th>
+                  <th className="px-8 py-6">Timestamp</th>
+                  <th className="px-8 py-6 text-right">Quantum</th>
+                  <th className="px-8 py-6 text-center">Status</th>
+                  <th className="px-8 py-6 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800/40 text-sm">
+                {filteredTransactions.map((tx) => {
+                  const { prefix, colorClass } = formatAmountSign(tx.type, tx.amount);
+                  return (
+                    <tr key={tx.id} className="hover:bg-white/[0.015] transition-colors group">
+                      <td className="px-8 py-6 font-mono text-[11px] text-zinc-500 font-bold tracking-wider group-hover:text-zinc-300 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <span>#{String(tx.id).slice(0, 12)}</span>
+                          <button
+                            onClick={() => copyToClipboard(tx.id, tx.id)}
+                            className="opacity-40 group-hover:opacity-100 hover:text-white transition-opacity"
+                            title="Copy full transaction ID"
+                          >
+                            {copiedId === tx.id ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-3.5">
+                          {getTypeIcon(tx.type)}
+                          <div>
+                            <span className="font-black text-white uppercase italic block text-base leading-none">
+                              {tx.type}
+                            </span>
+                            <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest mt-1 block">
+                              Verified
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className="text-zinc-400 font-black uppercase tracking-wider text-[11px] px-3.5 py-1.5 bg-zinc-900/60 border border-zinc-800 rounded-full inline-block">
+                          {tx.plan || tx.method || 'Standard Clearance'}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6 text-zinc-500 font-mono text-[11px]">
+                        {tx.date || 'Pending sync'}
+                      </td>
+                      <td className="px-8 py-6 text-right font-mono font-black text-base tracking-tight">
+                        <span className={colorClass}>
+                          {prefix}{formatCurrency(tx.amount)}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6 text-center">
+                        {getStatusBadge(tx.status)}
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <button 
+                          onClick={() => setSelectedTx(tx)}
+                          className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[10px] font-black uppercase tracking-wider text-zinc-400 hover:text-white hover:border-zinc-700 transition-all active:scale-95"
                         >
-                           {tx.status === 'pending' && (
-                             <button 
-                               onClick={() => handleAction(tx.id, 'cancel')}
-                               className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
-                             >
-                                <Ban size={16} className="text-orange-500" /> Cancel Transaction
-                             </button>
-                           )}
-                           {tx.status === 'canceled' && (
-                             <button 
-                               onClick={() => handleAction(tx.id, 'resume')}
-                               className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
-                             >
-                                <Play size={16} className="text-brand-purple" /> Resume Transaction
-                             </button>
-                           )}
-                           <button 
-                             onClick={() => handleAction(tx.id, 'delete')}
-                             className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-red-500 hover:text-white hover:bg-red-500/20 transition-all"
-                           >
-                              <Trash2 size={16} /> Delete Entry
-                           </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </td>
-                </tr>
-              ))}
-              {filteredTransactions.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-10 py-32 text-center">
-                    <div className="flex flex-col items-center gap-4">
-                       <History size={48} className="text-zinc-800" />
-                       <p className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em] italic leading-none underline decoration-zinc-800/50 underline-offset-8">No matching records</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                          Details
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Transaction Details Modal */}
       <AnimatePresence>
-        {confirmDeleteId && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-             <motion.div 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               exit={{ opacity: 0 }}
-               onClick={() => setConfirmDeleteId(null)}
-               className="absolute inset-0 bg-black/95 backdrop-blur-md"
-             />
-             <motion.div
-               initial={{ opacity: 0, scale: 0.9, y: 20 }}
-               animate={{ opacity: 1, scale: 1, y: 0 }}
-               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="relative w-full max-w-md bg-black border border-zinc-800 rounded-[48px] p-12 text-center shadow-[0_0_100px_rgba(239,68,68,0.1)]"
-             >
-                <div className="w-20 h-20 bg-red-500/10 text-red-500 rounded-[32px] flex items-center justify-center mx-auto mb-8 border border-red-500/20">
-                   <AlertTriangle size={40} />
+        {selectedTx && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedTx(null)}
+              className="absolute inset-0 bg-black/90 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative w-full max-w-lg bg-black border border-zinc-800 rounded-[36px] p-8 shadow-2xl z-10"
+            >
+              <div className="flex items-center justify-between pb-6 border-b border-zinc-800/80 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                    <Info size={18} className="text-brand-purple" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black uppercase text-white tracking-tight">Transaction Detail</h3>
+                    <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Protocol Ledger Entry</p>
+                  </div>
                 </div>
-                <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter  mb-4">Purge Record?</h3>
-                <p className="text-zinc-500 text-sm font-medium leading-relaxed mb-10">
-                   You are about to permanently delete this transaction from the protocol ledger. This action cannot be reversed.
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                   <button 
-                     onClick={() => setConfirmDeleteId(null)}
-                     className="py-5 border border-zinc-800 rounded-[24px] text-[10px] font-black uppercase tracking-widest text-zinc-600 hover:bg-zinc-900"
-                   >
-                     Abort
-                   </button>
-                   <button 
-                     onClick={performDelete}
-                     className="py-5 bg-red-500 text-white rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-red-500/20 hover:bg-red-400"
-                   >
-                     Confirm Purge
-                   </button>
+                <button 
+                  onClick={() => setSelectedTx(null)}
+                  className="w-9 h-9 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Transaction Hash / ID</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-xs text-white break-all">{selectedTx.id}</span>
+                    <button
+                      onClick={() => copyToClipboard(selectedTx.id, 'modal')}
+                      className="px-2.5 py-1 bg-zinc-800 rounded-lg text-[10px] font-mono text-zinc-300 hover:text-white shrink-0"
+                    >
+                      {copiedId === 'modal' ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
                 </div>
-             </motion.div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Operation</p>
+                    <p className="font-black text-white uppercase text-sm">{selectedTx.type}</p>
+                  </div>
+                  <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Status</p>
+                    <div>{getStatusBadge(selectedTx.status)}</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Amount</p>
+                    <p className="font-mono font-black text-white text-base">{formatCurrency(selectedTx.amount)}</p>
+                  </div>
+                  <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Plan / Channel</p>
+                    <p className="font-bold text-zinc-300 text-xs truncate">{selectedTx.plan || selectedTx.method || 'Standard Clearance'}</p>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Timestamp</p>
+                  <p className="font-mono text-xs text-zinc-300">{selectedTx.date || 'Pending sync'}</p>
+                </div>
+
+                {selectedTx.receiptImage && (
+                  <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">Attached Proof Receipt</p>
+                    <div className="rounded-xl overflow-hidden border border-zinc-800 max-h-48 flex items-center justify-center bg-black/60 p-2">
+                      <img 
+                        src={selectedTx.receiptImage} 
+                        alt="Deposit Receipt" 
+                        className="max-h-44 w-auto object-contain rounded-lg"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-zinc-800 flex justify-end">
+                <button
+                  onClick={() => setSelectedTx(null)}
+                  className="px-6 py-3 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-all"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </motion.div>
           </div>
         )}
       </AnimatePresence>
@@ -411,10 +655,10 @@ export default function TransactionsPage() {
                className="absolute inset-0 bg-black/90 backdrop-blur-sm"
              />
              <motion.div
-               initial={{ opacity: 0, scale: 0.9, y: 20 }}
+               initial={{ opacity: 0, scale: 0.95, y: 20 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
-               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="relative w-full max-w-4xl bg-white text-zinc-900 rounded-[48px] overflow-hidden shadow-[0_0_100px_rgba(75,47,168,0.2)] flex flex-col max-h-[90vh]"
+               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+               className="relative w-full max-w-4xl bg-white text-zinc-900 rounded-[40px] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
              >
                 {/* Modal Header */}
                 <div className="p-8 border-b border-zinc-100 flex items-center justify-between bg-zinc-50">
@@ -424,104 +668,99 @@ export default function TransactionsPage() {
                       </div>
                       <div>
                          <h3 className="text-xl font-black italic font-serif tracking-tight uppercase">Protocol Audit Report</h3>
-                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-1">Ref ID: AB-LEDGER-2026-XQ</p>
+                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-1">Ref ID: APEX-LEDGER-LIVE</p>
                       </div>
                    </div>
                    <button 
                      onClick={() => setShowAuditModal(false)}
-                     className="w-12 h-12 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-100 transition-colors"
+                     className="w-11 h-11 rounded-full border border-zinc-200 flex items-center justify-center hover:bg-zinc-100 transition-colors"
                    >
-                     <X size={20} />
+                     <X size={18} />
                    </button>
                 </div>
 
-                {/* Report Content - Styled to look like a document */}
-                <div className="flex-1 overflow-y-auto p-12 space-y-12 bg-white">
-                   {/* Official Letterhead Heading */}
-                   <div className="flex justify-between items-start border-b-2 border-zinc-900 pb-12">
-                      <div className="space-y-4">
+                {/* Report Content */}
+                <div className="flex-1 overflow-y-auto p-10 space-y-10 bg-white">
+                   <div className="flex justify-between items-start border-b-2 border-zinc-900 pb-8">
+                      <div className="space-y-3">
                          <div className="text-3xl font-black font-serif italic uppercase tracking-tighter">ApexBridge<span className="text-brand-purple">Capital</span></div>
-                         <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest leading-loose">
+                         <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest leading-relaxed">
                             Institutional Liquidity Hub<br />
                             Zürich, Switzerland • Registry No. 883.21<br />
                             security@apexbridge.protocol
                          </div>
                       </div>
                       <div className="text-right">
-                         <div className="inline-block px-4 py-2 border-2 border-zinc-900 text-zinc-900 text-[10px] font-black uppercase tracking-widest mb-4">CONFIDENTIAL</div>
-                         <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Date of Issuance: April 24, 2026</div>
-                      </div>
-                   </div>
-
-                   {/* Report Stats Grid */}
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
-                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-3">Net Asset Valuation</p>
-                         <p className="text-3xl font-black italic tracking-tighter text-zinc-900">{formatCurrency(transactions.reduce((acc, tx) => acc + tx.amount, 0))}</p>
-                         <div className="mt-4 flex items-center gap-2 text-[9px] font-black text-brand-purple uppercase">
-                            <TrendingUp size={12} /> Positive Variance
-                         </div>
-                      </div>
-                      <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
-                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-3">Verified Operations</p>
-                         <p className="text-3xl font-black italic tracking-tighter text-zinc-900">{transactions.length} Events</p>
-                         <div className="mt-4 flex items-center gap-2 text-[9px] font-black text-brand-purple uppercase">
-                            <BadgeCheck size={12} /> 100% Integrity
-                         </div>
-                      </div>
-                      <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
-                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-3">Terminal State</p>
-                         <p className="text-3xl font-black italic tracking-tighter text-zinc-900">SECURE</p>
-                         <div className="mt-4 flex items-center gap-2 text-[9px] font-black text-blue-600 uppercase">
-                            <Globe size={12} /> GMT+1 SYNC
+                         <div className="inline-block px-3 py-1.5 border-2 border-zinc-900 text-zinc-900 text-[10px] font-black uppercase tracking-widest mb-3">CONFIDENTIAL</div>
+                         <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
+                           Issuance: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                          </div>
                       </div>
                    </div>
 
-                   {/* Audit Details */}
-                   <div className="space-y-8">
-                      <h4 className="text-sm font-black uppercase tracking-[0.25em] border-b border-zinc-100 pb-4">Protocol Compliance Summary</h4>
-                      <div className="space-y-6">
+                   {/* Stats Grid */}
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
+                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2">Total Ledger Volume</p>
+                         <p className="text-2xl font-black italic tracking-tighter text-zinc-900">{formatCurrency(totalVolume)}</p>
+                         <div className="mt-3 flex items-center gap-1.5 text-[9px] font-black text-brand-purple uppercase">
+                            <TrendingUp size={12} /> Live Backend Feed
+                         </div>
+                      </div>
+                      <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
+                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2">Verified Operations</p>
+                         <p className="text-2xl font-black italic tracking-tighter text-zinc-900">{transactions.length} Events</p>
+                         <div className="mt-3 flex items-center gap-1.5 text-[9px] font-black text-emerald-600 uppercase">
+                            <BadgeCheck size={12} /> {transactions.length > 0 ? 'Backend Synchronized' : 'Clear Ledger'}
+                         </div>
+                      </div>
+                      <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
+                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2">Settled Volume</p>
+                         <p className="text-2xl font-black italic tracking-tighter text-zinc-900">{formatCurrency(approvedVolume)}</p>
+                         <div className="mt-3 flex items-center gap-1.5 text-[9px] font-black text-blue-600 uppercase">
+                            <Globe size={12} /> Validated Status
+                         </div>
+                      </div>
+                   </div>
+
+                   {/* Protocol Compliance */}
+                   <div className="space-y-6">
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] border-b border-zinc-100 pb-3">Protocol Compliance Summary</h4>
+                      <div className="space-y-4">
                          {[
-                           { label: 'Layer 1 Validation', status: 'Passed', desc: 'All transaction hashes verified against institutional registry.' },
-                           { label: 'Liquidity Solvency', status: 'Verified', desc: 'Sufficient capital reserves documented for all active deployment strings.' },
-                           { label: 'Security Handshake', status: 'Encrypted', desc: 'AES-256 end-to-end telemetry confirmed for every ledger event.' }
+                           { label: 'Backend Clearance', status: 'Live', desc: 'Direct GraphQL protocol queries without client synthetic data.' },
+                           { label: 'Security Handshake', status: 'Encrypted', desc: 'Token bearer validation and sanitized session telemetry.' },
+                           { label: 'Ledger Auditability', status: 'Compliant', desc: 'Full event tracking maintained on production database.' }
                          ].map((item, idx) => (
-                           <div key={idx} className="flex gap-6 items-start">
-                              <div className="w-10 h-10 rounded-full border-2 border-zinc-900 flex items-center justify-center shrink-0">
-                                 <FileText size={18} className="text-zinc-900" />
+                           <div key={idx} className="flex gap-4 items-start">
+                              <div className="w-8 h-8 rounded-full border border-zinc-900 flex items-center justify-center shrink-0 mt-0.5">
+                                 <FileText size={14} className="text-zinc-900" />
                               </div>
                               <div className="flex-1">
                                  <div className="flex items-center justify-between mb-1">
                                     <h5 className="font-black text-xs uppercase tracking-widest">{item.label}</h5>
-                                    <span className="text-[9px] font-black text-brand-purple uppercase tracking-widest bg-brand-purple/5 px-2 py-1 rounded">{item.status}</span>
+                                    <span className="text-[8px] font-black text-brand-purple uppercase tracking-widest bg-brand-purple/10 px-2 py-0.5 rounded">{item.status}</span>
                                  </div>
-                                 <p className="text-[11px] text-zinc-500 font-bold tracking-tight leading-relaxed">{item.desc}</p>
+                                 <p className="text-[11px] text-zinc-500 font-bold leading-normal">{item.desc}</p>
                               </div>
                            </div>
                          ))}
                       </div>
                    </div>
 
-                   {/* Footer Sign-off */}
-                   <div className="pt-12 border-t-2 border-zinc-100 flex justify-between items-end">
-                      <div className="space-y-2">
-                         <div className="w-48 h-1 bg-zinc-900" />
+                   {/* Footer */}
+                   <div className="pt-8 border-t-2 border-zinc-100 flex justify-between items-end">
+                      <div className="space-y-1">
+                         <div className="w-36 h-0.5 bg-zinc-900" />
                          <p className="text-[10px] font-black uppercase tracking-widest text-zinc-900">ApexBridge System Core</p>
-                         <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Automated Compliance Officer</p>
+                         <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Automated Ledger Officer</p>
                       </div>
-                      <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-4">
                          <button 
-                           onClick={() => alert('Intelligence Export Initiated: APEX-REPORT.pdf generated.')}
-                           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 transition-all active:scale-95"
+                           onClick={() => window.print()}
+                           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-600 hover:text-zinc-900 transition-colors"
                          >
-                            <Download size={14} /> Export PDF
-                         </button>
-                         <button 
-                           onClick={() => window.open('https://etherscan.io', '_blank')}
-                           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 transition-all active:scale-95"
-                         >
-                            <ExternalLink size={14} /> Ledger Link
+                            <Download size={13} /> Print Report
                          </button>
                       </div>
                    </div>
@@ -533,4 +772,3 @@ export default function TransactionsPage() {
     </div>
   );
 }
-

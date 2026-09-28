@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Wallet, Mail, Lock, User, ArrowLeft, Loader2, TrendingUp } from 'lucide-react';
+import { Mail, Lock, User, ArrowLeft, Loader2, TrendingUp, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface LoginPageProps {
@@ -9,22 +9,41 @@ interface LoginPageProps {
 }
 
 export default function LoginPage({ mode }: LoginPageProps) {
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Mock simulation
-    setTimeout(() => {
-      login(email);
-      navigate('/user/dashboard');
+    setErrorMessage(null);
+
+    try {
+      if (mode === 'signup') {
+        const res = await signup(email.trim(), password, name.trim());
+        if (res.success) {
+          navigate('/user/dashboard');
+        } else {
+          setErrorMessage(res.message || 'Signup failed. Please try again.');
+        }
+      } else {
+        const res = await login(email.trim(), password);
+        if (res.success) {
+          navigate('/user/dashboard');
+        } else {
+          setErrorMessage(res.message || 'Invalid email or password.');
+        }
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'An unexpected error occurred.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -50,10 +69,21 @@ export default function LoginPage({ mode }: LoginPageProps) {
             </div>
           </div>
 
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-black tracking-tight mb-2 text-white   uppercase tracking-tight">{mode === 'login' ? 'Authentication' : 'Onboarding'}</h1>
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-black tracking-tight mb-2 text-white uppercase">{mode === 'login' ? 'Authentication' : 'Onboarding'}</h1>
             <p className="text-zinc-500 text-[10px] font-black uppercase">{mode === 'login' ? 'Secure terminal access' : 'Join the ApexBridge protocol'}</p>
           </div>
+
+          {errorMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center gap-3 text-xs font-bold font-sans"
+            >
+              <AlertCircle size={18} className="shrink-0" />
+              <span>{errorMessage}</span>
+            </motion.div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {mode === 'signup' && (
@@ -67,7 +97,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Full Legal Name"
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4.5 pl-12 pr-4 text-white focus:outline-none focus:border-brand-purple/50 transition-all shadow-inner"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4.5 pl-12 pr-4 text-white focus:outline-none focus:border-brand-purple/50 transition-all shadow-inner text-sm"
                   />
                 </div>
               </div>
@@ -83,29 +113,56 @@ export default function LoginPage({ mode }: LoginPageProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="protocol@apexbridge.cap"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4.5 pl-12 pr-4 text-white focus:outline-none focus:border-brand-purple/50 transition-all font-mono shadow-inner"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4.5 pl-12 pr-4 text-white focus:outline-none focus:border-brand-purple/50 transition-all font-mono shadow-inner text-sm"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] ml-1">Pass-Key</label>
+              <div className="flex items-center justify-between ml-1">
+                <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Pass-Key</label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-[10px] font-black uppercase text-zinc-500 hover:text-brand-purple transition-colors flex items-center gap-1.5 cursor-pointer select-none"
+                >
+                  {showPassword ? (
+                    <>
+                      <EyeOff size={13} className="text-zinc-400" />
+                      <span>Hide</span>
+                    </>
+                  ) : (
+                    <>
+                      <Eye size={13} className="text-zinc-400" />
+                      <span>Show</span>
+                    </>
+                  )}
+                </button>
+              </div>
               <div className="relative group">
                 <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-brand-purple transition-colors" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4.5 pl-12 pr-4 text-white focus:outline-none focus:border-brand-purple/50 transition-all shadow-inner"
+                  placeholder={showPassword ? 'Enter your pass-key' : '••••••••'}
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl py-4.5 pl-12 pr-12 text-white focus:outline-none focus:border-brand-purple/50 transition-all shadow-inner text-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors p-1 cursor-pointer"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
             <button
               disabled={isLoading}
-              className="w-full py-5 bg-brand-purple text-black rounded-2xl font-black uppercase text-[10px] hover:bg-brand-purple-hover transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-brand-purple/10 group hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full py-5 bg-brand-purple text-black rounded-2xl font-black uppercase text-[10px] hover:bg-brand-purple-hover transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-brand-purple/10 group hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               {isLoading ? <Loader2 size={18} className="animate-spin" /> : (mode === 'login' ? 'Execute Access' : 'Register Protocol')}
             </button>
