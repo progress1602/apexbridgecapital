@@ -137,7 +137,8 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    if (user) {
+    // Only synchronize state from user object when the user is not actively editing
+    if (user && !isEditing) {
       setName(user.name || '');
       setEmail(user.email || '');
       setPhone(user.phone || '');
@@ -148,7 +149,7 @@ export default function ProfilePage() {
         setIs2FAEnabled(user.is2FAEnabled);
       }
     }
-  }, [user]);
+  }, [user, isEditing]);
 
   if (!user) {
     return (
@@ -477,12 +478,13 @@ export default function ProfilePage() {
                   <div className="relative">
                     <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
                     <input
-                      type="text"
+                      type="tel"
+                      autoComplete="tel"
                       disabled={!isEditing}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="w-full bg-zinc-900 border border-zinc-800 p-4 pl-12 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple/20 transition-all disabled:opacity-50 font-mono"
-                      placeholder="e.g. +1 (555) 019-2834"
+                      placeholder="e.g. +1 555 019 2834"
                     />
                   </div>
                 </div>

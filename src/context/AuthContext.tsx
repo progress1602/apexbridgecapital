@@ -126,6 +126,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             ...cached,
             ...(prev || {}),
             ...remoteUser,
+            country: prev?.country || cached.country || remoteUser.country,
+            walletAddress: prev?.walletAddress || cached.walletAddress || remoteUser.walletAddress,
             avatar: finalAvatar,
             balance: liveBalance,
           };
