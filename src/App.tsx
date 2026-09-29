@@ -21,8 +21,39 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-brand-black text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-brand-purple shadow-lg shadow-brand-purple/20"></div>
+      <div className="min-h-screen bg-brand-black text-white flex animate-pulse font-sans">
+        {/* Sidebar Skeleton */}
+        <div className="hidden lg:flex w-72 flex-col justify-between border-r border-zinc-800/80 p-8 space-y-8 shrink-0">
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-zinc-800" />
+              <div className="h-5 w-32 rounded bg-zinc-800" />
+            </div>
+            <div className="space-y-3 pt-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-12 rounded-2xl bg-zinc-900/80 border border-zinc-800/50" />
+              ))}
+            </div>
+          </div>
+          <div className="h-16 rounded-2xl bg-zinc-900/80 border border-zinc-800/50" />
+        </div>
+
+        {/* Content Shell Skeleton */}
+        <div className="flex-1 p-4 sm:p-8 md:p-14 space-y-6 sm:space-y-12 overflow-hidden">
+          <div className="flex justify-between items-end pb-6 sm:pb-8 border-b border-zinc-800/50">
+            <div className="space-y-2 sm:space-y-3">
+              <div className="h-3 w-24 sm:w-32 rounded-full bg-zinc-800" />
+              <div className="h-8 sm:h-10 w-48 sm:w-64 rounded-2xl bg-zinc-800" />
+            </div>
+            <div className="h-10 sm:h-12 w-28 sm:w-36 rounded-2xl bg-zinc-900" />
+          </div>
+          <div className="h-48 sm:h-72 rounded-3xl sm:rounded-[40px] bg-zinc-900/60 border border-zinc-800/60" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 sm:h-40 rounded-2xl sm:rounded-3xl bg-zinc-900/50 border border-zinc-800/40" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

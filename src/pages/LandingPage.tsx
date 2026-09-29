@@ -116,7 +116,7 @@ export default function LandingPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-900/50 bg-black/90 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-900/50 bg-black/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-24 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 md:gap-3 group relative z-50">
             <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(147,51,234,0.3)] group-hover:scale-110 transition-transform duration-500 shrink-0">
@@ -151,25 +151,28 @@ export default function LandingPage() {
 
             {/* Mobile Menu Button */}
             <button 
+              type="button"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 text-zinc-400 hover:text-white transition-colors relative z-50"
+              className="lg:hidden p-2 text-zinc-300 hover:text-white transition-colors relative z-50 cursor-pointer"
             >
-              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Overlay */}
+        {/* Mobile Navigation Dropdown */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, x: '100%' }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: '100%' }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-0 z-40 lg:hidden bg-black flex flex-col"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'calc(100dvh - 4rem)' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="lg:hidden fixed top-16 left-0 right-0 z-40 bg-brand-black/98 backdrop-blur-2xl border-b border-zinc-800 flex flex-col justify-between overflow-y-auto px-6 py-8"
             >
-              <div className="relative z-10 flex bg-transparent flex-col pt-32 px-10 gap-8">
+              <div className="flex flex-col gap-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">Protocol Navigation</p>
                 {[
                   { name: 'Home', href: '/' },
                   { name: 'Markets', href: '#protocol' },
@@ -181,29 +184,30 @@ export default function LandingPage() {
                   <motion.a
                     key={item.name}
                     href={item.href}
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + (idx * 0.05) }}
+                    transition={{ delay: 0.05 * idx, duration: 0.2 }}
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-3xl font-black text-white uppercase hover:text-purple-500 transition-colors"
+                    className="text-lg sm:text-xl font-black text-white hover:text-purple-400 uppercase tracking-tight py-2.5 px-3 rounded-xl hover:bg-zinc-900/60 transition-all flex items-center justify-between border-b border-zinc-900/50"
                   >
-                    {item.name}
+                    <span>{item.name}</span>
+                    <ArrowUpRight size={16} className="text-zinc-600" />
                   </motion.a>
                 ))}
               </div>
 
-              <div className="mt-auto p-10 space-y-4 border-t border-zinc-900 bg-transparent relative z-10">
+              <div className="pt-8 mt-6 border-t border-zinc-800/80 space-y-3">
                 <Link 
                   to="/login" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block w-full py-5 text-center text-zinc-400 text-sm font-black uppercase border border-zinc-800 rounded-xl hover:text-white"
+                  className="block w-full py-3.5 text-center text-zinc-300 text-xs font-black uppercase tracking-wider border border-zinc-800 rounded-xl hover:bg-zinc-900 transition-colors"
                 >
                   Login
                 </Link>
                 <Link 
                   to="/signup" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block w-full py-5 bg-purple-600 text-white text-center text-sm font-black uppercase rounded-xl shadow-xl shadow-purple-600/10"
+                  className="block w-full py-3.5 bg-purple-600 text-white text-center text-xs font-black uppercase tracking-wider rounded-xl shadow-lg shadow-purple-600/20 hover:bg-purple-500 transition-colors"
                 >
                   Deploy Capital
                 </Link>
@@ -250,7 +254,7 @@ export default function LandingPage() {
                   </div>
                   
                   {/* Heading */}
-                  <h1 className="text-5xl sm:text-7xl md:text-[85px] leading-[0.9] font-black text-white uppercase tracking-tight text-left">
+                  <h1 className="text-4xl sm:text-6xl md:text-[85px] leading-[0.95] md:leading-[0.9] font-black text-white uppercase tracking-tight text-left break-words">
                     PRECISION <br />
                     <span className="text-purple-500 font-black block mt-1">CAPITAL.</span>
                   </h1>
@@ -261,7 +265,7 @@ export default function LandingPage() {
                   </p>
 
                   {/* Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 md:gap-5 pt-2">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 pt-2">
                     <Link to="/signup" className="flex items-center justify-center gap-2 px-9 py-4 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase text-[11px] tracking-widest rounded-lg transition-all duration-200 shadow-lg hover:shadow-purple-500/10 active:scale-95 shrink-0">
                       DEPLOY CAPITAL NOW <ArrowRight size={14} />
                     </Link>
@@ -309,13 +313,13 @@ export default function LandingPage() {
 
                   {/* Email contact strip */}
                   <div className="pt-2">
-                    <div className="w-full max-w-md border border-purple-500/20 bg-zinc-950/65 backdrop-blur-sm p-4 px-5 rounded-xl flex items-center justify-between text-xs font-semibold">
+                    <div className="w-full max-w-md border border-purple-500/20 bg-zinc-950/65 backdrop-blur-sm p-3.5 sm:p-4 px-4 sm:px-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs font-semibold">
                       <div className="flex items-center gap-3">
-                        <Mail size={16} className="text-purple-400" />
+                        <Mail size={16} className="text-purple-400 shrink-0" />
                         <span className="text-purple-400 uppercase tracking-widest text-[10px] font-black">Email Us</span>
                       </div>
-                      <div className="w-px h-4 bg-zinc-800" />
-                      <a href="mailto:apexbridgecapital1@gmail.com" className="text-zinc-300 font-bold tracking-tight text-[11px] hover:text-purple-400 transition-colors">
+                      <div className="hidden sm:block w-px h-4 bg-zinc-800" />
+                      <a href="mailto:apexbridgecapital1@gmail.com" className="text-zinc-300 font-bold tracking-tight text-[11px] hover:text-purple-400 transition-colors break-all">
                         apexbridgecapital1@gmail.com
                       </a>
                     </div>
@@ -435,9 +439,9 @@ export default function LandingPage() {
                 <p className="text-zinc-500 uppercase tracking-[0.3em] md:tracking-[0.4em] font-black text-[9px] md:text-[10px]">High Efficiency Capital Deployment</p>
              </div>
 
-             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-5 md:gap-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-5 md:gap-10">
                 {/* Large Main Feature */}
-                <div className="sm:col-span-2 md:col-span-12 lg:col-span-8 bg-brand-black border border-zinc-800/40 rounded-[32px] md:rounded-[56px] p-8 md:p-12 flex flex-col justify-between overflow-hidden relative group hover:border-brand-purple/20 transition-all duration-700 shadow-2xl min-h-[400px]">
+                <div className="sm:col-span-2 md:col-span-12 lg:col-span-8 bg-brand-black border border-zinc-800/40 rounded-[28px] sm:rounded-[32px] md:rounded-[56px] p-6 sm:p-8 md:p-12 flex flex-col justify-between overflow-hidden relative group hover:border-brand-purple/20 transition-all duration-700 shadow-2xl min-h-[380px] sm:min-h-[400px]">
                    {/* Background Image */}
                    <div className="absolute inset-0 z-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-1000 grayscale">
                       <img 
@@ -449,13 +453,13 @@ export default function LandingPage() {
                    </div>
                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-purple/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
                    <div className="relative z-10">
-                      <div className="w-16 h-16 bg-zinc-900 rounded-3xl flex items-center justify-center text-brand-purple mb-10 border border-zinc-800 shadow-inner group-hover:rotate-12 transition-transform">
-                         <ShieldCheck size={32} />
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-900 rounded-2xl sm:rounded-3xl flex items-center justify-center text-brand-purple mb-8 sm:mb-10 border border-zinc-800 shadow-inner group-hover:rotate-12 transition-transform">
+                         <ShieldCheck size={28} className="sm:size-8" />
                       </div>
-                      <h3 className="text-4xl md:text-5xl font-black text-white mb-8 uppercase leading-none">Mathematical Isolation <br /> <span className="text-zinc-600">of Capital.</span></h3>
-                      <p className="text-zinc-400 max-w-md text-lg md:text-xl leading-relaxed font-bold tracking-tight">Your assets are segregated from operational accounts using cryptographic multi-sig isolation. Minimal risk, absolute clarity.</p>
+                      <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-white mb-6 sm:mb-8 uppercase leading-tight sm:leading-none break-words">Mathematical Isolation <br className="hidden sm:inline" /> <span className="text-zinc-600">of Capital.</span></h3>
+                      <p className="text-zinc-400 max-w-md text-base sm:text-lg md:text-xl leading-relaxed font-bold tracking-tight">Your assets are segregated from operational accounts using cryptographic multi-sig isolation. Minimal risk, absolute clarity.</p>
                    </div>
-                   <div className="relative z-10 grid grid-cols-4 gap-6 pt-16 mt-16 border-t border-zinc-800/50">
+                   <div className="relative z-10 grid grid-cols-4 gap-4 sm:gap-6 pt-12 sm:pt-16 mt-12 sm:mt-16 border-t border-zinc-800/50">
                       {[1,2,3,4].map(i => (
                         <div key={i} className="h-1 bg-zinc-800 rounded shadow-inner" />
                       ))}
@@ -463,7 +467,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Right Top */}
-                <div className="sm:col-span-1 md:col-span-6 lg:col-span-4 bg-brand-purple rounded-[32px] md:rounded-[56px] p-8 md:p-12 flex flex-col justify-between group overflow-hidden relative shadow-[0_20px_50px_rgba(75,47,168,0.15)] active:scale-95 transition-all min-h-[300px]">
+                <div className="sm:col-span-1 md:col-span-6 lg:col-span-4 bg-brand-purple rounded-[28px] sm:rounded-[32px] md:rounded-[56px] p-6 sm:p-8 md:p-12 flex flex-col justify-between group overflow-hidden relative shadow-[0_20px_50px_rgba(75,47,168,0.15)] active:scale-95 transition-all min-h-[260px] sm:min-h-[300px]">
                    {/* Background Image */}
                    <div className="absolute inset-0 z-0 opacity-10 group-hover:opacity-20 transition-opacity duration-1000 mix-blend-overlay grayscale">
                       <img 
@@ -554,11 +558,11 @@ export default function LandingPage() {
                        <div className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-zinc-600">Secure Client Access Proxy</div>
                     </div>
                     <div className="space-y-6 md:space-y-10" >
-                       <div className="p-6 md:p-8 bg-zinc-900/50 rounded-2xl md:rounded-3xl border border-zinc-800">
+                       <div className="p-5 sm:p-6 md:p-8 bg-zinc-900/50 rounded-2xl md:rounded-3xl border border-zinc-800">
                           <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                              <div>
                                 <p className="text-[8px] font-black uppercase text-zinc-500 mb-1">Net Valuation</p>
-                                <p className="text-3xl md:text-5xl font-black text-white font-mono">$1,240,402.10</p>
+                                <p className="text-2xl sm:text-4xl md:text-5xl font-black text-white font-mono break-all">$1,240,402.10</p>
                              </div>
                              <div className="px-3 py-1 bg-brand-purple/20 rounded-lg text-brand-purple text-[10px] font-bold self-start sm:self-center">+14.2%</div>
                           </div>
@@ -705,7 +709,7 @@ export default function LandingPage() {
                  <p className="text-brand-purple text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.5em]">Verified Global Asset Allocators</p>
               </div>
 
-              <div className="relative min-h-[550px] md:min-h-[500px] flex items-center justify-center">
+              <div className="relative min-h-[620px] sm:min-h-[500px] flex items-center justify-center pb-12 sm:pb-0">
                  <AnimatePresence mode="wait">
                     <motion.div
                       key={activeTestimonial}
@@ -725,8 +729,8 @@ export default function LandingPage() {
                                referrerPolicy="no-referrer"
                              />
                           </div>
-                          <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 w-24 h-24 md:w-32 md:h-32 bg-brand-purple flex items-center justify-center rounded-2xl md:rounded-3xl shadow-xl shadow-brand-purple/20 z-10 shrink-0">
-                             <Users className="text-black w-8 h-8 md:w-12 md:h-12" />
+                          <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-brand-purple flex items-center justify-center rounded-2xl md:rounded-3xl shadow-xl shadow-brand-purple/20 z-10 shrink-0">
+                             <Users className="text-black w-7 h-7 sm:w-8 sm:h-8 md:w-12 md:h-12" />
                           </div>
                        </div>
 
@@ -735,13 +739,13 @@ export default function LandingPage() {
                              <div className="flex gap-1 text-brand-purple">
                                 {[1,2,3,4,5].map(i => <Star key={i} fill="currentColor" className="w-3 h-3 md:w-3.5 md:h-3.5" />)}
                              </div>
-                             <p className="text-xl md:text-3xl font-medium text-white leading-relaxed uppercase tracking-tight">
+                             <p className="text-lg sm:text-xl md:text-3xl font-medium text-white leading-relaxed uppercase tracking-tight">
                                 "{testimonials[activeTestimonial].content}"
                              </p>
                           </div>
                           
-                          <div className="pt-8 md:pt-10 border-t border-zinc-800/50">
-                             <h4 className="text-lg md:text-xl font-black text-white uppercase">{testimonials[activeTestimonial].name}</h4>
+                          <div className="pt-6 sm:pt-8 md:pt-10 border-t border-zinc-800/50">
+                             <h4 className="text-base sm:text-lg md:text-xl font-black text-white uppercase">{testimonials[activeTestimonial].name}</h4>
                              <p className="text-zinc-500 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] md:tracking-[0.3em] mt-1 md:mt-2">
                                {testimonials[activeTestimonial].role}
                              </p>
@@ -756,7 +760,7 @@ export default function LandingPage() {
 
 
                  {/* Slider Controls */}
-                 <div className="absolute bottom-[-60px] left-1/2 -translate-x-1/2 flex gap-4">
+                 <div className="absolute bottom-[-40px] sm:bottom-[-60px] left-1/2 -translate-x-1/2 flex gap-3 sm:gap-4">
                     {testimonials.map((_, i) => (
                       <button
                         key={i}
@@ -777,7 +781,7 @@ export default function LandingPage() {
         {/* Final CTA Section */}
         <section className="py-20 md:py-48 px-4 md:px-6 relative overflow-hidden">
            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-purple/20 to-transparent" />
-           <div className="max-w-6xl mx-auto rounded-[40px] md:rounded-[80px] border border-zinc-800/50 bg-black p-8 md:p-32 text-center relative shadow-[0_0_150px_rgba(0,0,0,0.8)] border-b-0 overflow-hidden">
+           <div className="max-w-6xl mx-auto rounded-[32px] sm:rounded-[40px] md:rounded-[80px] border border-zinc-800/50 bg-black p-6 sm:p-12 md:p-32 text-center relative shadow-[0_0_150px_rgba(0,0,0,0.8)] border-b-0 overflow-hidden">
               <div className="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] bg-brand-purple/5 blur-[160px] rounded-full pointer-events-none" />
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -789,10 +793,10 @@ export default function LandingPage() {
                  <div className="inline-block px-6 py-3 md:px-10 md:py-4 bg-brand-purple/5 border border-brand-purple/10 rounded-full">
                     <span className="text-brand-purple text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em]">Secure Your Legacy</span>
                  </div>
-                 <h2 className="text-4xl sm:text-6xl md:text-9xl font-black text-white leading-none uppercase">THE PRIVATE <br className="hidden sm:block" /> <span className="text-zinc-700">POOL AWAITS.</span></h2>
-                 <p className="text-zinc-500 text-base md:text-2xl max-w-2xl mx-auto font-bold leading-relaxed font-sans">Account verification is instant. Deploy capital to institutional registries in under 120 seconds.</p>
+                 <h2 className="text-3xl sm:text-6xl md:text-9xl font-black text-white leading-tight sm:leading-none uppercase break-words">THE PRIVATE <br className="hidden sm:block" /> <span className="text-zinc-700">POOL AWAITS.</span></h2>
+                 <p className="text-zinc-500 text-sm sm:text-base md:text-2xl max-w-2xl mx-auto font-bold leading-relaxed font-sans">Account verification is instant. Deploy capital to institutional registries in under 120 seconds.</p>
                  <div className="flex flex-col xl:flex-row items-center justify-center gap-6 md:gap-8 pt-6 md:pt-10">
-                    <Link to="/signup" className="group w-full xl:w-auto px-10 py-5 md:px-16 md:py-7 bg-white text-black rounded-2xl md:rounded-[32px] font-black uppercase text-[10px] md:text-[12px] flex items-center justify-center gap-4 md:gap-5 hover:bg-brand-purple-hover transition-all shadow-[0_20px_50px_rgba(255,255,255,0.05)] active:scale-95 shrink-0">
+                    <Link to="/signup" className="group w-full xl:w-auto px-8 sm:px-10 py-4 sm:py-5 md:px-16 md:py-7 bg-white text-black rounded-2xl md:rounded-[32px] font-black uppercase text-[10px] md:text-[12px] flex items-center justify-center gap-4 md:gap-5 hover:bg-brand-purple-hover transition-all shadow-[0_20px_50px_rgba(255,255,255,0.05)] active:scale-95 shrink-0">
                        Apply For Portal Access
                        <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-500" />
                     </Link>
@@ -808,20 +812,20 @@ export default function LandingPage() {
         </section>
 
         {/* Comprehensive Footer */}
-        <footer className="py-32 px-6 bg-brand-black border-t border-zinc-900/50">
+        <footer className="py-20 sm:py-32 px-4 sm:px-6 bg-brand-black border-t border-zinc-900/50">
            <div className="max-w-7xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 mb-32">
-                 <div className="lg:col-span-5 space-y-10">
-                    <Link to="/" className="flex items-center gap-4">
-                       <div className="w-12 h-12 bg-brand-purple rounded-2xl flex items-center justify-center text-black shadow-xl">
-                          <TrendingUp size={24} />
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-20 mb-20 sm:mb-32">
+                 <div className="lg:col-span-5 space-y-8 sm:space-y-10">
+                    <Link to="/" className="flex items-center gap-3 sm:gap-4">
+                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand-purple rounded-2xl flex items-center justify-center text-black shadow-xl">
+                          <TrendingUp size={20} className="sm:size-6" />
                        </div>
-                       <span className="text-3xl font-black text-white uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
+                       <span className="text-2xl sm:text-3xl font-black text-white uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
                     </Link>
-                    <p className="text-zinc-500 text-lg leading-relaxed max-w-md font-bold tracking-tight">
+                    <p className="text-zinc-500 text-sm sm:text-lg leading-relaxed max-w-md font-bold tracking-tight">
                       The high-precision gateway for sovereign wealth, institutional stakings, and liquid managed asset protocols. Engineered for the next century of finance.
                     </p>
-                    <div className="flex gap-6 pt-4">
+                    <div className="flex gap-4 sm:gap-6 pt-2 sm:pt-4">
                        {[Globe, Github, Linkedin, Mail].map((Icon, idx) => (
                           <div key={idx} className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 hover:text-brand-purple hover:border-brand-purple/30 transition-all cursor-pointer group">
                              <Icon size={18} className="group-hover:scale-110 transition-transform" />
@@ -830,7 +834,7 @@ export default function LandingPage() {
                     </div>
                  </div>
 
-                 <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12 lg:gap-24">
+                 <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12 lg:gap-24">
                     {[
                       { title: 'Institutional', links: ['Yield Modeling', 'Execution Routing', 'Alpha Discovery', 'Market Liquidity'] },
                       { title: 'Compliance', links: ['Privacy Charter', 'AML Framework', 'Regulatory Hub', 'Risk Advisory'] },

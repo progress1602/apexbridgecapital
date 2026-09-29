@@ -127,27 +127,33 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Mobile Nav Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-brand-black border-b border-zinc-800/80 px-6 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-brand-purple rounded-xl flex items-center justify-center shadow-lg shadow-brand-purple/20">
-            <TrendingUp size={18} className="text-black" />
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-brand-black/95 backdrop-blur-xl border-b border-zinc-800/80 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+        <Link to="/user/dashboard" className="flex items-center gap-2 sm:gap-2.5 min-w-0 shrink">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-brand-purple rounded-xl flex items-center justify-center shadow-lg shadow-brand-purple/20 shrink-0">
+            <TrendingUp size={16} className="text-black" />
           </div>
-          <span className="text-base font-bold tracking-tight text-white uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link to="/user/notifications" className="relative p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors">
-            <Bell size={18} />
+          <span className="text-xs sm:text-base font-bold tracking-tight text-white uppercase truncate">
+            ApexBridge<span className="text-brand-purple">Capital</span>
+          </span>
+        </Link>
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <Link to="/user/notifications" className="relative p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors">
+            <Bell size={16} />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-purple text-white text-[9px] font-black rounded-full flex items-center justify-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </Link>
-          <span className="text-xs font-mono font-bold text-emerald-400 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl">
+          <span className="text-[10px] sm:text-xs font-mono font-bold text-emerald-400 bg-zinc-900 border border-zinc-800 px-2 sm:px-2.5 py-1.5 rounded-xl shrink-0 max-w-[100px] sm:max-w-none truncate">
             {formatCurrency(user?.balance || 0)}
           </span>
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="w-11 h-11 flex items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 active:scale-95 transition-all">
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+            aria-label="Toggle Navigation Menu"
+            className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 active:scale-95 transition-all cursor-pointer shrink-0"
+          >
+            {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
@@ -155,40 +161,62 @@ export default function DashboardLayout() {
       <AnimatePresence mode="wait">
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="lg:hidden fixed inset-0 z-40 bg-brand-black pt-32 px-6 overflow-y-auto"
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="lg:hidden fixed inset-0 z-40 bg-brand-black/98 backdrop-blur-2xl pt-24 px-5 sm:px-8 overflow-y-auto"
           >
-            <nav className="space-y-3 pb-20">
-              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-6 px-4">Protocol Terminal</p>
+            {/* User profile snapshot in mobile menu */}
+            <Link 
+              to="/user/profile"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="bg-zinc-900/90 border border-zinc-800 rounded-3xl p-4 mb-6 flex items-center gap-3.5 group hover:border-zinc-700 transition-colors"
+            >
+              <UserAvatar 
+                src={user?.avatar} 
+                name={user?.name || user?.email} 
+                size="md"
+                className="border-2 border-brand-purple/40 shrink-0"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-black uppercase text-white truncate">{user?.name || 'Investor'}</p>
+                <p className="text-[10px] text-zinc-400 font-mono truncate">{user?.email}</p>
+                <p className="text-[11px] text-emerald-400 font-mono font-bold mt-0.5">{formatCurrency(user?.balance || 0)}</p>
+              </div>
+            </Link>
+
+            <nav className="space-y-2 pb-24">
+              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-4 px-2">Protocol Navigation</p>
               {navItems.map((item) => (
                 <NavLink
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => cn(
-                    "flex items-center gap-4 px-6 py-5 rounded-[24px] text-sm font-black uppercase transition-all",
-                    isActive ? "bg-brand-purple text-black shadow-[0_10px_30px_rgba(75,47,168,0.2)] font-black" : "bg-zinc-900 border border-zinc-800 text-zinc-500"
+                    "flex items-center gap-3.5 px-5 py-4 rounded-2xl text-xs font-black uppercase transition-all",
+                    isActive ? "bg-brand-purple text-black shadow-lg shadow-brand-purple/20 font-black" : "bg-zinc-900/70 border border-zinc-800 text-zinc-400 hover:text-white"
                   )}
                 >
-                  <item.icon size={22} />
+                  <item.icon size={18} />
                   <span className="flex-1">{item.label}</span>
                   {item.hasBadge && unreadCount > 0 && (
-                    <span className="px-2.5 py-1 text-[10px] font-black rounded-full bg-brand-purple text-white shadow-sm">
+                    <span className="px-2 py-0.5 text-[9px] font-black rounded-full bg-brand-purple text-white shadow-sm">
                       {unreadCount}
                     </span>
                   )}
                 </NavLink>
               ))}
-              <div className="pt-8 mt-8 border-t border-zinc-800/50">
+              <div className="pt-6 mt-6 border-t border-zinc-800/60">
                  <button
-                    onClick={handleLogout}
-                    className="flex justify-between items-center w-full px-6 py-5 bg-red-500/5 border border-red-500/20 rounded-[24px] text-red-500 text-sm font-black uppercase"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="flex justify-between items-center w-full px-5 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-black uppercase cursor-pointer"
                  >
                     <span>Sign Out Terminal</span>
-                    <LogOut size={20} />
+                    <LogOut size={16} />
                  </button>
               </div>
             </nav>
@@ -197,7 +225,7 @@ export default function DashboardLayout() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 flex flex-col p-5 lg:p-14 pt-24 lg:pt-14 bg-brand-black relative">
+      <main className="flex-1 min-w-0 flex flex-col p-4 sm:p-6 lg:p-14 pt-20 lg:pt-14 bg-brand-black relative">
         <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-brand-purple/5 blur-[120px] rounded-full pointer-events-none" />
         <div className="max-w-7xl w-full mx-auto relative z-10">
           <Outlet />

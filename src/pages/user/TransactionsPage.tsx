@@ -77,7 +77,7 @@ export default function TransactionsPage() {
 
       setTransactions(Array.isArray(res) ? res : []);
     } catch (err: any) {
-      console.warn('Transactions query notice:', err);
+      console.error('[Transactions Query Error]:', err);
       setFetchError(err?.message || 'Unable to fetch transactions from server.');
       setTransactions([]);
     } finally {
@@ -265,10 +265,10 @@ export default function TransactionsPage() {
 
       {/* Query error alert if any */}
       {fetchError && (
-        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
             <AlertTriangle size={16} className="text-red-400 shrink-0" />
-            <span>{fetchError}</span>
+            <span className="break-words leading-relaxed">{fetchError}</span>
           </div>
           <div className="flex items-center gap-2">
             {fetchError.toLowerCase().includes('unauthorized') && (
@@ -353,20 +353,82 @@ export default function TransactionsPage() {
 
         {/* Loading Skeleton */}
         {isLoading && (
-          <div className="p-10 space-y-4">
-            {[1, 2, 3, 4, 5].map((idx) => (
-              <div key={idx} className="h-16 rounded-2xl bg-zinc-900/50 border border-zinc-800/40 animate-pulse flex items-center justify-between px-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-800" />
-                  <div className="space-y-2">
-                    <div className="w-24 h-3 bg-zinc-800 rounded" />
-                    <div className="w-16 h-2 bg-zinc-800/60 rounded" />
+          <div>
+            {/* Desktop Table Skeleton */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-zinc-800/60 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 bg-zinc-950/40">
+                    <th className="px-8 py-6">Transaction ID</th>
+                    <th className="px-8 py-6">Operation</th>
+                    <th className="px-6 py-6 min-w-[180px] max-w-[280px]">Plan / Channel</th>
+                    <th className="px-8 py-6">Timestamp</th>
+                    <th className="px-8 py-6 text-right">Quantum</th>
+                    <th className="px-8 py-6 text-center">Status</th>
+                    <th className="px-8 py-6 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/40">
+                  {[1, 2, 3, 4, 5, 6].map((idx) => (
+                    <tr key={idx} className="animate-pulse">
+                      <td className="px-8 py-6">
+                        <div className="h-4 w-24 bg-zinc-800/70 rounded" />
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-10 h-10 rounded-xl bg-zinc-800/80 shrink-0" />
+                          <div className="space-y-1.5">
+                            <div className="h-4 w-20 bg-zinc-800/70 rounded" />
+                            <div className="h-2.5 w-12 bg-zinc-900 rounded" />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 min-w-[180px] max-w-[280px]">
+                        <div className="h-6 w-32 bg-zinc-800/60 rounded-xl" />
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="h-3.5 w-24 bg-zinc-900 rounded" />
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <div className="h-5 w-20 bg-zinc-800/80 rounded ml-auto" />
+                      </td>
+                      <td className="px-8 py-6 text-center">
+                        <div className="h-6 w-20 bg-zinc-800/60 rounded-full mx-auto" />
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <div className="h-4 w-16 bg-zinc-900 rounded ml-auto" />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards Skeleton */}
+            <div className="block lg:hidden divide-y divide-zinc-800/60 p-4 space-y-4">
+              {[1, 2, 3, 4].map((idx) => (
+                <div key={idx} className="p-4 space-y-4 bg-zinc-950/40 rounded-2xl border border-zinc-900 animate-pulse">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-zinc-800/70" />
+                      <div className="space-y-1.5">
+                        <div className="h-4 w-24 bg-zinc-800/70 rounded" />
+                        <div className="h-3 w-16 bg-zinc-900 rounded" />
+                      </div>
+                    </div>
+                    <div className="h-6 w-16 bg-zinc-800/50 rounded-full" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="h-16 rounded-2xl bg-zinc-900/60" />
+                    <div className="h-16 rounded-2xl bg-zinc-900/60" />
+                  </div>
+                  <div className="flex justify-between items-center pt-1">
+                    <div className="h-3 w-20 bg-zinc-900 rounded" />
+                    <div className="h-3 w-16 bg-zinc-900 rounded" />
                   </div>
                 </div>
-                <div className="w-20 h-4 bg-zinc-800 rounded" />
-                <div className="w-16 h-6 bg-zinc-800 rounded-full" />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
@@ -439,11 +501,11 @@ export default function TransactionsPage() {
                         {prefix}{formatCurrency(tx.amount)}
                       </span>
                     </div>
-                    <div className="bg-zinc-900/60 p-3.5 rounded-2xl border border-zinc-800/50">
+                    <div className="bg-zinc-900/60 p-3.5 rounded-2xl border border-zinc-800/50 min-w-0 flex flex-col justify-between">
                       <p className="text-[8px] font-black uppercase text-zinc-500 tracking-widest mb-1">Plan / Channel</p>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-zinc-300 truncate block">
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-zinc-200 break-words leading-snug">
                         {tx.plan || tx.method || 'Standard Clearance'}
-                      </span>
+                      </p>
                     </div>
                   </div>
 
@@ -470,7 +532,7 @@ export default function TransactionsPage() {
                 <tr className="border-b border-zinc-800/60 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 bg-zinc-950/40">
                   <th className="px-8 py-6">Transaction ID</th>
                   <th className="px-8 py-6">Operation</th>
-                  <th className="px-8 py-6">Plan / Channel</th>
+                  <th className="px-6 py-6 min-w-[180px] max-w-[280px]">Plan / Channel</th>
                   <th className="px-8 py-6">Timestamp</th>
                   <th className="px-8 py-6 text-right">Quantum</th>
                   <th className="px-8 py-6 text-center">Status</th>
@@ -507,8 +569,8 @@ export default function TransactionsPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-8 py-6">
-                        <span className="text-zinc-400 font-black uppercase tracking-wider text-[11px] px-3.5 py-1.5 bg-zinc-900/60 border border-zinc-800 rounded-full inline-block">
+                      <td className="px-6 py-6 min-w-[180px] max-w-[280px] whitespace-normal">
+                        <span className="text-zinc-300 font-bold uppercase tracking-wider text-[11px] px-3.5 py-1.5 bg-zinc-900/80 border border-zinc-800/80 rounded-xl inline-block max-w-full break-words leading-relaxed">
                           {tx.plan || tx.method || 'Standard Clearance'}
                         </span>
                       </td>
@@ -605,9 +667,9 @@ export default function TransactionsPage() {
                     <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Amount</p>
                     <p className="font-mono font-black text-white text-base">{formatCurrency(selectedTx.amount)}</p>
                   </div>
-                  <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60">
+                  <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60 min-w-0">
                     <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Plan / Channel</p>
-                    <p className="font-bold text-zinc-300 text-xs truncate">{selectedTx.plan || selectedTx.method || 'Standard Clearance'}</p>
+                    <p className="font-bold text-zinc-200 text-xs break-words leading-relaxed">{selectedTx.plan || selectedTx.method || 'Standard Clearance'}</p>
                   </div>
                 </div>
 

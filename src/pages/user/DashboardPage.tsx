@@ -18,7 +18,8 @@ import {
   RefreshCw,
   Loader2,
   CheckCircle2,
-  History
+  History,
+  AlertCircle
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
@@ -43,6 +44,7 @@ export default function DashboardPage() {
   const [marketTickers, setMarketTickers] = useState<GraphQLMarketTicker[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [backendError, setBackendError] = useState<string | null>(null);
 
   const loadDashboardData = async (isManual = false) => {
     if (isManual) {
@@ -60,19 +62,35 @@ export default function DashboardPage() {
         if (accountData.value.walletSummary) {
           setWalletSummary(accountData.value.walletSummary);
         }
+        setBackendError(null);
+      } else if (accountData.status === 'rejected') {
+        const err = accountData.reason;
+        console.error('[Dashboard Account Query Error]:', err);
+        setBackendError(err?.message || 'Unable to sync wallet summary from backend server.');
       }
+
       if (investmentsData.status === 'fulfilled') {
         setUserInvestments(investmentsData.value || []);
+      } else {
+        console.error('[Dashboard Investments Query Error]:', investmentsData.reason);
       }
+
       if (txData.status === 'fulfilled') {
         setTransactions(txData.value || []);
+      } else {
+        console.error('[Dashboard Transactions Query Error]:', txData.reason);
       }
+
       if (tickersData.status === 'fulfilled') {
         setMarketTickers(tickersData.value || []);
+      } else {
+        console.error('[Dashboard Tickers Query Error]:', tickersData.reason);
       }
+
       await refreshUser();
-    } catch (err) {
-      console.warn('Dashboard fetch error:', err);
+    } catch (err: any) {
+      console.error('[Dashboard General Fetch Error]:', err);
+      setBackendError(err?.message || 'Failed to communicate with backend server.');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -128,45 +146,152 @@ export default function DashboardPage() {
 
   const recentTransactions = transactions.slice(0, 5);
 
+  if (isLoading && !walletSummary) {
+    return (
+      <div className="space-y-12 animate-pulse font-sans">
+        {/* Welcome Header Skeleton */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
+          <div className="space-y-3">
+            <div className="h-3 w-32 rounded-full bg-zinc-800" />
+            <div className="h-12 w-64 md:w-80 rounded-2xl bg-zinc-800" />
+            <div className="h-4 w-48 rounded bg-zinc-900" />
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-zinc-900 border border-zinc-800" />
+            <div className="h-12 w-40 rounded-2xl bg-zinc-900" />
+          </div>
+        </div>
+
+        {/* Market Tickers Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-brand-black-light border border-zinc-800/80 px-6 py-4 rounded-2xl flex items-center justify-between">
+              <div className="space-y-2">
+                <div className="h-2.5 w-12 rounded bg-zinc-800" />
+                <div className="h-5 w-24 rounded bg-zinc-800/80" />
+              </div>
+              <div className="h-6 w-14 rounded-lg bg-zinc-800/50" />
+            </div>
+          ))}
+        </div>
+
+        {/* Main Bento Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 bg-brand-black-light border border-zinc-800 p-10 rounded-[40px] space-y-8">
+            <div className="flex justify-between items-start">
+              <div className="h-3 w-40 rounded bg-zinc-800" />
+              <div className="h-5 w-24 rounded-full bg-zinc-900" />
+            </div>
+            <div className="space-y-3">
+              <div className="h-16 w-3/4 rounded-2xl bg-zinc-800/90" />
+              <div className="h-4 w-44 rounded bg-zinc-900" />
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-zinc-800/50">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-2 w-16 rounded bg-zinc-900" />
+                  <div className="h-5 w-20 rounded bg-zinc-800/80" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-4 grid grid-cols-1 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-brand-black-light border border-zinc-800 p-6 rounded-3xl flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800" />
+                  <div className="space-y-2">
+                    <div className="h-4 w-24 rounded bg-zinc-800" />
+                    <div className="h-2.5 w-32 rounded bg-zinc-900" />
+                  </div>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-zinc-900" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Activity Skeleton */}
+        <div className="bg-brand-black-light border border-zinc-800 rounded-[40px] p-8 md:p-10 space-y-6">
+          <div className="flex justify-between items-center pb-4 border-b border-zinc-800/60">
+            <div className="h-6 w-44 rounded-xl bg-zinc-800" />
+            <div className="h-4 w-20 rounded bg-zinc-900" />
+          </div>
+          <div className="space-y-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-16 rounded-2xl bg-zinc-900/50 border border-zinc-800/40 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-zinc-800" />
+                  <div className="space-y-1.5">
+                    <div className="h-4 w-28 rounded bg-zinc-800" />
+                    <div className="h-2.5 w-20 rounded bg-zinc-900" />
+                  </div>
+                </div>
+                <div className="h-5 w-20 rounded bg-zinc-800" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 font-sans">
       {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 sm:pb-8 border-b border-zinc-800/50">
         <div>
-          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
+          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-3">
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
              Capital Matrix Active
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
             Portfolio <span className="text-zinc-600">Core.</span>
           </h1>
-          <p className="text-zinc-500 text-sm font-medium mt-2">
+          <p className="text-zinc-500 text-xs sm:text-sm font-medium mt-2">
             Authenticated as <span className="text-white">{user?.name || user?.email || 'Investor'}</span> • {user?.tier || 'Institutional Tier'}
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => loadDashboardData(true)}
             title="Refresh Core Protocol Data"
             disabled={isLoading || isRefreshing}
-            className="p-4 rounded-2xl border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all active:scale-95 cursor-pointer bg-black/60 disabled:opacity-50"
+            className="p-3.5 sm:p-4 rounded-2xl border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all active:scale-95 cursor-pointer bg-black/60 disabled:opacity-50 shrink-0"
           >
             <RefreshCw size={16} className={(isLoading || isRefreshing) ? 'animate-spin text-brand-purple' : ''} />
           </button>
-          <Link to="/user/invest" className="px-8 py-4 bg-brand-purple text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 active:scale-95">
+          <Link to="/user/invest" className="flex-1 sm:flex-none text-center px-6 sm:px-8 py-3.5 sm:py-4 bg-brand-purple text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 active:scale-95">
             Deploy Capital
           </Link>
         </div>
       </div>
 
+      {/* Backend / Network Error Banner */}
+      {backendError && (
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-red-500/10 border border-red-500/30 text-red-400 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono">
+          <div className="flex items-center gap-3">
+            <AlertCircle size={18} className="text-red-400 shrink-0" />
+            <span className="break-words leading-relaxed">{backendError}</span>
+          </div>
+          <button 
+            onClick={() => loadDashboardData(true)} 
+            className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-xl text-[10px] font-black uppercase tracking-wider text-red-200 transition-colors shrink-0 cursor-pointer"
+          >
+            Retry Sync
+          </button>
+        </div>
+      )}
+
       {/* Market Tickers Bar */}
       {marketTickers.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {marketTickers.map((ticker, i) => (
-            <div key={i} className="bg-brand-black-light border border-zinc-800/80 px-6 py-4 rounded-2xl flex items-center justify-between">
+            <div key={i} className="bg-brand-black-light border border-zinc-800/80 px-5 sm:px-6 py-3.5 sm:py-4 rounded-2xl flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{ticker.symbol}</span>
-                <p className="text-lg font-black text-white font-mono">{formatCurrency(ticker.price)}</p>
+                <p className="text-base sm:text-lg font-black text-white font-mono">{formatCurrency(ticker.price)}</p>
               </div>
               <span className={`text-xs font-black font-mono px-2.5 py-1 rounded-lg ${
                 ticker.change24h >= 0 
@@ -182,9 +307,9 @@ export default function DashboardPage() {
 
       {/* Main Balance Bento */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 bg-brand-black-light border border-zinc-800 p-10 rounded-[40px] shadow-2xl relative overflow-hidden group">
+        <div className="lg:col-span-8 bg-brand-black-light border border-zinc-800 p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl md:rounded-[40px] shadow-2xl relative overflow-hidden group">
            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-purple/5 blur-[100px] rounded-full pointer-events-none" />
-           <div className="flex justify-between items-start mb-8">
+           <div className="flex justify-between items-start mb-6 sm:mb-8">
               <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">Total Portfolio Valuation</p>
               <div className="flex items-center gap-2 px-3 py-1 bg-brand-black-light border border-zinc-800 rounded-full">
                  <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
@@ -192,39 +317,39 @@ export default function DashboardPage() {
               </div>
            </div>
            <div className="space-y-2">
-              <h2 className="text-5xl md:text-7xl font-black text-white font-mono break-all leading-none">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white font-mono tracking-tight leading-none break-all">
                 {formatCurrency(totalPortfolio)}
               </h2>
-              <div className="flex items-center gap-4 text-brand-purple-hover font-black uppercase tracking-[0.2em] text-xs pt-4">
+              <div className="flex items-center gap-3 sm:gap-4 text-brand-purple-hover font-black uppercase tracking-[0.2em] text-xs pt-4 flex-wrap">
                  <span className="flex items-center gap-1">
                    <TrendingUp size={14} /> {growthRate >= 0 ? `+${growthRate}%` : `${growthRate}%`}
                  </span>
                  <span className="text-zinc-600">24H Protocol Growth</span>
               </div>
            </div>
-           <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-zinc-800/50">
+           <div className="mt-8 sm:mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 pt-6 sm:pt-8 border-t border-zinc-800/50">
               <div>
                  <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Available Balance</p>
-                 <p className="text-sm font-bold text-zinc-200 font-mono tracking-tight">{formatCurrency(availableBalance)}</p>
+                 <p className="text-xs sm:text-sm font-bold text-zinc-200 font-mono tracking-tight truncate">{formatCurrency(availableBalance)}</p>
               </div>
               <div>
                  <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Active Positions</p>
-                 <p className="text-sm font-bold text-brand-purple font-mono tracking-tight">{activeInvestmentsCount} Positions</p>
+                 <p className="text-xs sm:text-sm font-bold text-brand-purple font-mono tracking-tight">{activeInvestmentsCount} Positions</p>
               </div>
               <div>
                  <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Total Yield Accrued</p>
-                 <p className="text-sm font-bold text-emerald-400 font-mono tracking-tight">{formatCurrency(totalEarnings)}</p>
+                 <p className="text-xs sm:text-sm font-bold text-emerald-400 font-mono tracking-tight truncate">{formatCurrency(totalEarnings)}</p>
               </div>
               <div>
                  <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Base Currency</p>
-                 <p className="text-sm font-bold text-zinc-300 font-mono tracking-tight">{user?.currencyPreference || 'USD'}</p>
+                 <p className="text-xs sm:text-sm font-bold text-zinc-300 font-mono tracking-tight">{user?.currencyPreference || 'USD'}</p>
               </div>
            </div>
         </div>
 
-        <div className="lg:col-span-4 bg-brand-purple rounded-[40px] p-10 flex flex-col justify-between shadow-[0_20px_50px_rgba(75,47,168,0.1)] group">
+        <div className="lg:col-span-4 bg-brand-purple rounded-2xl sm:rounded-3xl md:rounded-[40px] p-5 sm:p-8 md:p-10 flex flex-col justify-between shadow-[0_20px_50px_rgba(75,47,168,0.1)] group">
            <div>
-              <div className="w-12 h-12 bg-brand-black/10 rounded-2xl flex items-center justify-center text-black mb-10 group-hover:rotate-12 transition-transform">
+              <div className="w-12 h-12 bg-brand-black/10 rounded-2xl flex items-center justify-center text-black mb-6 sm:mb-10 group-hover:rotate-12 transition-transform">
                  <Zap size={24} />
               </div>
               <h3 className="text-2xl font-black text-black uppercase leading-none">Instant <br /> Capital Refuel.</h3>
@@ -232,7 +357,7 @@ export default function DashboardPage() {
                 Fund your account with Bitcoin, Ethereum, Solana, or USDT for immediate automated allocation.
               </p>
            </div>
-           <Link to="/user/deposit" className="w-full py-4 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-[10px] text-center hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 mt-8">
+           <Link to="/user/deposit" className="w-full py-4 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-[10px] text-center hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 mt-6 sm:mt-8">
              Refuel Balance <ArrowUpRight size={14} />
            </Link>
         </div>
@@ -253,32 +378,32 @@ export default function DashboardPage() {
               <motion.div 
                 key={inv.id} 
                 whileHover={{ y: -4 }}
-                className="p-8 bg-brand-black-light border border-zinc-800 rounded-[32px] flex flex-col sm:flex-row justify-between items-center gap-6 group transition-all hover:bg-brand-black hover:border-brand-purple/30"
+                className="p-5 sm:p-8 bg-brand-black-light border border-zinc-800 rounded-2xl sm:rounded-[32px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 group transition-all hover:bg-brand-black hover:border-brand-purple/30"
               >
-                <div className="flex items-center gap-6 w-full sm:w-auto">
-                  <div className="w-16 h-16 rounded-[24px] bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-brand-purple group-hover:scale-105 transition-all shadow-inner shrink-0">
-                    <Layers size={28} />
+                <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto min-w-0">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-[24px] bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-brand-purple group-hover:scale-105 transition-all shadow-inner shrink-0">
+                    <Layers size={24} className="sm:size-7" />
                   </div>
-                  <div>
-                    <h4 className="text-lg font-black text-white uppercase">{inv.planName}</h4>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mt-1">Registry: #{inv.id.slice(0, 8)}</p>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-base sm:text-lg font-black text-white uppercase truncate">{inv.planName}</h4>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mt-0.5 truncate">Registry: #{inv.id.slice(0, 8)}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-8 w-full sm:w-auto justify-between sm:justify-end">
-                   <div className="text-right">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-1">Staked Value</p>
-                      <p className="text-xl font-bold text-white font-mono tracking-tighter">{formatCurrency(inv.amount)}</p>
+                <div className="flex items-center gap-6 sm:gap-8 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-zinc-800/60 pt-3 sm:pt-0">
+                   <div className="text-left sm:text-right">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Staked Value</p>
+                      <p className="text-lg sm:text-xl font-bold text-white font-mono tracking-tighter">{formatCurrency(inv.amount)}</p>
                    </div>
-                   <div className="h-10 w-px bg-zinc-800 hidden sm:block" />
+                   <div className="h-8 sm:h-10 w-px bg-zinc-800 block" />
                    <div className="text-right">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-1">Target ROI</p>
-                      <p className="text-xl font-bold text-brand-purple font-mono tracking-tighter">+{inv.roi}</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Target ROI</p>
+                      <p className="text-lg sm:text-xl font-bold text-brand-purple font-mono tracking-tighter">+{inv.roi}</p>
                    </div>
                 </div>
               </motion.div>
             ))}
             {userInvestments.length === 0 && (
-              <div className="p-16 text-center border-2 border-dashed border-zinc-800 rounded-[40px] text-zinc-600 uppercase tracking-[0.2em] font-black text-xs space-y-4">
+              <div className="p-8 sm:p-16 text-center border-2 border-dashed border-zinc-800 rounded-3xl sm:rounded-[40px] text-zinc-600 uppercase tracking-[0.2em] font-black text-xs space-y-4">
                 <p>Zero active positions in backend ledger.</p>
                 <Link to="/user/invest" className="inline-block px-6 py-3 bg-zinc-900 border border-zinc-700 text-white rounded-xl hover:border-brand-purple transition-all text-[10px]">
                   Initialize Deployment Now
@@ -296,7 +421,7 @@ export default function DashboardPage() {
               Full Ledger
             </Link>
           </div>
-          <div className="bg-brand-black-light rounded-[40px] border border-zinc-800 p-8 shadow-2xl relative overflow-hidden">
+          <div className="bg-brand-black-light rounded-2xl sm:rounded-[40px] border border-zinc-800 p-5 sm:p-8 shadow-2xl relative overflow-hidden">
              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-purple/20 to-transparent" />
              <div className="space-y-px">
                 {recentTransactions.map((tx) => (

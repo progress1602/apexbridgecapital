@@ -118,7 +118,7 @@ export async function fetchGraphQL<T = any>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(GRAPHQL_ENDPOINT, {
+  const makeRequest = () => fetch(GRAPHQL_ENDPOINT, {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -127,29 +127,71 @@ export async function fetchGraphQL<T = any>(
     }),
   });
 
+  let response: Response;
+  try {
+    response = await makeRequest();
+  } catch (networkErr: any) {
+    // If the server was sleeping (Render cold start) or had a temporary connection blip, retry once
+    console.warn('[GraphQL Network Notice]: Initial connection attempt failed, retrying in 1.5s...', networkErr);
+    try {
+      await new Promise((r) => setTimeout(r, 1500));
+      response = await makeRequest();
+    } catch (retryErr: any) {
+      console.error('[GraphQL Network Error]: Failed to reach backend endpoint:', GRAPHQL_ENDPOINT, retryErr);
+      throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+    }
+  }
+
   if (!response.ok) {
+    let errorDetail = '';
+    try {
+      const errJson = await response.json();
+      if (errJson.errors && Array.isArray(errJson.errors) && errJson.errors.length > 0) {
+        errorDetail = errJson.errors.map((e: any) => e.message || JSON.stringify(e)).join(' | ');
+      } else if (errJson.message) {
+        errorDetail = errJson.message;
+      } else if (errJson.error) {
+        errorDetail = typeof errJson.error === 'string' ? errJson.error : JSON.stringify(errJson.error);
+      }
+    } catch {
+      // ignore text parse error
+    }
+
+    const fullErrMsg = errorDetail || `HTTP ${response.status}: ${response.statusText}`;
+    console.error(`[GraphQL Backend HTTP ${response.status} Error]:`, fullErrMsg);
+
     if (response.status === 401) {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('apexbridge:unauthorized'));
       }
-      throw new Error('Unauthorized: Missing or invalid token. Please log in again.');
+      throw new Error(errorDetail || 'Your session has expired or is unauthorized. Please log in again.');
     }
-    throw new Error(`Network response error: ${response.status} ${response.statusText}`);
+
+    if (response.status === 502 || response.status === 503 || response.status === 504) {
+      throw new Error('The server is temporarily warming up or busy. Please wait a moment and try again.');
+    }
+
+    throw new Error(errorDetail || 'Server encountered an issue processing your request. Please try again.');
   }
 
-  const json = await response.json();
+  let json: any;
+  try {
+    json = await response.json();
+  } catch (parseErr: any) {
+    console.error('[GraphQL JSON Parse Error]: Backend did not return valid JSON:', parseErr);
+    throw new Error('Received an unexpected response from the server. Please try again.');
+  }
 
-  if (json.errors && json.errors.length > 0) {
-    const errorMsg = json.errors[0]?.message || 'GraphQL operation failed';
+  if (json.errors && Array.isArray(json.errors) && json.errors.length > 0) {
+    console.error('[GraphQL Backend Errors]:', json.errors);
+    const errorMsg = json.errors.map((e: any) => e.message || 'GraphQL operation failed').join(' | ');
     const isAuthError = errorMsg.toLowerCase().includes('unauthorized') || 
                         errorMsg.toLowerCase().includes('invalid token') ||
                         errorMsg.toLowerCase().includes('token expired');
     if (isAuthError && typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('apexbridge:unauthorized', { detail: { message: errorMsg } }));
     }
-    if (!json.data || Object.values(json.data).every(val => val === null)) {
-      throw new Error(errorMsg);
-    }
+    throw new Error(errorMsg);
   }
 
   return json.data;
@@ -561,6 +603,9 @@ export async function apiSignup(email: string, password: string, fullName?: stri
     password,
     fullName: fullName || null,
   });
+  if (!data?.signup) {
+    throw new Error('Registration failed: Backend did not return an account payload.');
+  }
   return data.signup;
 }
 
@@ -602,6 +647,9 @@ export async function apiLogin(email: string, password: string) {
     email,
     password,
   });
+  if (!data?.login) {
+    throw new Error('Login failed: Backend returned an empty response.');
+  }
   return data.login;
 }
 

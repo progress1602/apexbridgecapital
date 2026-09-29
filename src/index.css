@@ -11,3 +11,10 @@
   --color-brand-black: #0A0A0A;
   --color-brand-black-light: #121212;
 }
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  -webkit-tap-highlight-color: transparent;
+}
+

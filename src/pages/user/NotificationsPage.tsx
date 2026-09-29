@@ -119,31 +119,31 @@ export default function NotificationsPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-16 animate-in fade-in duration-1000 pb-32 font-sans">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 pb-8 border-b border-zinc-800/50">
         <div>
-          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
+          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-3 sm:mb-4">
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Command Center
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
             Intelligence <span className="text-zinc-600">Feed.</span>
           </h1>
-          <p className="text-zinc-500 text-sm font-medium mt-2 leading-relaxed max-w-xl">
+          <p className="text-zinc-500 text-xs sm:text-sm font-medium mt-1 sm:mt-2 leading-relaxed max-w-xl">
              Real-time critical data streams, security telemetry, and protocol update logs retrieved from GraphQL.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() => loadNotifications(true)}
             title="Refresh from server"
             disabled={isLoading || isRefreshing}
-            className="p-4 rounded-full border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all active:scale-95 cursor-pointer bg-black/60 disabled:opacity-50"
+            className="p-3.5 sm:p-4 rounded-full border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all active:scale-95 cursor-pointer bg-black/60 disabled:opacity-50 shrink-0"
           >
             <RefreshCw size={14} className={cn((isLoading || isRefreshing) && "animate-spin text-brand-purple")} />
           </button>
           <button 
             onClick={handleMarkAllRead}
-            className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-brand-purple hover:text-white transition-all border border-brand-purple/20 px-8 py-4 rounded-full hover:bg-brand-purple shadow-xl shadow-brand-purple/5 active:scale-95 cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-brand-purple hover:text-white transition-all border border-brand-purple/20 px-4 sm:px-8 py-3.5 sm:py-4 rounded-full hover:bg-brand-purple shadow-xl shadow-brand-purple/5 active:scale-95 cursor-pointer"
           >
             <CheckCircle size={14} /> Read All Intelligence
           </button>
@@ -179,7 +179,7 @@ export default function NotificationsPage() {
       )}
 
       {/* Advanced Filtering */}
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-4">
          {[
            { id: 'all', label: 'All Intel' },
            { id: 'unread', label: 'Unread' },
@@ -190,7 +190,7 @@ export default function NotificationsPage() {
              key={f.id}
              onClick={() => setFilter(f.id as any)}
              className={cn(
-               "px-8 py-4 rounded-full text-[9px] font-black uppercase tracking-[0.3em] transition-all border shrink-0 cursor-pointer",
+               "px-4 sm:px-8 py-2.5 sm:py-4 rounded-full text-[9px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] transition-all border shrink-0 cursor-pointer",
                filter === f.id 
                  ? "bg-white text-black border-white shadow-xl" 
                  : "bg-black border-zinc-800 text-zinc-600 hover:border-zinc-700"
@@ -204,14 +204,25 @@ export default function NotificationsPage() {
       {/* Notification Stream */}
       <div className="space-y-4">
         {isLoading ? (
-          <div className="py-32 text-center space-y-4">
-            <Loader2 className="w-10 h-10 text-brand-purple animate-spin mx-auto" />
-            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">Polling Intelligence Node...</p>
+          <div className="space-y-4 animate-pulse">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-brand-black-light border border-zinc-800/80 rounded-2xl sm:rounded-[32px] p-4 sm:p-8 flex items-start gap-4 sm:gap-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-zinc-800/80 shrink-0" />
+                <div className="flex-1 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <div className="h-4 w-40 rounded bg-zinc-800" />
+                    <div className="h-3 w-20 rounded bg-zinc-900" />
+                  </div>
+                  <div className="h-3.5 w-3/4 rounded bg-zinc-900" />
+                  <div className="h-3.5 w-1/2 rounded bg-zinc-900" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredNotifs.length === 0 ? (
-          <div className="bg-brand-black border border-zinc-800/80 rounded-[40px] p-20 text-center space-y-4">
-            <Bell className="w-12 h-12 text-zinc-700 mx-auto" />
-            <h3 className="text-lg font-black uppercase text-zinc-400">Ledger Clear</h3>
+          <div className="bg-brand-black border border-zinc-800/80 rounded-3xl sm:rounded-[40px] p-10 sm:p-20 text-center space-y-4">
+            <Bell className="w-10 h-10 sm:w-12 sm:h-12 text-zinc-700 mx-auto" />
+            <h3 className="text-base sm:text-lg font-black uppercase text-zinc-400">Ledger Clear</h3>
             <p className="text-xs text-zinc-600 max-w-sm mx-auto font-medium">
               No notifications matching your filter criteria at this timestamp.
             </p>
@@ -225,46 +236,46 @@ export default function NotificationsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 className={cn(
-                  "p-8 rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden group",
+                  "p-4 sm:p-8 rounded-2xl sm:rounded-[32px] border transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 relative overflow-hidden group",
                   n.isRead 
                     ? "bg-brand-black border-zinc-800/40 opacity-70 hover:opacity-100" 
                     : "bg-brand-black-light border-brand-purple/30 shadow-lg"
                 )}
               >
                 {!n.isRead && (
-                  <div className="absolute top-0 left-0 w-1.5 h-full bg-brand-purple" />
+                  <div className="absolute top-0 left-0 w-1 sm:w-1.5 h-full bg-brand-purple" />
                 )}
                 
-                <div className="flex items-start gap-6">
+                <div className="flex items-start gap-3.5 sm:gap-6">
                   <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0",
+                    "w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center border shrink-0",
                     n.type === 'security' ? "bg-red-500/10 text-red-400 border-red-500/20" :
                     n.type === 'transaction' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
                     "bg-brand-purple/10 text-brand-purple border-brand-purple/20"
                   )}>
-                    {n.type === 'security' ? <ShieldCheck size={20} /> :
-                     n.type === 'transaction' ? <CheckCircle2 size={20} /> :
-                     <Info size={20} />}
+                    {n.type === 'security' ? <ShieldCheck size={18} /> :
+                     n.type === 'transaction' ? <CheckCircle2 size={18} /> :
+                     <Info size={18} />}
                   </div>
 
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-3">
-                      <h4 className="text-base font-black uppercase text-white tracking-tight">{n.title}</h4>
+                  <div className="space-y-1 sm:space-y-1.5 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <h4 className="text-sm sm:text-base font-black uppercase text-white tracking-tight break-words">{n.title}</h4>
                       <span className="text-[9px] font-mono text-zinc-600 uppercase">
                         {formatTimestamp(n.createdAt)}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-400 font-medium leading-relaxed max-w-xl">
+                    <p className="text-xs text-zinc-400 font-medium leading-relaxed max-w-xl break-words">
                       {n.message}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-end md:self-center">
+                <div className="flex items-center gap-2 self-end md:self-center shrink-0">
                   {!n.isRead && (
                     <button
                       onClick={() => handleMarkRead(n.id)}
-                      className="px-4 py-2 rounded-xl bg-brand-purple/10 border border-brand-purple/20 text-brand-purple text-[10px] font-black uppercase tracking-wider hover:bg-brand-purple hover:text-black transition-colors cursor-pointer"
+                      className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-brand-purple/10 border border-brand-purple/20 text-brand-purple text-[9px] sm:text-[10px] font-black uppercase tracking-wider hover:bg-brand-purple hover:text-black transition-colors cursor-pointer"
                     >
                       Acknowledge
                     </button>
@@ -272,7 +283,7 @@ export default function NotificationsPage() {
                   <button
                     onClick={() => handleArchiveNotif(n.id)}
                     title="Archive"
-                    className="p-3 rounded-xl border border-zinc-800 text-zinc-600 hover:text-zinc-300 hover:border-zinc-700 transition-colors cursor-pointer"
+                    className="p-2 sm:p-3 rounded-xl border border-zinc-800 text-zinc-600 hover:text-zinc-300 hover:border-zinc-700 transition-colors cursor-pointer"
                   >
                     <Archive size={14} />
                   </button>

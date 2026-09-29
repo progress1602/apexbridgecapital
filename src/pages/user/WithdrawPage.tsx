@@ -18,7 +18,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { apiCreateWithdrawal } from '../../lib/graphql';
 
 export default function WithdrawPage() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, isLoading } = useAuth();
   const [step, setStep] = useState(1);
 
   React.useEffect(() => {
@@ -54,13 +54,47 @@ export default function WithdrawPage() {
       if (res && res.id) {
         await refreshUser();
         setIsSuccess(true);
+      } else {
+        setErrorMessage('Withdrawal request failed: Backend returned an empty response.');
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Withdrawal request failed.');
+      console.error('[Withdrawal Request Error]:', err);
+      setErrorMessage(err?.message || 'Withdrawal request failed. Backend server or network error.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading && !user) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-16 pb-32 animate-pulse font-sans">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
+          <div className="space-y-3">
+            <div className="h-3 w-32 rounded-full bg-zinc-800" />
+            <div className="h-10 w-64 rounded-2xl bg-zinc-800" />
+          </div>
+          <div className="flex gap-4">
+            {[1, 2, 3].map((s) => (
+              <div key={s} className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800" />
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div className="lg:col-span-8 bg-brand-black-light border border-zinc-800 rounded-[56px] p-12 md:p-20 space-y-8">
+            <div className="h-6 w-48 rounded bg-zinc-800" />
+            <div className="h-16 w-full rounded-2xl bg-zinc-900" />
+            <div className="h-14 w-full rounded-2xl bg-zinc-900" />
+          </div>
+          <div className="lg:col-span-4 bg-brand-black-light border border-zinc-800 rounded-[48px] p-10 space-y-6">
+            <div className="h-4 w-32 rounded bg-zinc-800" />
+            <div className="h-8 w-44 rounded bg-zinc-800/80" />
+            <div className="h-24 w-full rounded-2xl bg-zinc-900" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
@@ -103,27 +137,27 @@ export default function WithdrawPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-16 pb-32 font-sans">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 pb-8 border-b border-zinc-800/50">
         <div>
-          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
+          <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-3 sm:mb-4">
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
              Liquidity Outbound
           </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white italic">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-white italic">
             Liquidate <span className="text-zinc-600 italic">Assets.</span>
           </h1>
         </div>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 sm:gap-8">
            {[1, 2, 3].map((s) => (
-             <div key={s} className="flex items-center gap-3">
+             <div key={s} className="flex items-center gap-2 sm:gap-3">
                 <div className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black transition-all duration-500",
+                  "w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-[10px] sm:text-xs font-black transition-all duration-500",
                   step >= s ? "bg-brand-purple text-black" : "bg-zinc-900 text-zinc-600 border border-zinc-800"
                 )}>
-                  {step > s ? <Check size={16} /> : s}
+                  {step > s ? <Check size={14} /> : s}
                 </div>
                 <div className={cn(
-                  "hidden md:block h-px w-8 bg-zinc-800",
+                  "h-px w-4 sm:w-8 bg-zinc-800",
                   s === 3 && "hidden"
                 )} />
              </div>
@@ -147,26 +181,26 @@ export default function WithdrawPage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="bg-brand-black-light border border-zinc-800 rounded-[56px] p-12 md:p-20 space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]"
+                  className="bg-brand-black-light border border-zinc-800 rounded-2xl sm:rounded-[40px] md:rounded-[56px] p-5 sm:p-12 md:p-20 space-y-6 sm:space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]"
                 >
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2">Liquidation Quantum (USD)</label>
                    <div className="relative group">
-                      <span className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 text-brand-purple font-black italic text-4xl md:text-5xl">$</span>
+                      <span className="absolute left-4 sm:left-10 top-1/2 -translate-y-1/2 text-brand-purple font-black italic text-2xl sm:text-5xl">$</span>
                       <input
                         type="number"
                         required
                         value={amount}
                         max={user?.balance || 0}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[32px] py-12 md:py-16 pl-16 md:pl-24 pr-10 text-4xl md:text-8xl font-black text-white focus:outline-none focus:border-brand-purple/40 transition-all placeholder:text-zinc-800 shadow-inner font-mono tracking-tighter"
+                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-2xl sm:rounded-[32px] py-5 sm:py-14 pl-10 sm:pl-22 pr-4 sm:pr-8 text-2xl sm:text-6xl md:text-8xl font-black text-white focus:outline-none focus:border-brand-purple/40 transition-all placeholder:text-zinc-800 shadow-inner font-mono tracking-tighter"
                         placeholder="0"
                       />
                    </div>
                   </div>
 
-                  <div className="bg-zinc-900/50 rounded-3xl p-8 border border-zinc-800">
-                     <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-widest text-zinc-500 px-2 italic">
+                  <div className="bg-zinc-900/50 rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-zinc-800">
+                     <div className="flex justify-between items-center text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-zinc-500 px-1 sm:px-2 italic">
                         <span>Available for Liquidation</span>
                         <span className="text-white font-mono">{formatCurrency(user?.balance || 0)}</span>
                      </div>
@@ -175,7 +209,7 @@ export default function WithdrawPage() {
                   <button 
                     disabled={!amount || Number(amount) < 20 || Number(amount) > (user?.balance || 0)}
                     onClick={() => setStep(2)}
-                    className="w-full py-8 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-xs hover:bg-brand-purple-hover transition-all disabled:opacity-30 flex items-center justify-center gap-4 group shadow-xl shadow-brand-purple/10 cursor-pointer"
+                    className="w-full py-4 sm:py-8 bg-brand-purple text-black rounded-2xl sm:rounded-[32px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-xs hover:bg-brand-purple-hover transition-all disabled:opacity-30 flex items-center justify-center gap-3 sm:gap-4 group shadow-xl shadow-brand-purple/10 cursor-pointer"
                   >
                     Initiate Clearance <ArrowRight className="group-hover:translate-x-2 transition-transform" />
                   </button>
@@ -188,10 +222,10 @@ export default function WithdrawPage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="bg-brand-black-light border border-zinc-800 rounded-[56px] p-12 md:p-20 space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]"
+                  className="bg-brand-black-light border border-zinc-800 rounded-2xl sm:rounded-[40px] md:rounded-[56px] p-5 sm:p-12 md:p-20 space-y-6 sm:space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-10">
+                    <div className="space-y-2 sm:space-y-4">
                       <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2 flex items-center gap-3">
                          <Building2 size={16} className="text-brand-purple" /> Institution Name
                       </label>
@@ -200,10 +234,10 @@ export default function WithdrawPage() {
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
                         placeholder="Global Treasury Provider"
-                        className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] py-6 px-10 text-white font-bold tracking-tight focus:border-brand-purple/40 outline-none"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl sm:rounded-[28px] py-3.5 sm:py-6 px-4 sm:px-10 text-white font-bold tracking-tight focus:border-brand-purple/40 outline-none text-xs sm:text-sm"
                       />
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-2 sm:space-y-4">
                       <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2 flex items-center gap-3">
                          <CreditCard size={16} className="text-brand-purple" /> Account Number / Address
                       </label>
@@ -212,12 +246,12 @@ export default function WithdrawPage() {
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
                         placeholder="000 000 000 000"
-                        className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] py-6 px-10 text-white font-mono tracking-widest focus:border-brand-purple/40 outline-none"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl sm:rounded-[28px] py-3.5 sm:py-6 px-4 sm:px-10 text-white font-mono tracking-widest focus:border-brand-purple/40 outline-none text-xs sm:text-sm"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-2 sm:space-y-4">
                     <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2 flex items-center gap-3">
                        <Wallet size={16} className="text-brand-purple" /> Beneficiary Legal ID
                     </label>
@@ -226,16 +260,16 @@ export default function WithdrawPage() {
                       value={accountName}
                       onChange={(e) => setAccountName(e.target.value)}
                       placeholder="Identical to Internal Registry Documentation"
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-[28px] py-6 px-10 text-white font-bold uppercase focus:border-brand-purple/40 outline-none"
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl sm:rounded-[28px] py-3.5 sm:py-6 px-4 sm:px-10 text-white font-bold uppercase focus:border-brand-purple/40 outline-none text-xs sm:text-sm"
                     />
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-6 pt-6">
-                     <button onClick={() => setStep(1)} className="flex-1 py-7 border border-zinc-800 rounded-[32px] text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:bg-zinc-800 transition-all cursor-pointer">Back</button>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
+                     <button onClick={() => setStep(1)} className="w-full sm:flex-1 py-4 sm:py-7 border border-zinc-800 rounded-2xl sm:rounded-[32px] text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-zinc-500 hover:bg-zinc-800 transition-all cursor-pointer">Back</button>
                      <button 
                        disabled={!bankName || !accountNumber || !accountName}
                        onClick={() => setStep(3)} 
-                       className="flex-[2] py-7 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-[10px] hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 cursor-pointer disabled:opacity-30"
+                       className="w-full sm:flex-[2] py-4 sm:py-7 bg-brand-purple text-black rounded-2xl sm:rounded-[32px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[10px] hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 cursor-pointer disabled:opacity-30"
                      >
                        Validate Credentials
                      </button>
@@ -249,45 +283,45 @@ export default function WithdrawPage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="bg-black border border-zinc-800 rounded-[56px] p-12 md:p-20 space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]"
+                  className="bg-black border border-zinc-800 rounded-2xl sm:rounded-[40px] md:rounded-[56px] p-5 sm:p-12 md:p-20 space-y-6 sm:space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]"
                 >
-                  <div className="text-center space-y-6">
-                     <div className="w-20 h-20 bg-brand-purple/10 text-brand-purple rounded-3xl flex items-center justify-center mx-auto border border-brand-purple/20">
-                        <TrendingUp size={32} />
+                  <div className="text-center space-y-4 sm:space-y-6">
+                     <div className="w-16 h-16 sm:w-20 sm:h-20 bg-brand-purple/10 text-brand-purple rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto border border-brand-purple/20">
+                        <TrendingUp size={28} className="sm:size-8" />
                      </div>
-                     <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase">Audit Summary.</h2>
+                     <h2 className="text-2xl sm:text-3xl font-black text-white italic tracking-tighter uppercase">Audit Summary.</h2>
                   </div>
 
-                  <div className="bg-zinc-900 border border-zinc-800/50 rounded-[40px] overflow-hidden">
-                     <div className="p-8 space-y-4 border-b border-zinc-800/50">
-                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">
+                  <div className="bg-zinc-900 border border-zinc-800/50 rounded-2xl sm:rounded-[40px] overflow-hidden">
+                     <div className="p-5 sm:p-8 space-y-3 sm:space-y-4 border-b border-zinc-800/50">
+                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
                            <span>Principal To Liquidate</span>
                            <span className="text-white font-mono">{formatCurrency(Number(amount))}</span>
                         </div>
-                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">
+                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
                            <span>Settlement Interest Charge (10%)</span>
-                           <span className="text-red-500 font-mono">-{formatCurrency(fee)}</span>
+                           <span className="text-red-400 font-mono">-{formatCurrency(fee)}</span>
                         </div>
                      </div>
-                     <div className="p-8 bg-black/40">
-                        <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-[0.3em] text-white">
+                     <div className="p-5 sm:p-8 bg-black/40">
+                        <div className="flex justify-between items-center text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white">
                            <span>Net Disbursed Capital</span>
-                           <span className="text-2xl font-mono tracking-tighter text-brand-purple">{formatCurrency(netAmount)}</span>
+                           <span className="text-xl sm:text-2xl font-mono tracking-tighter text-brand-purple">{formatCurrency(netAmount)}</span>
                         </div>
                      </div>
                   </div>
 
-                  <div className="bg-brand-purple/5 border border-brand-purple/20 rounded-3xl p-8 flex items-start gap-4">
-                     <AlertTriangle className="text-brand-purple shrink-0 mt-1" size={18} />
-                     <p className="text-[11px] text-zinc-400 font-bold leading-relaxed italic uppercase">Protocol Integrity Note: All withdrawals require multi-sig manual clearance by admin nodes. Approximate settlement T+1 cycle.</p>
+                  <div className="bg-brand-purple/5 border border-brand-purple/20 rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex items-start gap-3 sm:gap-4">
+                     <AlertTriangle className="text-brand-purple shrink-0 mt-0.5" size={16} />
+                     <p className="text-[10px] sm:text-[11px] text-zinc-400 font-bold leading-relaxed italic uppercase">Protocol Integrity Note: All withdrawals require multi-sig manual clearance by admin nodes. Approximate settlement T+1 cycle.</p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-6">
-                     <button onClick={() => setStep(2)} className="flex-1 py-7 border border-zinc-800 rounded-[32px] text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:bg-zinc-800 transition-all cursor-pointer">Back</button>
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                     <button onClick={() => setStep(2)} className="flex-1 py-4 sm:py-7 border border-zinc-800 rounded-2xl sm:rounded-[32px] text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-zinc-500 hover:bg-zinc-800 transition-all cursor-pointer">Back</button>
                      <button 
                        onClick={() => handleSubmit()}
                        disabled={isSubmitting}
-                       className="flex-[2] py-7 bg-brand-purple text-black rounded-[32px] font-black uppercase tracking-[0.3em] text-[10px] hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 flex items-center justify-center gap-3 cursor-pointer"
+                       className="flex-[2] py-4 sm:py-7 bg-brand-purple text-black rounded-2xl sm:rounded-[32px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[10px] hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 flex items-center justify-center gap-3 cursor-pointer"
                      >
                        {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <>Broadcast for Approval <History size={16} /></>}
                      </button>
@@ -298,7 +332,7 @@ export default function WithdrawPage() {
         </div>
 
         <div className="lg:col-span-4 space-y-10">
-           <div className="p-12 rounded-[56px] bg-brand-black-light border border-zinc-800 shadow-2xl space-y-12">
+           <div className="p-6 sm:p-12 rounded-3xl sm:rounded-[56px] bg-brand-black-light border border-zinc-800 shadow-2xl space-y-8 sm:space-y-12">
               <div className="flex items-center gap-4 text-[10px] font-black text-brand-purple uppercase tracking-widest italic border-b border-zinc-800 pb-8">
                  <ShieldCheck size={18} /> Security Manifest
               </div>

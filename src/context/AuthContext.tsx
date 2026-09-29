@@ -218,11 +218,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch (err: any) {
-      console.warn('GraphQL login error:', err);
-      return { success: false, message: err.message || 'Login failed. Please check credentials.' };
+      console.error('[GraphQL Login Error]:', err);
+      return { success: false, message: err?.message || 'Login failed. Please check credentials or network connection.' };
     }
 
-    return { success: false, message: 'Invalid credentials' };
+    return { success: false, message: 'Invalid credentials or missing response from authentication node.' };
   };
 
   const signup = async (email: string, password: string, fullName?: string): Promise<{ success: boolean; message?: string }> => {
@@ -243,8 +243,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: true };
       }
     } catch (err: any) {
-      console.warn('GraphQL signup error:', err);
-      return { success: false, message: err.message || 'Signup failed. Please try again.' };
+      console.error('[GraphQL Signup Error]:', err);
+      return { success: false, message: err?.message || 'Signup failed. Please try again or check connection.' };
     }
 
     return { success: false, message: 'Registration could not be completed.' };
@@ -313,8 +313,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('apexbridge_user', JSON.stringify(mergedUser));
         return true;
       }
-    } catch (err) {
-      console.warn('Backend update profile failed:', err);
+    } catch (err: any) {
+      console.error('[Backend Update Profile Error]:', err);
+      throw err;
     }
 
     // Local state fallback

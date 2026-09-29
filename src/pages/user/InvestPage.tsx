@@ -8,7 +8,6 @@ import {
   ArrowUpRight, 
   CheckCircle2, 
   AlertTriangle, 
-  Loader2, 
   Clock, 
   Activity, 
   History as HistoryIcon, 
@@ -17,10 +16,7 @@ import {
   ShieldCheck,
   Check,
   RefreshCw,
-  Database,
-  Terminal,
-  Copy,
-  ExternalLink
+  Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn, formatCurrency } from '../../lib/utils';
@@ -31,10 +27,7 @@ import {
   apiSettleInvestment,
   DEFAULT_INVESTMENT_PLANS,
   GraphQLInvestmentPlan,
-  GraphQLUserInvestment,
-  GRAPHQL_ENDPOINT,
-  getStoredToken,
-  USER_INVESTMENTS_QUERY
+  GraphQLUserInvestment
 } from '../../lib/graphql';
 
 const planIcons: Record<string, any> = {
@@ -44,7 +37,7 @@ const planIcons: Record<string, any> = {
 };
 
 export default function InvestPage() {
-  const { user, refreshUser, updateBalance } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [plans, setPlans] = useState<GraphQLInvestmentPlan[]>([]);
   const [investments, setInvestments] = useState<GraphQLUserInvestment[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<GraphQLInvestmentPlan | null>(null);
@@ -55,21 +48,17 @@ export default function InvestPage() {
   const [showProgress, setShowProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [withdrawnAmount, setWithdrawnAmount] = useState<number | null>(null);
-  const [copiedPlaygroundHeader, setCopiedPlaygroundHeader] = useState(false);
-  const [showInspector, setShowInspector] = useState(false);
-  const [isInspecting, setIsInspecting] = useState(false);
-  const [inspectorResult, setInspectorResult] = useState<any>(null);
 
   const loadData = async () => {
     setIsFetching(true);
     try {
       const [fetchedPlans, fetchedInvestments] = await Promise.all([
         apiGetInvestmentPlans().catch((err) => {
-          console.warn('Error fetching investment plans:', err);
+          console.error('[Error fetching investment plans]:', err);
           return DEFAULT_INVESTMENT_PLANS;
         }),
         apiGetUserInvestments().catch((err) => {
-          console.warn('Error fetching user investments:', err);
+          console.error('[Error fetching user investments]:', err);
           return [];
         }),
       ]);
@@ -126,42 +115,6 @@ export default function InvestPage() {
     };
   }, []);
 
-  const runLiveInspector = async () => {
-    setIsInspecting(true);
-    setShowInspector(true);
-    try {
-      const token = getStoredToken();
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      const res = await fetch(GRAPHQL_ENDPOINT, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          query: USER_INVESTMENTS_QUERY,
-        }),
-      });
-      const json = await res.json();
-      setInspectorResult({
-        timestamp: new Date().toLocaleTimeString(),
-        endpoint: GRAPHQL_ENDPOINT,
-        hasToken: !!token,
-        status: res.status,
-        data: json,
-      });
-    } catch (err: any) {
-      setInspectorResult({
-        timestamp: new Date().toLocaleTimeString(),
-        error: err.message || 'Fetch failed',
-      });
-    } finally {
-      setIsInspecting(false);
-    }
-  };
-
   const handleWithdrawInvestment = async (inv: GraphQLUserInvestment) => {
     setIsLoading(true);
     try {
@@ -174,9 +127,10 @@ export default function InvestPage() {
         }
       }
     } catch (err: any) {
-      console.error('Settlement error:', err);
-      // If settlement failed on server, calculate local display
+      console.error('[Settlement Error]:', err);
+      // If settlement failed on server, calculate local display but inform user
       setWithdrawnAmount(inv.projectedReturn || inv.amount);
+      setErrorMessage(err?.message || 'Settlement request encountered a backend communication error.');
     } finally {
       setIsLoading(false);
     }
@@ -222,10 +176,11 @@ export default function InvestPage() {
         }
         setIsSuccess(true);
       } else {
-        setErrorMessage('Failed to deploy capital into vault.');
+        setErrorMessage('Failed to deploy capital into vault: Backend returned an empty response.');
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Investment failed to create.');
+      console.error('[Investment Deployment Error]:', err);
+      setErrorMessage(err?.message || 'Investment failed to create. Backend server or network error.');
     } finally {
       setIsLoading(false);
     }
@@ -233,9 +188,75 @@ export default function InvestPage() {
 
   if (isFetching && plans.length === 0) {
     return (
-      <div className="py-32 text-center space-y-4">
-        <Loader2 className="w-10 h-10 text-brand-purple animate-spin mx-auto" />
-        <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">Querying GraphQL Investment Vaults...</p>
+      <div className="space-y-16 animate-pulse font-sans">
+        {/* Header Skeleton */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-zinc-800/50">
+          <div className="space-y-3">
+            <div className="h-3 w-36 rounded-full bg-zinc-800" />
+            <div className="h-10 w-72 md:w-96 rounded-2xl bg-zinc-800" />
+            <div className="h-4 w-60 rounded-lg bg-zinc-900" />
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-44 rounded-2xl bg-zinc-900 border border-zinc-800" />
+            <div className="h-12 w-32 rounded-2xl bg-zinc-900 border border-zinc-800" />
+          </div>
+        </div>
+
+        {/* Plans Grid Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[1, 2, 3].map((idx) => (
+            <div key={idx} className="bg-black border border-zinc-800/80 rounded-[40px] p-8 md:p-10 space-y-8 relative overflow-hidden">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800/80" />
+                <div className="h-6 w-20 rounded-full bg-zinc-900" />
+              </div>
+              <div className="space-y-3">
+                <div className="h-8 w-44 rounded-xl bg-zinc-800" />
+                <div className="h-3 w-full rounded bg-zinc-900" />
+                <div className="h-3 w-4/5 rounded bg-zinc-900" />
+              </div>
+              <div className="grid grid-cols-2 gap-4 py-6 border-y border-zinc-800/40">
+                <div className="space-y-2">
+                  <div className="h-2 w-16 rounded bg-zinc-900" />
+                  <div className="h-6 w-20 rounded bg-zinc-800" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-2 w-16 rounded bg-zinc-900" />
+                  <div className="h-6 w-20 rounded bg-zinc-800" />
+                </div>
+              </div>
+              <div className="h-14 w-full rounded-2xl bg-zinc-900" />
+            </div>
+          ))}
+        </div>
+
+        {/* Deployment Vault Skeleton */}
+        <div className="bg-brand-black-light border border-zinc-800 rounded-[40px] p-8 md:p-12 space-y-8">
+          <div className="flex justify-between items-center pb-6 border-b border-zinc-800/60">
+            <div className="h-7 w-48 rounded-xl bg-zinc-800" />
+            <div className="h-4 w-24 rounded bg-zinc-900" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="h-16 rounded-2xl bg-zinc-900" />
+            <div className="h-16 rounded-2xl bg-zinc-900" />
+            <div className="h-16 rounded-2xl bg-zinc-900" />
+          </div>
+          <div className="h-14 rounded-2xl bg-zinc-900" />
+        </div>
+
+        {/* History Skeleton */}
+        <div className="space-y-6 pt-4 border-t border-zinc-800/50">
+          <div className="h-8 w-60 rounded-xl bg-zinc-800" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-44 rounded-[32px] bg-black border border-zinc-800/60 p-6 space-y-4">
+                <div className="h-4 w-28 rounded bg-zinc-900" />
+                <div className="h-6 w-40 rounded bg-zinc-800" />
+                <div className="h-4 w-32 rounded bg-zinc-900 mt-6" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -447,45 +468,45 @@ export default function InvestPage() {
               key={plan.id}
               onClick={() => { setSelectedPlan(plan); setAmount(plan.minAmount.toString()); }}
               className={cn(
-                "text-left p-10 md:p-12 rounded-[48px] md:rounded-[56px] border transition-all duration-700 relative overflow-hidden group shadow-2xl flex flex-col justify-between h-full min-h-[450px] md:min-h-[500px] cursor-pointer",
+                "text-left p-6 sm:p-10 md:p-12 rounded-3xl sm:rounded-[48px] md:rounded-[56px] border transition-all duration-500 relative overflow-hidden group shadow-2xl flex flex-col justify-between h-full min-h-[420px] md:min-h-[500px] cursor-pointer",
                 isSelected 
                   ? "bg-black border-brand-purple/40 ring-1 ring-brand-purple/20" 
                   : "bg-transparent border-zinc-800/40 hover:bg-black/50 hover:border-zinc-700"
               )}
             >
               {isSelected && (
-                <div className="absolute top-8 right-10 md:right-12 flex items-center gap-2">
+                <div className="absolute top-6 right-6 sm:top-8 sm:right-10 md:right-12 flex items-center gap-2">
                    <div className="w-1.5 h-2.5 rounded-full bg-brand-purple animate-pulse" />
                    <span className="text-brand-purple font-black text-[9px] uppercase tracking-[0.3em]">Active Node</span>
                 </div>
               )}
               
               <div>
-                <div className={cn("inline-flex w-14 h-14 md:w-16 md:h-16 items-center justify-center rounded-[20px] md:rounded-[24px] mb-8 md:mb-12 shadow-inner group-hover:scale-110 transition-transform duration-500", 
+                <div className={cn("inline-flex w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 items-center justify-center rounded-xl sm:rounded-[20px] md:rounded-[24px] mb-6 sm:mb-8 md:mb-12 shadow-inner group-hover:scale-110 transition-transform duration-500", 
                   plan.id === 'institutional' ? "bg-brand-purple text-black shadow-[0_0_30px_rgba(75,47,168,0.3)]" : "bg-zinc-800 text-brand-purple border border-zinc-700")}>
-                  <IconComp size={24} className="md:size-7" />
+                  <IconComp size={22} className="md:size-7" />
                 </div>
-                <h3 className="text-2xl md:text-3xl font-black text-white mb-2 italic tracking-tighter uppercase">{plan.name}</h3>
-                <p className="text-[10px] text-zinc-600 uppercase tracking-[0.4em] font-black mb-6 md:mb-8 italic">{plan.durationDays} DAYS SETTLEMENT</p>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-2 italic tracking-tighter uppercase">{plan.name}</h3>
+                <p className="text-[10px] text-zinc-600 uppercase tracking-[0.4em] font-black mb-4 sm:mb-6 md:mb-8 italic">{plan.durationDays} DAYS SETTLEMENT</p>
                 
-                <div className="mb-8 md:mb-12">
-                  <span className="text-5xl md:text-6xl font-black text-white tabular-nums tracking-tighter font-mono">{plan.roi}</span>
+                <div className="mb-6 sm:mb-8 md:mb-12">
+                  <span className="text-4xl sm:text-5xl md:text-6xl font-black text-white tabular-nums tracking-tighter font-mono">{plan.roi}</span>
                   <span className="text-[10px] text-brand-purple font-black ml-3 uppercase tracking-widest">Yield Target</span>
                 </div>
 
-                <div className="space-y-4 mb-4">
+                <div className="space-y-3 sm:space-y-4 mb-4">
                   {['Institutional tier returns', `${plan.durationDays}-Day auto-compound cycle`, '24/7 Priority settlement'].map((f, i) => (
-                    <div key={i} className="flex items-center gap-3 text-xs md:text-sm text-zinc-400 font-medium">
-                      <div className="w-5 h-5 rounded-lg bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center text-brand-purple transition-transform group-hover:scale-110">
+                    <div key={i} className="flex items-center gap-2.5 sm:gap-3 text-xs sm:text-sm text-zinc-400 font-medium">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-md sm:rounded-lg bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center text-brand-purple transition-transform group-hover:scale-110 shrink-0">
                          <Check size={10} />
                       </div>
-                      {f}
+                      <span className="truncate">{f}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-8 border-t border-zinc-800/50 grid grid-cols-2 gap-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest italic">
+              <div className="pt-6 sm:pt-8 border-t border-zinc-800/50 grid grid-cols-2 gap-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest italic">
                 <div>
                    <p className="mb-1">Min Entry</p>
                    <p className="text-white font-mono text-sm tracking-tighter">${plan.minAmount}</p>
@@ -504,15 +525,15 @@ export default function InvestPage() {
       {selectedPlan && (
         <div className="max-w-4xl mx-auto relative group">
           <div className="absolute inset-0 bg-brand-purple/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-brand-purple/10 transition-all opacity-50" />
-          <form onSubmit={handleInvest} className="relative z-10 bg-brand-black border border-zinc-800 rounded-[48px] md:rounded-[56px] p-8 md:p-16 space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
-             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 pb-8 border-b border-zinc-800/50">
+          <form onSubmit={handleInvest} className="relative z-10 bg-brand-black border border-zinc-800 rounded-2xl sm:rounded-3xl md:rounded-[56px] p-5 sm:p-10 md:p-16 space-y-6 sm:space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
+             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6 pb-5 sm:pb-8 border-b border-zinc-800/50">
                 <div>
                    <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-1">Execution Mode</p>
-                   <h2 className="text-2xl md:text-3xl font-black text-brand-purple italic tracking-tighter uppercase">Vault #{selectedPlan.name.replace(/\s+/g, '')}</h2>
+                   <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-brand-purple italic tracking-tighter uppercase truncate">Vault #{selectedPlan.name.replace(/\s+/g, '')}</h2>
                 </div>
                 <div className="sm:text-right">
                    <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-1">Liquidity State</p>
-                   <p className="text-sm font-black text-white italic uppercase tracking-widest tabular-nums flex items-center gap-2 justify-end">
+                   <p className="text-xs sm:text-sm font-black text-white italic uppercase tracking-widest tabular-nums flex items-center gap-2 sm:justify-end">
                       <span className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" /> Ready to Transact
                    </p>
                 </div>
@@ -525,14 +546,14 @@ export default function InvestPage() {
                 </div>
              )}
 
-             <div className="space-y-8">
-                <div className="space-y-6">
-                   <div className="flex justify-between items-end text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 px-2 italic">
+             <div className="space-y-5 sm:space-y-8">
+                <div className="space-y-3 sm:space-y-6">
+                   <div className="flex justify-between items-end text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 px-1 sm:px-2 italic">
                       <label>Deployment Quantum</label>
                       <span className="text-zinc-600 hidden sm:inline">Wallet: {formatCurrency(user?.balance || 0)}</span>
                    </div>
                    <div className="relative group">
-                      <div className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 text-brand-purple text-3xl md:text-5xl font-black italic">$</div>
+                      <div className="absolute left-4 sm:left-10 top-1/2 -translate-y-1/2 text-brand-purple text-2xl sm:text-5xl font-black italic">$</div>
                       <input
                         type="number"
                         required
@@ -540,45 +561,45 @@ export default function InvestPage() {
                         max={currentMax}
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-[32px] py-10 md:py-14 pl-16 md:pl-28 pr-12 text-4xl md:text-7xl font-black text-white focus:outline-none focus:border-brand-purple/40 transition-all font-mono tracking-tighter shadow-inner placeholder:text-zinc-800"
+                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-2xl sm:rounded-[32px] py-4 sm:py-12 md:py-14 pl-10 sm:pl-22 md:pl-28 pr-4 sm:pr-12 text-2xl sm:text-5xl md:text-7xl font-black text-white focus:outline-none focus:border-brand-purple/40 transition-all font-mono tracking-tighter shadow-inner placeholder:text-zinc-800"
                         placeholder="0"
                       />
                    </div>
                 </div>
 
-                <div className="bg-zinc-900/80 border border-zinc-800 rounded-[32px] p-6 md:p-10 space-y-5 shadow-inner">
-                   <div className="flex justify-between items-center text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 px-2 italic font-mono">
-                      <span>Protocol Maintenance Fee ({feeRate * 100}%)</span>
+                <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl sm:rounded-[32px] p-4 sm:p-8 md:p-10 space-y-3 sm:space-y-5 shadow-inner">
+                   <div className="flex justify-between items-center text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-zinc-600 px-1 sm:px-2 italic font-mono">
+                      <span>Protocol Fee ({feeRate * 100}%)</span>
                       <span className="text-brand-purple/70">+{formatCurrency(fee)}</span>
                    </div>
                    <div className="h-[2px] bg-zinc-800/40 w-full" />
-                   <div className="flex justify-between items-center text-[11px] md:text-xs font-black uppercase tracking-[0.4em] text-white px-2">
+                   <div className="flex justify-between items-center text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-white px-1 sm:px-2">
                       <span className="italic tracking-tighter text-zinc-400">Total Deployment Charge</span>
-                      <span className="text-brand-purple text-xl font-mono tracking-tighter">{formatCurrency(totalCharge)}</span>
+                      <span className="text-brand-purple text-base sm:text-xl font-mono tracking-tighter">{formatCurrency(totalCharge)}</span>
                    </div>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                   <div className="p-8 bg-zinc-900 border border-zinc-800 rounded-[32px] flex items-center gap-6 group hover:border-brand-purple/20 transition-all cursor-default relative overflow-hidden shadow-xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
+                   <div className="p-4 sm:p-8 bg-zinc-900 border border-zinc-800 rounded-2xl sm:rounded-[32px] flex items-center gap-4 sm:gap-6 group hover:border-brand-purple/20 transition-all cursor-default relative overflow-hidden shadow-xl">
                       <div className="absolute inset-0 bg-brand-purple/0 group-hover:bg-brand-purple/[0.02] transition-all" />
-                      <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-brand-purple shadow-inner group-hover:rotate-6 transition-transform">
-                        <TrendingUp size={24} />
+                      <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-brand-purple shadow-inner group-hover:rotate-6 transition-transform shrink-0">
+                        <TrendingUp size={20} className="sm:size-6" />
                       </div>
-                      <div>
-                        <p className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-1">Estimated Return</p>
-                        <p className="text-2xl font-bold text-white font-mono tracking-tighter">
+                      <div className="min-w-0">
+                        <p className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-0.5">Estimated Return</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white font-mono tracking-tighter truncate">
                           {amount ? formatCurrency(Number(amount) * (1 + parseInt(selectedPlan.roi) / 100)) : '$0.00'}
                         </p>
                       </div>
                    </div>
-                   <div className="p-8 bg-zinc-900 border border-zinc-800 rounded-[32px] flex items-center gap-6 group hover:border-brand-purple/20 transition-all cursor-default relative overflow-hidden shadow-xl">
+                   <div className="p-4 sm:p-8 bg-zinc-900 border border-zinc-800 rounded-2xl sm:rounded-[32px] flex items-center gap-4 sm:gap-6 group hover:border-brand-purple/20 transition-all cursor-default relative overflow-hidden shadow-xl">
                       <div className="absolute inset-0 bg-brand-purple/0 group-hover:bg-brand-purple/[0.02] transition-all" />
-                      <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-brand-purple shadow-inner group-hover:rotate-6 transition-transform">
-                        <Clock size={24} />
+                      <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-brand-purple shadow-inner group-hover:rotate-6 transition-transform shrink-0">
+                        <Clock size={20} className="sm:size-6" />
                       </div>
-                      <div>
-                        <p className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-1">Release Cycle</p>
-                        <p className="text-2xl font-bold text-white font-mono tracking-tighter italic uppercase">{selectedPlan.durationDays} Days</p>
+                      <div className="min-w-0">
+                        <p className="text-[9px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-0.5">Release Cycle</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white font-mono tracking-tighter italic uppercase">{selectedPlan.durationDays} Days</p>
                       </div>
                    </div>
                 </div>
@@ -587,10 +608,10 @@ export default function InvestPage() {
              <button
                type="submit"
                disabled={isLoading || !amount || Number(amount) < currentMin}
-               className="w-full py-8 md:py-10 bg-brand-purple text-black rounded-[32px] md:rounded-[40px] font-black uppercase tracking-[0.3em] text-[10px] md:text-xs hover:bg-brand-purple-hover transition-all duration-300 disabled:opacity-30 disabled:grayscale shadow-[0_20px_50px_rgba(75,47,168,0.2)] flex items-center justify-center gap-4 group active:scale-[0.98] cursor-pointer"
+               className="w-full py-5 sm:py-8 md:py-10 bg-brand-purple text-black rounded-2xl sm:rounded-[32px] md:rounded-[40px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[10px] md:text-xs hover:bg-brand-purple-hover transition-all duration-300 disabled:opacity-30 disabled:grayscale shadow-[0_20px_50px_rgba(75,47,168,0.2)] flex items-center justify-center gap-3 sm:gap-4 group active:scale-[0.98] cursor-pointer"
              >
                {isLoading ? (
-                 <Loader2 className="animate-spin" size={20} />
+                 <Loader2 className="animate-spin" size={18} />
                ) : (
                  <>
                    Commence Capital Deployment{' '}
@@ -612,18 +633,11 @@ export default function InvestPage() {
       {/* Investment History Hub */}
       <div className="space-y-12 font-sans">
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-800/50 pb-8">
-            <div>
+             <div>
                <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase">Deployed <span className="text-zinc-600">History.</span></h2>
                <p className="text-zinc-500 text-xs font-medium mt-1 font-mono tracking-widest uppercase italic">Archives of all previous capital deployment strings synchronized with GraphQL backend.</p>
             </div>
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={runLiveInspector}
-                className="px-6 py-4 bg-zinc-900 border border-zinc-800 hover:border-brand-purple/40 text-zinc-300 font-black uppercase tracking-widest text-[9px] rounded-full hover:bg-zinc-800 transition-all flex items-center gap-2.5 shadow-xl cursor-pointer"
-              >
-                 <Terminal size={14} className="text-brand-purple" />
-                 {isInspecting ? 'Querying Backend...' : 'Verify Live Backend API'}
-              </button>
+            <div>
               <button 
                 onClick={() => setShowProgress(true)}
                 className="px-8 py-4 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase tracking-widest text-[9px] rounded-full hover:bg-zinc-800 transition-all flex items-center gap-3 shadow-xl cursor-pointer"
@@ -632,62 +646,6 @@ export default function InvestPage() {
               </button>
             </div>
          </div>
-
-         {/* Backend Verification & GraphQL Playground Inspector Panel */}
-         <AnimatePresence>
-           {showInspector && (
-             <motion.div
-               initial={{ opacity: 0, height: 0 }}
-               animate={{ opacity: 1, height: 'auto' }}
-               exit={{ opacity: 0, height: 0 }}
-               className="bg-brand-black border border-brand-purple/30 rounded-[32px] p-6 md:p-8 space-y-6 overflow-hidden shadow-2xl relative"
-             >
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-800/60 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-brand-purple/10 flex items-center justify-center text-brand-purple">
-                      <Database size={16} />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-black text-white uppercase tracking-wider">Live Render GraphQL Backend Inspector</h4>
-                      <p className="text-[10px] text-zinc-500 font-mono">{GRAPHQL_ENDPOINT}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => {
-                        const token = getStoredToken();
-                        if (token) {
-                          navigator.clipboard.writeText(JSON.stringify({ Authorization: `Bearer ${token}` }, null, 2));
-                          setCopiedPlaygroundHeader(true);
-                          setTimeout(() => setCopiedPlaygroundHeader(false), 2500);
-                        }
-                      }}
-                      className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl text-[9px] font-black uppercase tracking-wider text-zinc-300 transition-all flex items-center gap-2 cursor-pointer"
-                    >
-                      {copiedPlaygroundHeader ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} className="text-brand-purple" />}
-                      {copiedPlaygroundHeader ? 'Copied Header JSON!' : 'Copy Playground Header'}
-                    </button>
-                    <button
-                      onClick={() => setShowInspector(false)}
-                      className="text-[10px] font-black uppercase text-zinc-600 hover:text-white px-3 py-1 cursor-pointer"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
-                    <span>Active Backend Query: <strong className="text-brand-purple">userInvestments</strong></span>
-                    {inspectorResult?.timestamp && <span>Checked: {inspectorResult.timestamp}</span>}
-                  </div>
-                  <pre className="p-4 bg-zinc-950 border border-zinc-900 rounded-2xl text-[10px] font-mono text-emerald-400/90 overflow-x-auto max-h-56 select-all">
-                    {isInspecting ? 'Querying Render backend...' : JSON.stringify(inspectorResult || { status: 'Click "Verify Live Backend API" to run live inspection' }, null, 2)}
-                  </pre>
-                </div>
-             </motion.div>
-           )}
-         </AnimatePresence>
 
          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {investments.map((inv) => (
