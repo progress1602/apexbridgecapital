@@ -196,9 +196,9 @@ export default function DepositPage() {
           <div className="absolute inset-0 bg-brand-purple/20 blur-2xl rounded-full" />
           <CheckCircle2 size={56} className="relative z-10" />
         </div>
-        <h1 className="text-4xl font-black uppercase text-white mb-6">Protocol Notified.</h1>
+        <h1 className="text-4xl font-black uppercase text-white mb-6">Deposit Submitted!</h1>
         <p className="text-zinc-500 mb-12 px-10 leading-relaxed font-medium text-lg">
-          Deposit request of <span className="text-white font-mono">{formatCurrency(Number(amount))}</span> has been broadcasted to the backend ledger. Balance will be stationed upon verification.
+          Your deposit of <span className="text-white font-mono">{formatCurrency(Number(amount))}</span> has been received and is being verified. Your wallet balance will update shortly.
         </p>
         <button 
           onClick={() => { 
@@ -211,7 +211,7 @@ export default function DepositPage() {
           }}
           className="px-12 py-5 bg-brand-purple text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-purple-hover transition-all shadow-2xl shadow-brand-purple/20 active:scale-95 cursor-pointer"
         >
-          Station New Liquidity
+          Make Another Deposit
         </button>
       </div>
     );
@@ -225,13 +225,13 @@ export default function DepositPage() {
         <div>
           <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
-             Liquidity Inbound
+             Add Funds
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white">
-            Station <span className="text-zinc-600">Capital.</span>
+            Deposit <span className="text-zinc-600">Money.</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium mt-2 leading-relaxed max-w-xl">
-             Funding your brokerage terminal via encrypted institutional channels. T+1 global settlement standard.
+             Add funds securely to your investor wallet using Bitcoin or Ethereum.
           </p>
         </div>
         <button
@@ -254,7 +254,7 @@ export default function DepositPage() {
               step === s ? "text-brand-purple bg-brand-purple/[0.03]" : "text-zinc-600"
             )}>
               {step === s && <div className="absolute bottom-0 left-0 w-full h-1 bg-brand-purple" />}
-              Channel 0{s}
+              Step 0{s}
             </div>
           ))}
         </div>
@@ -272,7 +272,7 @@ export default function DepositPage() {
                 className="px-4 py-2 bg-brand-purple text-black rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-brand-purple-hover transition-colors flex items-center gap-2 cursor-pointer shrink-0"
               >
                 <LogIn size={12} />
-                Authenticate Now
+                Log In Now
               </button>
             )}
           </div>
@@ -289,7 +289,7 @@ export default function DepositPage() {
                 className="space-y-6 sm:space-y-10"
               >
                 <div className="space-y-3 sm:space-y-6">
-                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">Select Settlement Layer</label>
+                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic">Choose Payment Method</label>
                   <div className="grid grid-cols-1 gap-2.5 sm:gap-4">
                     {methods.map((m) => {
                       const lowerId = (m.id || '').toLowerCase();
@@ -328,7 +328,7 @@ export default function DepositPage() {
 
                 <div className="space-y-3 sm:space-y-6">
                   <div className="flex justify-between items-end text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic font-mono">
-                    <label>Funding Quantum (USD)</label>
+                    <label>Deposit Amount (USD)</label>
                     <span className="text-brand-purple/60 flex items-center gap-1.5"><AlertCircle size={12} /> Min: ${currentMinDeposit}</span>
                   </div>
                   <div className="relative group">
@@ -351,7 +351,7 @@ export default function DepositPage() {
                   onClick={() => setStep(2)}
                   className="w-full py-4 sm:py-7 bg-brand-purple text-black rounded-2xl sm:rounded-[32px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-xs hover:bg-brand-purple-hover transition-all disabled:opacity-30 shadow-xl shadow-brand-purple/20 active:scale-[0.98] cursor-pointer"
                 >
-                  Confirm Strategy
+                  Continue to Payment
                 </button>
               </motion.div>
             )}
@@ -366,7 +366,7 @@ export default function DepositPage() {
               >
                 <div className="p-5 sm:p-12 rounded-2xl sm:rounded-[40px] bg-brand-purple/5 border border-brand-purple/10 text-center relative overflow-hidden group">
                    <div className="absolute inset-0 bg-brand-purple/[0.02] animate-pulse" />
-                   <p className="text-[10px] text-brand-purple/60 font-black uppercase tracking-[0.4em] mb-2 sm:mb-3 italic">Settlement Required</p>
+                   <p className="text-[10px] text-brand-purple/60 font-black uppercase tracking-[0.4em] mb-2 sm:mb-3 italic">Amount to Deposit</p>
                    <p className="text-2xl sm:text-6xl md:text-7xl font-black text-white font-mono tracking-tighter mb-3 sm:mb-4 break-words">{formatCurrency(Number(amount))}</p>
                    <div className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-black/40 backdrop-blur-md rounded-full border border-white/5">
                       <span className="text-[9px] text-zinc-400 font-black tracking-widest uppercase italic">{method.name} ({method.network})</span>
@@ -374,7 +374,7 @@ export default function DepositPage() {
                 </div>
 
                 <div className="space-y-3 sm:space-y-6">
-                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2">Protocol Destination Address</label>
+                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2">Deposit Wallet Address</label>
                   <div className="p-4 sm:p-6 bg-zinc-900 border border-zinc-800 rounded-2xl sm:rounded-3xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-3.5">
                     <span className="font-mono text-xs sm:text-sm break-all text-brand-purple-hover select-all leading-relaxed">
                       {method.address}
@@ -387,11 +387,11 @@ export default function DepositPage() {
                         copied ? "bg-white text-black" : "bg-brand-purple text-black hover:bg-brand-purple-hover"
                       )}
                     >
-                      {copied ? 'Captured' : 'Copy Hub'}
+                      {copied ? 'Copied!' : 'Copy Address'}
                     </button>
                   </div>
                   <p className="text-[9px] text-zinc-600 font-bold tracking-widest uppercase text-center italic">
-                    Requires {method.confirmationsRequired} network confirmations. Deploy only via {method.network}.
+                    Requires {method.confirmationsRequired} network confirmations. Please send only via the {method.network} network.
                   </p>
                 </div>
 
@@ -401,14 +401,14 @@ export default function DepositPage() {
                      onClick={() => setStep(1)} 
                      className="flex-1 py-4 sm:py-6 border border-zinc-800 rounded-2xl sm:rounded-[24px] text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:bg-zinc-800 transition-colors cursor-pointer"
                    >
-                     Abort
+                     Cancel
                    </button>
                    <button 
                      type="button"
                      onClick={() => setStep(3)} 
                      className="flex-[2] py-4 sm:py-6 bg-brand-purple text-black rounded-2xl sm:rounded-[24px] font-black uppercase tracking-[0.2em] text-[10px] hover:bg-brand-purple-hover shadow-xl shadow-brand-purple/20 active:scale-[0.98] transition-all cursor-pointer"
                    >
-                     Protocol Transmitted
+                     I Have Sent The Payment
                    </button>
                 </div>
               </motion.div>
@@ -434,10 +434,10 @@ export default function DepositPage() {
                    </div>
                    <div>
                       <h3 className="font-black text-xl sm:text-3xl text-white uppercase italic tracking-tighter">
-                        {isUploading ? 'Syncing...' : file ? 'Proof Locked.' : 'Audit Link.'}
+                        {isUploading ? 'Uploading...' : file ? 'Receipt Attached.' : 'Upload Proof of Payment'}
                       </h3>
                       <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mt-2">
-                        {file ? `File: ${file.name}` : 'Station receipt for block verification'}
+                        {file ? `File: ${file.name}` : 'Attach receipt or screenshot for fast verification'}
                       </p>
                    </div>
                 </div>
@@ -456,7 +456,7 @@ export default function DepositPage() {
                   />
                   <label htmlFor="proof-upload" className="cursor-pointer space-y-3 sm:space-y-4 relative z-10 block">
                     <p className="text-xs sm:text-sm font-black text-white uppercase tracking-widest group-hover:text-brand-purple transition-colors italic">
-                      {file ? 'Re-attach Proof Receipt?' : 'Attach Ledger Proof / Receipt'}
+                      {file ? 'Replace Uploaded Receipt' : 'Attach Payment Screenshot / Receipt'}
                     </p>
                     <p className="text-[9px] text-zinc-700 font-black tracking-[0.2em] uppercase leading-relaxed">PNG, JPG, or PDF (Max: 10MB)</p>
                   </label>
@@ -464,7 +464,7 @@ export default function DepositPage() {
 
                 <div className="space-y-2.5 sm:space-y-3 text-left">
                   <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] italic pl-2">
-                    Transaction Hash / TXID (Optional)
+                    Transaction ID / TXID (Optional)
                   </label>
                   <input
                     type="text"
@@ -491,9 +491,9 @@ export default function DepositPage() {
                      {isSubmitting ? (
                        <Loader2 className="animate-spin" size={18} />
                      ) : file ? (
-                       'Transmit With Proof Receipt'
+                       'Submit Deposit with Receipt'
                      ) : (
-                       'Transmit Deposit Request'
+                       'Submit Deposit Request'
                      )}
                    </button>
                 </div>

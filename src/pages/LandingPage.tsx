@@ -28,9 +28,9 @@ import { cn } from '../lib/utils';
 import { useState, useEffect } from 'react';
 
 const stats = [
-  { label: 'Platform Liquidity', value: '$8.4B+' },
-  { label: 'Institutional Clients', value: '1,200+' },
-  { label: 'Average APY', value: '14.2%' },
+  { label: 'Total Assets Managed', value: '$8.4B+' },
+  { label: 'Active Investors', value: '1,200+' },
+  { label: 'Average Return', value: '14.2%' },
 ];
 
 const partners = [
@@ -40,58 +40,58 @@ const partners = [
 const testimonials = [
   {
     name: "Marcus Schmidt",
-    role: "Portfolio Manager",
+    role: "Private Investor",
     location: "Munich, Germany",
-    content: "The tier-one liquidity provided by ApexBridge Capital has revolutionized our regional capital deployment strategy. Exceptional transparency.",
+    content: "ApexBridge Capital has made investing simple and stress-free. Daily returns arrive on schedule and withdrawals are completely seamless.",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2570&auto=format&fit=crop"
   },
   {
     name: "Yuki Tanaka",
-    role: "CEO, NexGen Trade",
+    role: "Business Owner",
     location: "Tokyo, Japan",
-    content: "Sub-10ms execution at scale is no longer a corporate myth. ApexBridge delivers the precision terminal we needed for global arbitrage.",
+    content: "The user experience is crystal clear. Depositing crypto and choosing an investment plan took less than three minutes.",
     image: "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=2670&auto=format&fit=crop"
   },
   {
     name: "Elena Rossi",
-    role: "Hedge Fund Analyst",
+    role: "Financial Consultant",
     location: "Milan, Italy",
-    content: "Their mathematical isolation protocols are industry-leading. For the first time, institutional stakings feel truly sovereign.",
+    content: "I recommend ApexBridge to all my clients looking for consistent returns. The security and transparency give complete peace of mind.",
     image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2670&auto=format&fit=crop"
   },
   {
     name: "Lucas Ferreira",
-    role: "Fintech Lead",
+    role: "Tech Entrepreneur",
     location: "São Paulo, Brazil",
-    content: "Instant P2P asset settlement across 140 countries is a game-changer for our liquidity pools. The UI is a masterclass in fintech design.",
+    content: "Fast payouts across multiple countries make this the most reliable platform I have ever used. Everything works smoothly.",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=2570&auto=format&fit=crop"
   },
   {
     name: "Sarah O'Connor",
-    role: "Wealth Advisor",
+    role: "Independent Investor",
     location: "Dublin, Ireland",
-    content: "The Alpha Bolt technology ensures our client yields are always optimized. It's the only platform we trust with high-net-worth accounts.",
+    content: "Their customer support is helpful and always responsive. The returns are credited straight to my wallet every day.",
     image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=2670&auto=format&fit=crop"
   },
   {
     name: "Ahmed Al-Sayed",
-    role: "Private Equity Associate",
+    role: "Real Estate Investor",
     location: "Dubai, UAE",
-    content: "Accessing deep liquidity pools was previously restricted to massive conglomerates. ApexBridge democratized this access for our firm.",
+    content: "Accessing top-tier investment opportunities was never this easy. The dashboard is clean, fast, and very easy to navigate.",
     image: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=2670&auto=format&fit=crop"
   },
   {
     name: "Svetlana Petrov",
-    role: "Quant Researcher",
+    role: "Portfolio Analyst",
     location: "Zurich, Switzerland",
-    content: "Mathematical precision meets intuitive design. The intelligence matrix offers real-time alpha metrics that are consistently accurate.",
+    content: "Clear metrics, honest fees, and reliable profit payouts. It is refreshing to use a platform that puts the investor first.",
     image: "https://images.unsplash.com/photo-1598550874175-4d0fe4a7c7ea?q=80&w=2670&auto=format&fit=crop"
   },
   {
     name: "David Chen",
-    role: "Asset Allocator",
+    role: "Individual Investor",
     location: "Singapore",
-    content: "The bridge between traditional finance and sovereign wealth protocols has finally been built. ApexBridge is the future of capital.",
+    content: "ApexBridge makes modern investing accessible to everyone. The automated compounding and clear plans are outstanding.",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=2570&auto=format&fit=crop"
   }
 ];
@@ -119,21 +119,21 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-900/50 bg-black/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-24 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 md:gap-3 group relative z-50">
-            <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(147,51,234,0.3)] group-hover:scale-110 transition-transform duration-500 shrink-0">
-               <TrendingUp size={20} className="text-white md:size-6" />
+            <div className="w-8 h-8 md:w-12 md:h-12 bg-brand-purple rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(72,202,228,0.3)] group-hover:scale-110 transition-transform duration-500 shrink-0">
+               <TrendingUp size={20} className="text-black md:size-6" />
             </div>
             <span className="text-sm md:text-2xl font-black tracking-tight text-white uppercase truncate">
-              ApexBridge<span className="text-purple-500">Capital</span>
+              ApexBridge<span className="text-brand-purple">Capital</span>
             </span>
           </Link>
           
           <div className="hidden lg:flex items-center gap-8 text-[11px] font-extrabold uppercase tracking-[0.2em]">
-            <span className="relative text-purple-400 cursor-pointer">
+            <span className="relative text-brand-purple cursor-pointer">
               Home
-              <span className="absolute left-1/2 -bottom-[6px] -translate-x-1/2 w-4 h-[3px] bg-purple-500 rounded-full" />
+              <span className="absolute left-1/2 -bottom-[6px] -translate-x-1/2 w-4 h-[3px] bg-brand-purple rounded-full" />
             </span>
-            <a href="#protocol" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Markets</a>
-            <a href="#protocol" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Alpha Plans</a>
+            <a href="#features" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Markets</a>
+            <a href="#features" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Investment Plans</a>
             <a href="#infrastructure" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">About Us</a>
             <a href="#yield" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Resources</a>
             <a href="#partners" className="text-zinc-400 hover:text-white transition-colors cursor-pointer">Contact</a>
@@ -141,11 +141,11 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-4">
             <div className="hidden lg:flex items-center gap-4">
-              <Link to="/login" className="px-6 py-3 border border-zinc-800 hover:border-purple-500 hover:text-purple-400 text-white text-[11px] font-black uppercase rounded-lg transition-all tracking-widest text-center">
-                Login
+              <Link to="/login" className="px-6 py-3 border border-zinc-800 hover:border-brand-purple hover:text-brand-purple text-white text-[11px] font-black uppercase rounded-lg transition-all tracking-widest text-center">
+                Log In
               </Link>
-              <Link to="/signup" className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-black uppercase rounded-lg transition-all duration-200 shadow-lg tracking-widest text-center">
-                Deploy Capital
+              <Link to="/signup" className="px-6 py-3 bg-brand-purple hover:bg-brand-purple-hover text-black text-[11px] font-black uppercase rounded-lg transition-all duration-200 shadow-lg tracking-widest text-center">
+                Get Started
               </Link>
             </div>
 
@@ -172,11 +172,11 @@ export default function LandingPage() {
               className="lg:hidden fixed top-16 left-0 right-0 z-40 bg-brand-black/98 backdrop-blur-2xl border-b border-zinc-800 flex flex-col justify-between overflow-y-auto px-6 py-8"
             >
               <div className="flex flex-col gap-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">Protocol Navigation</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">Menu Navigation</p>
                 {[
                   { name: 'Home', href: '/' },
-                  { name: 'Markets', href: '#protocol' },
-                  { name: 'Alpha Plans', href: '#protocol' },
+                  { name: 'Markets', href: '#features' },
+                  { name: 'Investment Plans', href: '#features' },
                   { name: 'About Us', href: '#infrastructure' },
                   { name: 'Resources', href: '#yield' },
                   { name: 'Contact', href: '#partners' }
@@ -188,7 +188,7 @@ export default function LandingPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.05 * idx, duration: 0.2 }}
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-lg sm:text-xl font-black text-white hover:text-purple-400 uppercase tracking-tight py-2.5 px-3 rounded-xl hover:bg-zinc-900/60 transition-all flex items-center justify-between border-b border-zinc-900/50"
+                    className="text-lg sm:text-xl font-black text-white hover:text-brand-purple uppercase tracking-tight py-2.5 px-3 rounded-xl hover:bg-zinc-900/60 transition-all flex items-center justify-between border-b border-zinc-900/50"
                   >
                     <span>{item.name}</span>
                     <ArrowUpRight size={16} className="text-zinc-600" />
@@ -202,14 +202,14 @@ export default function LandingPage() {
                   onClick={() => setIsMenuOpen(false)}
                   className="block w-full py-3.5 text-center text-zinc-300 text-xs font-black uppercase tracking-wider border border-zinc-800 rounded-xl hover:bg-zinc-900 transition-colors"
                 >
-                  Login
+                  Log In
                 </Link>
                 <Link 
                   to="/signup" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block w-full py-3.5 bg-purple-600 text-white text-center text-xs font-black uppercase tracking-wider rounded-xl shadow-lg shadow-purple-600/20 hover:bg-purple-500 transition-colors"
+                  className="block w-full py-3.5 bg-brand-purple text-black text-center text-xs font-black uppercase tracking-wider rounded-xl shadow-lg shadow-brand-purple/20 hover:bg-brand-purple-hover transition-colors"
                 >
-                  Deploy Capital
+                  Create Account
                 </Link>
               </div>
             </motion.div>
@@ -243,39 +243,39 @@ export default function LandingPage() {
                   className="space-y-7 sm:space-y-8"
                 >
                   {/* Badge */}
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-purple-500/20 rounded-full bg-black/40 backdrop-blur-sm">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-brand-purple/20 rounded-full bg-black/40 backdrop-blur-sm">
                     <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-purple opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-purple"></span>
                     </span>
-                    <span className="tracking-[0.25em] text-[10px] md:text-[11px] font-black uppercase text-purple-400">
-                      MARKET EXECUTION: ACTIVE
+                    <span className="tracking-[0.25em] text-[10px] md:text-[11px] font-black uppercase text-brand-purple">
+                      LIVE INVESTMENT PLATFORM
                     </span>
                   </div>
                   
                   {/* Heading */}
                   <h1 className="text-4xl sm:text-6xl md:text-[85px] leading-[0.95] md:leading-[0.9] font-black text-white uppercase tracking-tight text-left break-words">
-                    PRECISION <br />
-                    <span className="text-purple-500 font-black block mt-1">CAPITAL.</span>
+                    GROW YOUR <br />
+                    <span className="text-brand-purple font-black block mt-1">CAPITAL.</span>
                   </h1>
                   
                   {/* Paragraph Info */}
                   <p className="text-zinc-300 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed font-bold tracking-tight text-left">
-                    The sophisticated interface for deep liquidity management and diversified stakings. Join the private network of global allocators.
+                    A secure and powerful investment platform with transparent returns, instant deposits, and dedicated portfolio tracking.
                   </p>
 
                   {/* Buttons */}
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 pt-2">
-                    <Link to="/signup" className="flex items-center justify-center gap-2 px-9 py-4 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase text-[11px] tracking-widest rounded-lg transition-all duration-200 shadow-lg hover:shadow-purple-500/10 active:scale-95 shrink-0">
-                      DEPLOY CAPITAL NOW <ArrowRight size={14} />
+                    <Link to="/signup" className="flex items-center justify-center gap-2 px-9 py-4 bg-brand-purple hover:bg-brand-purple-hover text-black font-black uppercase text-[11px] tracking-widest rounded-lg transition-all duration-200 shadow-lg hover:shadow-brand-purple/10 active:scale-95 shrink-0">
+                      START INVESTING <ArrowRight size={14} />
                     </Link>
-                    <a href="#protocol" className="flex items-center justify-center gap-2 px-9 py-4 bg-transparent border border-purple-600 hover:bg-purple-600/10 text-white font-black uppercase text-[11px] tracking-widest rounded-lg transition-all duration-200 active:scale-95 shrink-0">
-                      VIEW ALPHA PLANS
+                    <a href="#features" className="flex items-center justify-center gap-2 px-9 py-4 bg-transparent border border-brand-purple hover:bg-brand-purple/10 text-white font-black uppercase text-[11px] tracking-widest rounded-lg transition-all duration-200 active:scale-95 shrink-0">
+                      EXPLORE PLANS
                     </a>
                   </div>
 
-                  {/* Mobile-only Optimized Woman Image Block (fully visible, styled with a purple rim, never overlapping text) */}
-                  <div className="md:hidden w-full relative rounded-2xl overflow-hidden border border-purple-500/20 shadow-2xl mt-6 bg-zinc-950">
+                  {/* Mobile-only Optimized Woman Image Block */}
+                  <div className="md:hidden w-full relative rounded-2xl overflow-hidden border border-brand-purple/20 shadow-2xl mt-6 bg-zinc-950">
                     <div className="aspect-[1.4] sm:aspect-[1.8] w-full">
                       <img 
                         src="https://res.cloudinary.com/progresshenry/image/upload/v1781474630/background_iuvp53.jpg" 
@@ -292,34 +292,34 @@ export default function LandingPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pt-5 border-t border-zinc-900/40">
                     <div className="flex -space-x-3.5">
                       {[
-                        { initials: 'MS', bg: 'from-purple-900/50 to-zinc-900' },
+                        { initials: 'MS', bg: 'from-brand-purple/30 to-zinc-900' },
                         { initials: 'YT', bg: 'from-zinc-800 to-zinc-900' },
-                        { initials: 'ER', bg: 'from-purple-950 to-zinc-900' },
+                        { initials: 'ER', bg: 'from-brand-purple/20 to-zinc-900' },
                         { initials: 'LF', bg: 'from-zinc-900 to-black' },
                       ].map((partner, idx) => (
                         <div 
                           key={idx} 
-                          className={`w-11 h-11 rounded-full border-2 border-zinc-950 overflow-hidden bg-gradient-to-br ${partner.bg} shadow-md flex items-center justify-center text-[11px] font-black text-purple-300 font-mono`}
+                          className={`w-11 h-11 rounded-full border-2 border-zinc-950 overflow-hidden bg-gradient-to-br ${partner.bg} shadow-md flex items-center justify-center text-[11px] font-black text-brand-purple font-mono`}
                         >
                           {partner.initials}
                         </div>
                       ))}
                     </div>
                     <div className="space-y-0.5">
-                      <p className="text-[10px] sm:text-[11px] text-purple-400 font-black uppercase tracking-[0.2em]">TRUSTED BY 12,400+</p>
-                      <p className="text-[9px] text-zinc-500 font-extrabold uppercase tracking-wider">INSTITUTIONAL PARTNERS</p>
+                      <p className="text-[10px] sm:text-[11px] text-brand-purple font-black uppercase tracking-[0.2em]">TRUSTED BY 12,400+</p>
+                      <p className="text-[9px] text-zinc-500 font-extrabold uppercase tracking-wider">ACTIVE INVESTORS</p>
                     </div>
                   </div>
 
                   {/* Email contact strip */}
                   <div className="pt-2">
-                    <div className="w-full max-w-md border border-purple-500/20 bg-zinc-950/65 backdrop-blur-sm p-3.5 sm:p-4 px-4 sm:px-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs font-semibold">
+                    <div className="w-full max-w-md border border-brand-purple/20 bg-zinc-950/65 backdrop-blur-sm p-3.5 sm:p-4 px-4 sm:px-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs font-semibold">
                       <div className="flex items-center gap-3">
-                        <Mail size={16} className="text-purple-400 shrink-0" />
-                        <span className="text-purple-400 uppercase tracking-widest text-[10px] font-black">Email Us</span>
+                        <Mail size={16} className="text-brand-purple shrink-0" />
+                        <span className="text-brand-purple uppercase tracking-widest text-[10px] font-black">Email Us</span>
                       </div>
                       <div className="hidden sm:block w-px h-4 bg-zinc-800" />
-                      <a href="mailto:apexbridgecapital1@gmail.com" className="text-zinc-300 font-bold tracking-tight text-[11px] hover:text-purple-400 transition-colors break-all">
+                      <a href="mailto:apexbridgecapital1@gmail.com" className="text-zinc-300 font-bold tracking-tight text-[11px] hover:text-brand-purple transition-colors break-all">
                         apexbridgecapital1@gmail.com
                       </a>
                     </div>
@@ -340,8 +340,8 @@ export default function LandingPage() {
               
               {/* Enterprise Security */}
               <div className="flex items-center gap-4 group md:pr-6 md:border-r border-zinc-800/40 pb-6 md:pb-0 border-b md:border-b-0 border-zinc-900/60">
-                <div className="w-12 h-12 rounded-full border border-purple-500/80 bg-purple-500/5 flex items-center justify-center text-purple-400 shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.15)] transition-transform duration-300 group-hover:scale-105">
-                  <Lock size={18} className="text-purple-500" />
+                <div className="w-12 h-12 rounded-full border border-brand-purple/80 bg-brand-purple/5 flex items-center justify-center text-brand-purple shrink-0 shadow-[0_0_15px_rgba(72,202,228,0.15)] transition-transform duration-300 group-hover:scale-105">
+                  <Lock size={18} className="text-brand-purple" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-[11px] sm:text-xs font-black tracking-wider text-white uppercase">
@@ -353,47 +353,47 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Deep Liquidity Access */}
+              {/* Global Asset Access */}
               <div className="flex items-center gap-4 group md:px-6 md:border-r border-zinc-800/40 pb-6 md:pb-0 border-b md:border-b-0 border-zinc-900/60">
-                <div className="w-12 h-12 rounded-full border border-purple-500/80 bg-purple-500/5 flex items-center justify-center text-purple-400 shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.15)] transition-transform duration-300 group-hover:scale-105">
-                  <TrendingUp size={18} className="text-purple-500" />
+                <div className="w-12 h-12 rounded-full border border-brand-purple/80 bg-brand-purple/5 flex items-center justify-center text-brand-purple shrink-0 shadow-[0_0_15px_rgba(72,202,228,0.15)] transition-transform duration-300 group-hover:scale-105">
+                  <TrendingUp size={18} className="text-brand-purple" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-[11px] sm:text-xs font-black tracking-wider text-white uppercase">
-                    DEEP LIQUIDITY ACCESS
+                    GLOBAL ASSET ACCESS
                   </h4>
                   <p className="text-[11px] text-zinc-400 font-normal leading-relaxed">
-                    Access global liquidity pools seamlessly.
+                    Access global high-yield investment markets easily.
                   </p>
                 </div>
               </div>
 
-              {/* Diversified Stakings */}
+              {/* Diversified Plans */}
               <div className="flex items-center gap-4 group md:px-6 md:border-r border-zinc-800/40 pb-6 md:pb-0 border-b md:border-b-0 border-zinc-900/60">
-                <div className="w-12 h-12 rounded-full border border-purple-500/80 bg-purple-500/5 flex items-center justify-center text-purple-400 shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.15)] transition-transform duration-300 group-hover:scale-105">
-                  <Globe size={18} className="text-purple-500" />
+                <div className="w-12 h-12 rounded-full border border-brand-purple/80 bg-brand-purple/5 flex items-center justify-center text-brand-purple shrink-0 shadow-[0_0_15px_rgba(72,202,228,0.15)] transition-transform duration-300 group-hover:scale-105">
+                  <Globe size={18} className="text-brand-purple" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-[11px] sm:text-xs font-black tracking-wider text-white uppercase">
-                    DIVERSIFIED STAKINGS
+                    DIVERSIFIED PLANS
                   </h4>
                   <p className="text-[11px] text-zinc-400 font-normal leading-relaxed">
-                    Maximize returns with strategic allocations.
+                    Maximize daily returns with smart investment plans.
                   </p>
                 </div>
               </div>
 
-              {/* Private Network Access */}
+              {/* Premier Investor Access */}
               <div className="flex items-center gap-4 group md:pl-6">
-                <div className="w-12 h-12 rounded-full border border-purple-500/80 bg-purple-500/5 flex items-center justify-center text-purple-400 shrink-0 shadow-[0_0_15px_rgba(147,51,234,0.15)] transition-transform duration-300 group-hover:scale-105">
-                  <Users size={18} className="text-purple-500" />
+                <div className="w-12 h-12 rounded-full border border-brand-purple/80 bg-brand-purple/5 flex items-center justify-center text-brand-purple shrink-0 shadow-[0_0_15px_rgba(72,202,228,0.15)] transition-transform duration-300 group-hover:scale-105">
+                  <Users size={18} className="text-brand-purple" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-[11px] sm:text-xs font-black tracking-wider text-white uppercase">
-                    PRIVATE NETWORK ACCESS
+                    PREMIER INVESTOR ACCESS
                   </h4>
                   <p className="text-[11px] text-zinc-400 font-normal leading-relaxed">
-                    Join a network of elite institutional allocators.
+                    Join thousands of successful investors worldwide.
                   </p>
                 </div>
               </div>
@@ -406,7 +406,7 @@ export default function LandingPage() {
         {/* Institutional Backing / Partners */}
         <section id="partners" className="py-20 border-y border-zinc-800/10 overflow-hidden bg-brand-black">
           <div className="max-w-7xl mx-auto px-4 md:px-6">
-            <p className="text-center text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-zinc-600 mb-8 md:mb-12">Settlement provided by institutional custodians</p>
+            <p className="text-center text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-zinc-600 mb-8 md:mb-12">Protected and supported by leading financial networks</p>
             <div className="flex flex-wrap justify-center items-center gap-x-10 md:gap-x-20 gap-y-8 md:gap-y-10 opacity-30 grayscale saturate-0 contrast-150">
                {partners.map((p, i) => (
                  <span key={i} className="text-xl md:text-3xl font-black text-white hover:text-brand-purple transition-all cursor-default uppercase">
@@ -430,13 +430,13 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Bento Grid: The Protocol Advantage */}
-        <section id="protocol" className="py-20 md:py-32 px-4 md:px-6 bg-brand-black">
+        {/* Bento Grid: Core Advantages */}
+        <section id="features" className="py-20 md:py-32 px-4 md:px-6 bg-brand-black">
           <div className="max-w-7xl mx-auto">
              <div className="text-center mb-12 md:mb-32 space-y-4 md:space-y-6">
                 <div className="w-12 md:w-16 h-1 bg-brand-purple mx-auto rounded-full" />
-                <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white uppercase leading-none">Protocol <span className="text-zinc-700">Core.</span></h2>
-                <p className="text-zinc-500 uppercase tracking-[0.3em] md:tracking-[0.4em] font-black text-[9px] md:text-[10px]">High Efficiency Capital Deployment</p>
+                <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white uppercase leading-none">Why Choose <span className="text-zinc-700">Us.</span></h2>
+                <p className="text-zinc-500 uppercase tracking-[0.3em] md:tracking-[0.4em] font-black text-[9px] md:text-[10px]">High Yield & Secure Asset Management</p>
              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-5 md:gap-10">
@@ -456,8 +456,8 @@ export default function LandingPage() {
                       <div className="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-900 rounded-2xl sm:rounded-3xl flex items-center justify-center text-brand-purple mb-8 sm:mb-10 border border-zinc-800 shadow-inner group-hover:rotate-12 transition-transform">
                          <ShieldCheck size={28} className="sm:size-8" />
                       </div>
-                      <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-white mb-6 sm:mb-8 uppercase leading-tight sm:leading-none break-words">Mathematical Isolation <br className="hidden sm:inline" /> <span className="text-zinc-600">of Capital.</span></h3>
-                      <p className="text-zinc-400 max-w-md text-base sm:text-lg md:text-xl leading-relaxed font-bold tracking-tight">Your assets are segregated from operational accounts using cryptographic multi-sig isolation. Minimal risk, absolute clarity.</p>
+                      <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-white mb-6 sm:mb-8 uppercase leading-tight sm:leading-none break-words">Complete Security <br className="hidden sm:inline" /> <span className="text-zinc-600">for Your Funds.</span></h3>
+                      <p className="text-zinc-400 max-w-md text-base sm:text-lg md:text-xl leading-relaxed font-bold tracking-tight">Your funds are protected with bank-grade security and isolated cold storage, backed by 24/7 automated monitoring.</p>
                    </div>
                    <div className="relative z-10 grid grid-cols-4 gap-4 sm:gap-6 pt-12 sm:pt-16 mt-12 sm:mt-16 border-t border-zinc-800/50">
                       {[1,2,3,4].map(i => (
@@ -467,7 +467,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Right Top */}
-                <div className="sm:col-span-1 md:col-span-6 lg:col-span-4 bg-brand-purple rounded-[28px] sm:rounded-[32px] md:rounded-[56px] p-6 sm:p-8 md:p-12 flex flex-col justify-between group overflow-hidden relative shadow-[0_20px_50px_rgba(75,47,168,0.15)] active:scale-95 transition-all min-h-[260px] sm:min-h-[300px]">
+                <div className="sm:col-span-1 md:col-span-6 lg:col-span-4 bg-brand-purple rounded-[28px] sm:rounded-[32px] md:rounded-[56px] p-6 sm:p-8 md:p-12 flex flex-col justify-between group overflow-hidden relative shadow-[0_20px_50px_rgba(72,202,228,0.25)] active:scale-95 transition-all min-h-[260px] sm:min-h-[300px]">
                    {/* Background Image */}
                    <div className="absolute inset-0 z-0 opacity-10 group-hover:opacity-20 transition-opacity duration-1000 mix-blend-overlay grayscale">
                       <img 
@@ -485,8 +485,8 @@ export default function LandingPage() {
                       <ArrowUpRight size={20} className="text-black/40 group-hover:text-black transition-colors md:size-6" />
                    </div>
                    <div className="relative z-10">
-                      <h3 className="text-2xl md:text-3xl font-black text-black mb-2 md:mb-3 uppercase">Alpha Bolt</h3>
-                      <p className="text-black/50 text-[9px] font-black uppercase tracking-[0.25em]">Sub-10ms Trade routing Engine</p>
+                      <h3 className="text-2xl md:text-3xl font-black text-black mb-2 md:mb-3 uppercase">Instant Execution</h3>
+                      <p className="text-black/50 text-[9px] font-black uppercase tracking-[0.25em]">Automated Returns & Fast Deposits</p>
                    </div>
                 </div>
                 {/* Bottom Center */}
@@ -507,8 +507,8 @@ export default function LandingPage() {
                       <div className="h-px flex-1 bg-zinc-800/50" />
                    </div>
                    <div className="relative z-10">
-                      <h3 className="text-xl md:text-2xl font-black text-white mb-3 md:mb-4 uppercase">Global Reserve</h3>
-                      <p className="text-zinc-400 text-sm md:text-base leading-relaxed font-bold tracking-tight">Liquidate into fiat or digital stores in over 140+ countries within one banking day. Complete sovereign control.</p>
+                      <h3 className="text-xl md:text-2xl font-black text-white mb-3 md:mb-4 uppercase">Worldwide Access</h3>
+                      <p className="text-zinc-400 text-sm md:text-base leading-relaxed font-bold tracking-tight">Withdraw directly to crypto or bank accounts across 140+ countries anytime with fast payouts.</p>
                    </div>
                 </div>
 
@@ -527,8 +527,8 @@ export default function LandingPage() {
                       <div className="flex gap-2 md:gap-3">
                          {[1,2,3,4,5].map(i => <div key={i} className="w-6 md:w-8 h-1.5 md:h-2 bg-brand-purple rounded-full" />)}
                       </div>
-                      <h3 className="text-2xl md:text-3xl font-black text-white uppercase">Intelligence Matrix</h3>
-                      <p className="text-zinc-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em]">Real-time Portfolio Alpha metrics</p>
+                      <h3 className="text-2xl md:text-3xl font-black text-white uppercase">Live Analytics</h3>
+                      <p className="text-zinc-500 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em]">Track your profits and balance in real-time</p>
                    </div>
                    <div className="w-32 h-32 md:w-40 md:h-40 bg-brand-purple/5 rounded-full border border-brand-purple/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-700 relative z-10 shrink-0">
                       <BarChart3 size={40} className="text-brand-purple/40 animate-pulse md:size-[48px]" />
@@ -555,13 +555,13 @@ export default function LandingPage() {
                           <div className="w-2.5 h-2.5 rounded-full bg-amber-500/20" />
                           <div className="w-2.5 h-2.5 rounded-full bg-brand-purple/20" />
                        </div>
-                       <div className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-zinc-600">Secure Client Access Proxy</div>
+                       <div className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-zinc-600">Secure Client Dashboard</div>
                     </div>
                     <div className="space-y-6 md:space-y-10" >
                        <div className="p-5 sm:p-6 md:p-8 bg-zinc-900/50 rounded-2xl md:rounded-3xl border border-zinc-800">
                           <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                              <div>
-                                <p className="text-[8px] font-black uppercase text-zinc-500 mb-1">Net Valuation</p>
+                                <p className="text-[8px] font-black uppercase text-zinc-500 mb-1">Total Balance</p>
                                 <p className="text-2xl sm:text-4xl md:text-5xl font-black text-white font-mono break-all">$1,240,402.10</p>
                              </div>
                              <div className="px-3 py-1 bg-brand-purple/20 rounded-lg text-brand-purple text-[10px] font-bold self-start sm:self-center">+14.2%</div>
@@ -573,14 +573,14 @@ export default function LandingPage() {
                        </div>
                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                           <div className="p-5 md:p-6 bg-zinc-900 rounded-2xl md:rounded-3xl border border-zinc-800 space-y-3">
-                             <p className="text-[8px] font-black uppercase text-zinc-500">Accrued Yield</p>
+                             <p className="text-[8px] font-black uppercase text-zinc-500">Total Profits</p>
                              <p className="text-lg md:text-xl font-bold text-white font-mono">$12,402.00</p>
                              <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
                                 <div className="w-3/4 h-full bg-brand-purple" />
                              </div>
                           </div>
                           <div className="p-5 md:p-6 bg-zinc-900 rounded-2xl md:rounded-3xl border border-zinc-800 space-y-3">
-                             <p className="text-[8px] font-black uppercase text-zinc-500">Active Node</p>
+                             <p className="text-[8px] font-black uppercase text-zinc-500">Active Plan</p>
                              <p className="text-lg md:text-xl font-bold text-brand-purple">Premium Flow</p>
                              <div className="flex gap-1">
                                 {[1,2,3,4,5].map(i => <div key={i} className="w-4 h-1 bg-brand-purple rounded-full" />)}
@@ -592,20 +592,20 @@ export default function LandingPage() {
               </div>
 
               <div className="order-1 lg:order-2 space-y-6 md:space-y-10">
-                 <span className="text-brand-purple text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] block">Unified Asset Management</span>
+                 <span className="text-brand-purple text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] block">Smart Portfolio Management</span>
                  <h2 className="text-4xl md:text-7xl font-black text-white leading-[0.95] md:leading-none uppercase">
-                    YOUR ASSETS, <br />
-                    <span className="text-zinc-600">DEMOCRATIZED.</span>
+                    INVESTING, <br />
+                    <span className="text-zinc-600">SIMPLIFIED.</span>
                   </h2>
                   <p className="text-zinc-400 text-base md:text-xl font-bold leading-relaxed max-w-xl font-sans tracking-tight">
-                    Experience a tier-one trading floor from your private mobile terminal. Deep analytics, instant stakings, and absolute transparency are standard features of the ApexBridge protocol.
+                    Access high-yield investment plans right from your phone or computer. Real-time earnings, quick withdrawals, and full transparency on every transaction.
                   </p>
                   <ul className="space-y-4 md:space-y-6">
                      {[
-                       'Automated Dividend Compounding',
-                       'Instant P2P Asset Settlement',
-                       'Military-Grade Encryption Protocol',
-                       'Dedicated Wealth Concierge'
+                       'Automated Daily Profit Crediting',
+                       'Instant Crypto & Bank Withdrawals',
+                       'Bank-Level Data Encryption',
+                       '24/7 Dedicated Investor Support'
                      ].map((item, i) => (
                         <li key={i} className="flex items-center gap-3 md:gap-4 text-zinc-300 font-black uppercase text-[9px] md:text-xs">
                            <div className="w-5 h-5 md:w-6 md:h-6 rounded-lg bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center text-brand-purple shrink-0">
@@ -617,7 +617,7 @@ export default function LandingPage() {
                   </ul>
                   <div className="pt-4 md:pt-6">
                     <Link to="/signup" className="inline-flex items-center gap-4 text-brand-purple font-black uppercase text-[10px] md:text-xs group">
-                       EXPLORE PORTAL INTERFACE <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform md:size-[18px]" />
+                       GET STARTED IN MINUTES <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform md:size-[18px]" />
                     </Link>
                   </div>
               </div>
@@ -629,13 +629,13 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto">
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 lg:gap-32 items-center">
                 <div className="space-y-10 md:space-y-12">
-                   <div className="inline-block px-4 py-2 bg-brand-purple/10 border border-brand-purple/20 rounded-full text-brand-purple text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em]">Hardware-Back Security</div>
-                   <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white uppercase mb-6 leading-tight">THE <span className="text-zinc-600">FORTRESS.</span></h2>
+                   <div className="inline-block px-4 py-2 bg-brand-purple/10 border border-brand-purple/20 rounded-full text-brand-purple text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em]">Bank-Grade Security</div>
+                   <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white uppercase mb-6 leading-tight">SAFETY & <span className="text-zinc-600">SECURITY.</span></h2>
                    <div className="space-y-8 md:space-y-10">
                       {[
-                         { title: 'Privacy Protocols', desc: 'Secure history without exposing sensitive data points.', icon: Lock },
-                         { title: 'Biometric Gateway', desc: 'Secure withdrawals with biometric verification.', icon: Fingerprint },
-                         { title: 'Cold-Vault Isolation', desc: 'Assets stored in physical vaults across 3 continents.', icon: Layers }
+                         { title: 'Data Privacy', desc: 'Your personal and financial records are fully encrypted and private.', icon: Lock },
+                         { title: 'Identity Protection', desc: 'Advanced identity verification keeps your funds safe at all times.', icon: Fingerprint },
+                         { title: 'Cold Storage Vaults', desc: 'User funds are stored offline in multi-region secure storage.', icon: Layers }
                       ].map((item, i) => (
                         <div key={i} className="flex gap-5 md:gap-8 group pt-6 border-t border-zinc-800/50">
                            <div className="w-12 h-12 md:w-14 md:h-14 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center text-zinc-600 group-hover:text-brand-purple group-hover:border-brand-purple/30 transition-all duration-300 shrink-0">
@@ -656,17 +656,17 @@ export default function LandingPage() {
                          <div className="w-2.5 h-2.5 rounded-full bg-brand-purple" />
                          <div className="w-2.5 h-2.5 rounded-full bg-brand-purple opacity-60" />
                          <div className="w-2.5 h-2.5 rounded-full bg-brand-purple opacity-20" />
-                         <span className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase ml-2 md:ml-4">System Shield: Fully Optimized</span>
+                         <span className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase ml-2 md:ml-4">Security Status: Active & Protected</span>
                       </div>
                       
                       <div className="space-y-10 md:space-y-12">
                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-zinc-800/50 pb-8 md:pb-10">
                             <div>
-                               <p className="text-[8px] text-zinc-500 font-black uppercase mb-1 md:mb-2">Protocol Hash</p>
+                               <p className="text-[8px] text-zinc-500 font-black uppercase mb-1 md:mb-2">Transaction ID</p>
                                <p className="text-[10px] font-mono text-zinc-400">0x7F8C4...B2D1</p>
                             </div>
                             <div className="sm:text-right">
-                               <p className="text-[8px] text-zinc-500 font-black uppercase mb-1 md:mb-2">Node Efficiency</p>
+                               <p className="text-[8px] text-zinc-500 font-black uppercase mb-1 md:mb-2">Platform Uptime</p>
                                <p className="text-xl md:text-2xl font-black text-brand-purple font-mono">99.8%</p>
                             </div>
                          </div>
@@ -683,8 +683,8 @@ export default function LandingPage() {
                             <Activity className="text-brand-purple/30 animate-pulse block" size={28} />
                             <div className="flex-1 w-full">
                                <div className="flex justify-between text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] text-zinc-600 mb-3 md:mb-4">
-                                  <span>Network Latency Shield</span>
-                                  <span>0.00ms Drop</span>
+                                  <span>Fast Transfer Speed</span>
+                                  <span>99.9% Reliable</span>
                                </div>
                                <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
                                   <motion.div 
@@ -705,8 +705,8 @@ export default function LandingPage() {
            <div className="absolute top-0 left-0 w-full h-px bg-zinc-800/50" />
            <div className="max-w-7xl mx-auto">
               <div className="text-center mb-12 md:mb-24">
-                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white uppercase mb-4 md:mb-6 leading-tight">PROTOCOL <span className="text-zinc-600">TESTIMONIALS.</span></h2>
-                 <p className="text-brand-purple text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.5em]">Verified Global Asset Allocators</p>
+                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white uppercase mb-4 md:mb-6 leading-tight">INVESTOR <span className="text-zinc-600">REVIEWS.</span></h2>
+                 <p className="text-brand-purple text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.5em]">Real Stories From Active Investors</p>
               </div>
 
               <div className="relative min-h-[620px] sm:min-h-[500px] flex items-center justify-center pb-12 sm:pb-0">
@@ -791,18 +791,18 @@ export default function LandingPage() {
                 className="space-y-8 md:space-y-12 relative z-10"
               >
                  <div className="inline-block px-6 py-3 md:px-10 md:py-4 bg-brand-purple/5 border border-brand-purple/10 rounded-full">
-                    <span className="text-brand-purple text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em]">Secure Your Legacy</span>
+                    <span className="text-brand-purple text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em]">Start Your Journey</span>
                  </div>
-                 <h2 className="text-3xl sm:text-6xl md:text-9xl font-black text-white leading-tight sm:leading-none uppercase break-words">THE PRIVATE <br className="hidden sm:block" /> <span className="text-zinc-700">POOL AWAITS.</span></h2>
-                 <p className="text-zinc-500 text-sm sm:text-base md:text-2xl max-w-2xl mx-auto font-bold leading-relaxed font-sans">Account verification is instant. Deploy capital to institutional registries in under 120 seconds.</p>
+                 <h2 className="text-3xl sm:text-6xl md:text-9xl font-black text-white leading-tight sm:leading-none uppercase break-words">READY TO <br className="hidden sm:block" /> <span className="text-zinc-700">GROW WEALTH?</span></h2>
+                 <p className="text-zinc-500 text-sm sm:text-base md:text-2xl max-w-2xl mx-auto font-bold leading-relaxed font-sans">Account creation takes under two minutes. Fund your wallet and choose your preferred investment plan today.</p>
                  <div className="flex flex-col xl:flex-row items-center justify-center gap-6 md:gap-8 pt-6 md:pt-10">
                     <Link to="/signup" className="group w-full xl:w-auto px-8 sm:px-10 py-4 sm:py-5 md:px-16 md:py-7 bg-white text-black rounded-2xl md:rounded-[32px] font-black uppercase text-[10px] md:text-[12px] flex items-center justify-center gap-4 md:gap-5 hover:bg-brand-purple-hover transition-all shadow-[0_20px_50px_rgba(255,255,255,0.05)] active:scale-95 shrink-0">
-                       Apply For Portal Access
+                       Create Free Account
                        <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-500" />
                     </Link>
                     <div className="flex flex-col items-center xl:items-start gap-2">
                        <div className="flex items-center gap-3 text-brand-purple text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">
-                          <Lock size={14} /> AES-256 Protocol Active
+                          <Lock size={14} /> 256-Bit SSL Encryption
                        </div>
                        <p className="text-zinc-600 text-[8px] md:text-[10px] font-bold uppercase">ISO-27001 Certified System</p>
                     </div>
@@ -823,7 +823,7 @@ export default function LandingPage() {
                        <span className="text-2xl sm:text-3xl font-black text-white uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
                     </Link>
                     <p className="text-zinc-500 text-sm sm:text-lg leading-relaxed max-w-md font-bold tracking-tight">
-                      The high-precision gateway for sovereign wealth, institutional stakings, and liquid managed asset protocols. Engineered for the next century of finance.
+                      The simple and secure platform for growing your wealth with automated daily returns. Engineered for modern investors.
                     </p>
                     <div className="flex gap-4 sm:gap-6 pt-2 sm:pt-4">
                        {[Globe, Github, Linkedin, Mail].map((Icon, idx) => (
@@ -836,9 +836,9 @@ export default function LandingPage() {
 
                  <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12 lg:gap-24">
                     {[
-                      { title: 'Institutional', links: ['Yield Modeling', 'Execution Routing', 'Alpha Discovery', 'Market Liquidity'] },
+                      { title: 'Investing', links: ['Investment Plans', 'Daily Returns', 'Security & Safety', 'Market Overview'] },
                       { title: 'Compliance', links: ['Privacy Charter', 'AML Framework', 'Regulatory Hub', 'Risk Advisory'] },
-                      { title: 'Global', links: ['Node Network', 'Custodian Map', 'System Status', 'Help Terminal'] }
+                      { title: 'Support', links: ['Getting Started', 'Knowledge Base', 'System Status', 'Help Center'] }
                     ].map((group, idx) => (
                       <div key={idx} className="space-y-8">
                          <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-brand-purple">{group.title}</h4>
@@ -858,13 +858,13 @@ export default function LandingPage() {
                  <div className="space-y-4">
                     <div className="text-[10px] text-zinc-700 font-mono tracking-[0.2em] uppercase leading-loose">
                        © 2024 APEXBRIDGE CAPITAL ASSET MANAGEMENT GLOBAL. ALL SYSTEMS OPERATIONAL. <br />
-                       FINANCIAL PROTOCOLS LICENSED BY GLOBAL CUSTODIAN ADVISORY.
+                       LICENSED AND REGULATED WEALTH MANAGEMENT SERVICES.
                     </div>
                  </div>
                  <div className="flex flex-wrap justify-center gap-10 items-center">
                     <div className="flex items-center gap-3 text-zinc-700">
                        <div className="w-2 h-2 bg-brand-purple/50 rounded-full animate-pulse" />
-                       <span className="text-[10px] font-black uppercase">Protocol Shield: V2.4-Active</span>
+                       <span className="text-[10px] font-black uppercase">Security Shield: Active</span>
                     </div>
                     <div className="h-6 w-px bg-zinc-900 hidden sm:block" />
                     <span className="text-[10px] text-zinc-800 font-mono tracking-[0.3em] font-black uppercase">ISO-9001 QUALIFIED</span>

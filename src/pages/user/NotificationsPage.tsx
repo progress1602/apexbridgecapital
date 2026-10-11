@@ -129,7 +129,7 @@ export default function NotificationsPage() {
             Intelligence <span className="text-zinc-600">Feed.</span>
           </h1>
           <p className="text-zinc-500 text-xs sm:text-sm font-medium mt-1 sm:mt-2 leading-relaxed max-w-xl">
-             Real-time critical data streams, security telemetry, and protocol update logs retrieved from GraphQL.
+             Real-time notifications about your deposits, investment earnings, and withdrawals.
           </p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
@@ -184,7 +184,7 @@ export default function NotificationsPage() {
            { id: 'all', label: 'All Intel' },
            { id: 'unread', label: 'Unread' },
            { id: 'read', label: 'Verified' },
-           { id: 'spam', label: 'Protocol Spam' }
+           { id: 'spam', label: 'Promotions' }
          ].map((f) => (
            <button
              key={f.id}
@@ -222,7 +222,7 @@ export default function NotificationsPage() {
         ) : filteredNotifs.length === 0 ? (
           <div className="bg-brand-black border border-zinc-800/80 rounded-3xl sm:rounded-[40px] p-10 sm:p-20 text-center space-y-4">
             <Bell className="w-10 h-10 sm:w-12 sm:h-12 text-zinc-700 mx-auto" />
-            <h3 className="text-base sm:text-lg font-black uppercase text-zinc-400">Ledger Clear</h3>
+            <h3 className="text-base sm:text-lg font-black uppercase text-zinc-400">No Notifications</h3>
             <p className="text-xs text-zinc-600 max-w-sm mx-auto font-medium">
               No notifications matching your filter criteria at this timestamp.
             </p>

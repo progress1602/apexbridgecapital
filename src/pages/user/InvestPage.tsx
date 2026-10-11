@@ -127,10 +127,10 @@ export default function InvestPage() {
         }
       }
     } catch (err: any) {
-      console.error('[Settlement Error]:', err);
-      // If settlement failed on server, calculate local display but inform user
+      console.error('[Investment Payout Error]:', err);
+      // If payout failed on server, calculate local display but inform user
       setWithdrawnAmount(inv.projectedReturn || inv.amount);
-      setErrorMessage(err?.message || 'Settlement request encountered a backend communication error.');
+      setErrorMessage(err?.message || 'Investment payout request could not be completed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -176,10 +176,10 @@ export default function InvestPage() {
         }
         setIsSuccess(true);
       } else {
-        setErrorMessage('Failed to deploy capital into vault: Backend returned an empty response.');
+        setErrorMessage('Failed to start investment: Backend returned an empty response.');
       }
     } catch (err: any) {
-      console.error('[Investment Deployment Error]:', err);
+      console.error('[Investment Start Error]:', err);
       setErrorMessage(err?.message || 'Investment failed to create. Backend server or network error.');
     } finally {
       setIsLoading(false);
@@ -266,11 +266,11 @@ export default function InvestPage() {
       <div className="space-y-12 animate-in fade-in duration-700 pb-32 font-sans">
         <div className="flex items-center justify-between">
            <button onClick={() => setShowProgress(false)} className="text-[10px] font-black uppercase text-zinc-500 hover:text-white transition-colors flex items-center gap-2 cursor-pointer">
-              <HistoryIcon size={14} /> Close Terminal
+              <HistoryIcon size={14} /> Back to Plans
            </button>
            <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-brand-purple animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand-purple">Live Syncing</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-purple">Active Growth</span>
            </div>
         </div>
 
@@ -287,28 +287,28 @@ export default function InvestPage() {
                      </div>
                      
                      <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Deployment Active</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Investment Active</p>
                         <h3 className="text-3xl md:text-4xl font-black text-white italic uppercase">{inv.planName}</h3>
                      </div>
 
                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div className="space-y-1">
-                           <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Entry</p>
+                           <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Invested</p>
                            <p className="text-xl font-bold text-white font-mono">{formatCurrency(inv.amount)}</p>
                         </div>
                         <div className="space-y-1">
-                           <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Target ROI</p>
+                           <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Target Return</p>
                            <p className="text-xl font-bold text-brand-purple font-mono tracking-tighter">{inv.roi}</p>
                         </div>
                         <div className="space-y-1 col-span-2 md:col-span-1">
-                           <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Commencement</p>
+                           <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Start Date</p>
                            <p className="text-sm font-bold text-zinc-400 font-mono tracking-tight">{inv.startDate ? new Date(inv.startDate).toLocaleDateString() : 'Active'}</p>
                         </div>
                      </div>
 
                      <div className="space-y-4 pt-10 border-t border-zinc-800/50">
                         <div className="flex justify-between items-end mb-2">
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Liquidity Growth Matrix</p>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Investment Completion</p>
                            <span className="text-brand-purple font-mono text-sm font-black">{progressVal}%</span>
                         </div>
                         <div className="h-4 w-full bg-brand-black rounded-full border border-zinc-800 p-1">
@@ -325,7 +325,7 @@ export default function InvestPage() {
 
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-10">
                         <div className="p-6 bg-zinc-900/50 border border-brand-purple/10 rounded-3xl space-y-1">
-                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Projected Return</p>
+                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Expected Total Return</p>
                            <p className="text-2xl font-black text-white font-mono tracking-tighter">
                              {formatCurrency(inv.projectedReturn || (inv.amount * (1 + parseFloat(inv.roi) / 100)))}
                            </p>
@@ -334,17 +334,17 @@ export default function InvestPage() {
                           className={cn(
                             "p-6 border rounded-3xl space-y-1 flex items-center justify-between transition-all duration-300",
                             progressVal >= 100 
-                              ? "bg-brand-purple hover:bg-brand-purple-hover text-black border-brand-purple/30 cursor-pointer shadow-[0_0_20px_rgba(147,51,234,0.4)] active:scale-[0.98]" 
+                              ? "bg-brand-purple hover:bg-brand-purple-hover text-black border-brand-purple/30 cursor-pointer shadow-[0_0_20px_rgba(72,202,228,0.4)] active:scale-[0.98]" 
                               : "bg-zinc-900/50 border-zinc-800/50 text-zinc-400"
                           )}
                           onClick={progressVal >= 100 ? () => handleWithdrawInvestment(inv) : undefined}
                         >
                            <div>
                               <p className={cn("text-[9px] font-black uppercase tracking-widest", progressVal >= 100 ? "text-black/70" : "text-zinc-600")}>
-                                {progressVal >= 100 ? "Settlement Ready" : "Settlement Cycle"}
+                                {progressVal >= 100 ? "Ready to Collect" : "Earning in Progress"}
                               </p>
                               <p className={cn("text-lg font-bold italic", progressVal >= 100 ? "text-black font-black" : "text-zinc-400")}>
-                                 {progressVal >= 100 ? "Withdraw Funds" : "In Staking Cycle"}
+                                 {progressVal >= 100 ? "Collect Profit" : "Active & Earning"}
                               </p>
                            </div>
                            {progressVal >= 100 ? (
@@ -363,7 +363,7 @@ export default function InvestPage() {
                    <div className="w-20 h-20 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-800 shadow-inner">
                       <Activity size={32} />
                    </div>
-                   <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em] italic underline decoration-zinc-800/50 underline-offset-8">No active growth matrix</p>
+                   <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em] italic underline decoration-zinc-800/50 underline-offset-8">No active investments found</p>
                 </div>
               )}
            </div>
@@ -371,14 +371,14 @@ export default function InvestPage() {
            <div className="lg:col-span-4 space-y-10">
               <div className="bg-zinc-900 border border-zinc-800 rounded-[48px] p-10 space-y-8">
                  <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-purple flex items-center gap-2 italic">
-                    <Target size={14} /> Growth Logistics
+                    <Target size={14} /> Investment Features
                  </h4>
                  <div className="space-y-6">
                     {[
-                      { l: 'Node Status', v: 'OPTIMAL', c: 'text-brand-purple' },
-                      { l: 'Sync Latency', v: '< 2ms', c: 'text-zinc-400' },
-                      { l: 'Protocol Stability', v: '99.98%', c: 'text-zinc-400' },
-                      { l: 'Network Hashrate', v: 'Distributed', c: 'text-zinc-400' }
+                      { l: 'Platform Status', v: 'ACTIVE & ONLINE', c: 'text-brand-purple' },
+                      { l: 'Payout Speed', v: 'Instant', c: 'text-zinc-400' },
+                      { l: 'System Uptime', v: '99.98%', c: 'text-zinc-400' },
+                      { l: 'Profit Frequency', v: 'Daily', c: 'text-zinc-400' }
                     ].map((st, i) => (
                       <div key={i} className="flex justify-between items-center border-b border-zinc-800/50 pb-4">
                          <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{st.l}</span>
@@ -391,9 +391,9 @@ export default function InvestPage() {
               <div className="bg-black border border-zinc-800 rounded-[48px] p-10 relative overflow-hidden group">
                  <div className="absolute inset-0 bg-brand-purple/10 translate-y-full group-hover:translate-y-0 transition-transform duration-700" />
                  <ShieldCheck size={40} className="text-zinc-800 mb-6 group-hover:scale-110 transition-transform" />
-                 <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.4em] italic">Protected Staking</p>
+                 <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.4em] italic">Fund Protection</p>
                  <p className="text-xs text-zinc-600 mt-4 italic font-medium leading-relaxed">
-                   All active capital deployments are collateralized via institutional reserve vaults for zero-drift security.
+                   All user deposits and returns are protected by segregated cold storage and comprehensive reserve security.
                  </p>
               </div>
            </div>
@@ -409,15 +409,15 @@ export default function InvestPage() {
           <div className="absolute inset-0 bg-brand-purple/20 blur-2xl rounded-full" />
           <CheckCircle2 size={56} className="relative z-10" />
         </div>
-        <h1 className="text-4xl font-black uppercase text-white mb-6 tracking-tighter italic">Capital Stationed.</h1>
-        <p className="text-zinc-500 mb-4 px-10 leading-relaxed font-medium text-lg">Your deployment into the <span className="text-brand-purple">{selectedPlan.name}</span> is now active.</p>
+        <h1 className="text-4xl font-black uppercase text-white mb-6 tracking-tighter italic">Investment Started!</h1>
+        <p className="text-zinc-500 mb-4 px-10 leading-relaxed font-medium text-lg">Your investment in the <span className="text-brand-purple">{selectedPlan.name}</span> is now active.</p>
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 mb-12 max-w-sm mx-auto">
            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2 font-mono">
-              <span>Principal</span>
+              <span>Investment Amount</span>
               <span className="text-white">{formatCurrency(Number(amount))}</span>
            </div>
            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-500 font-mono">
-              <span>Protocol Fee ({feeRate * 100}%)</span>
+              <span>Platform Fee ({feeRate * 100}%)</span>
               <span className="text-brand-purple">{formatCurrency(fee)}</span>
            </div>
         </div>
@@ -425,7 +425,7 @@ export default function InvestPage() {
           onClick={() => { setAmount(selectedPlan.minAmount.toString()); setIsSuccess(false); setShowProgress(true); }}
           className="px-12 py-5 bg-brand-purple text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-purple-hover transition-all shadow-2xl shadow-brand-purple/20 active:scale-95 cursor-pointer"
         >
-          Monitor Terminal
+          View Investment Progress
         </button>
       </div>
     );
@@ -437,13 +437,13 @@ export default function InvestPage() {
         <div>
           <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-4">
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
-             Strategic Yield Protocol
+             Investment Plans
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white italic">
-            Asset <span className="text-zinc-600 italic">Deployment.</span>
+            Grow Your <span className="text-zinc-600 italic">Money.</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium mt-2 leading-relaxed max-w-xl">
-             Allocating capital into high-efficiency vaults. Selected nodes are optimized for T+0 instant settlement.
+             Choose an investment plan that fits your financial goals. Your daily returns will be credited automatically.
           </p>
         </div>
         <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest text-zinc-500 italic">
@@ -454,7 +454,7 @@ export default function InvestPage() {
           >
             <RefreshCw size={14} className={isFetching ? 'animate-spin text-brand-purple' : ''} />
           </button>
-          Available Liquidity: <span className="text-white ml-2 tabular-nums">{formatCurrency(user?.balance || 0)}</span>
+          Available Balance: <span className="text-white ml-2 tabular-nums">{formatCurrency(user?.balance || 0)}</span>
         </div>
       </div>
 
@@ -477,25 +477,25 @@ export default function InvestPage() {
               {isSelected && (
                 <div className="absolute top-6 right-6 sm:top-8 sm:right-10 md:right-12 flex items-center gap-2">
                    <div className="w-1.5 h-2.5 rounded-full bg-brand-purple animate-pulse" />
-                   <span className="text-brand-purple font-black text-[9px] uppercase tracking-[0.3em]">Active Node</span>
+                   <span className="text-brand-purple font-black text-[9px] uppercase tracking-[0.3em]">Selected Plan</span>
                 </div>
               )}
               
               <div>
                 <div className={cn("inline-flex w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 items-center justify-center rounded-xl sm:rounded-[20px] md:rounded-[24px] mb-6 sm:mb-8 md:mb-12 shadow-inner group-hover:scale-110 transition-transform duration-500", 
-                  plan.id === 'institutional' ? "bg-brand-purple text-black shadow-[0_0_30px_rgba(75,47,168,0.3)]" : "bg-zinc-800 text-brand-purple border border-zinc-700")}>
+                  plan.id === 'institutional' ? "bg-brand-purple text-black shadow-[0_0_30px_rgba(72,202,228,0.3)]" : "bg-zinc-800 text-brand-purple border border-zinc-700")}>
                   <IconComp size={22} className="md:size-7" />
                 </div>
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-2 italic tracking-tighter uppercase">{plan.name}</h3>
-                <p className="text-[10px] text-zinc-600 uppercase tracking-[0.4em] font-black mb-4 sm:mb-6 md:mb-8 italic">{plan.durationDays} DAYS SETTLEMENT</p>
+                <p className="text-[10px] text-zinc-600 uppercase tracking-[0.4em] font-black mb-4 sm:mb-6 md:mb-8 italic">{plan.durationDays} DAYS DURATION</p>
                 
                 <div className="mb-6 sm:mb-8 md:mb-12">
                   <span className="text-4xl sm:text-5xl md:text-6xl font-black text-white tabular-nums tracking-tighter font-mono">{plan.roi}</span>
-                  <span className="text-[10px] text-brand-purple font-black ml-3 uppercase tracking-widest">Yield Target</span>
+                  <span className="text-[10px] text-brand-purple font-black ml-3 uppercase tracking-widest">Total Return</span>
                 </div>
 
                 <div className="space-y-3 sm:space-y-4 mb-4">
-                  {['Institutional tier returns', `${plan.durationDays}-Day auto-compound cycle`, '24/7 Priority settlement'].map((f, i) => (
+                  {['Guaranteed returns', `${plan.durationDays} days earning period`, 'Instant profit withdrawal'].map((f, i) => (
                     <div key={i} className="flex items-center gap-2.5 sm:gap-3 text-xs sm:text-sm text-zinc-400 font-medium">
                       <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-md sm:rounded-lg bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center text-brand-purple transition-transform group-hover:scale-110 shrink-0">
                          <Check size={10} />
@@ -508,11 +508,11 @@ export default function InvestPage() {
 
               <div className="pt-6 sm:pt-8 border-t border-zinc-800/50 grid grid-cols-2 gap-4 text-[9px] font-black text-zinc-600 uppercase tracking-widest italic">
                 <div>
-                   <p className="mb-1">Min Entry</p>
+                   <p className="mb-1">Minimum</p>
                    <p className="text-white font-mono text-sm tracking-tighter">${plan.minAmount}</p>
                 </div>
                 <div className="text-right">
-                   <p className="mb-1">Upper Limit</p>
+                   <p className="mb-1">Maximum</p>
                    <p className="text-white font-mono text-sm tracking-tighter">${plan.maxAmount.toLocaleString()}</p>
                 </div>
               </div>
@@ -521,20 +521,20 @@ export default function InvestPage() {
         })}
       </div>
 
-      {/* Investment Execution Terminal */}
+      {/* Investment Form */}
       {selectedPlan && (
         <div className="max-w-4xl mx-auto relative group">
           <div className="absolute inset-0 bg-brand-purple/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-brand-purple/10 transition-all opacity-50" />
           <form onSubmit={handleInvest} className="relative z-10 bg-brand-black border border-zinc-800 rounded-2xl sm:rounded-3xl md:rounded-[56px] p-5 sm:p-10 md:p-16 space-y-6 sm:space-y-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-6 pb-5 sm:pb-8 border-b border-zinc-800/50">
                 <div>
-                   <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-1">Execution Mode</p>
-                   <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-brand-purple italic tracking-tighter uppercase truncate">Vault #{selectedPlan.name.replace(/\s+/g, '')}</h2>
+                   <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-1">Selected Plan</p>
+                   <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-brand-purple italic tracking-tighter uppercase truncate">{selectedPlan.name}</h2>
                 </div>
                 <div className="sm:text-right">
-                   <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-1">Liquidity State</p>
+                   <p className="text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em] mb-1">Status</p>
                    <p className="text-xs sm:text-sm font-black text-white italic uppercase tracking-widest tabular-nums flex items-center gap-2 sm:justify-end">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" /> Ready to Transact
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" /> Ready to Invest
                    </p>
                 </div>
              </div>
@@ -549,8 +549,8 @@ export default function InvestPage() {
              <div className="space-y-5 sm:space-y-8">
                 <div className="space-y-3 sm:space-y-6">
                    <div className="flex justify-between items-end text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 px-1 sm:px-2 italic">
-                      <label>Deployment Quantum</label>
-                      <span className="text-zinc-600 hidden sm:inline">Wallet: {formatCurrency(user?.balance || 0)}</span>
+                      <label>Investment Amount</label>
+                      <span className="text-zinc-600 hidden sm:inline">Balance: {formatCurrency(user?.balance || 0)}</span>
                    </div>
                    <div className="relative group">
                       <div className="absolute left-4 sm:left-10 top-1/2 -translate-y-1/2 text-brand-purple text-2xl sm:text-5xl font-black italic">$</div>
@@ -569,12 +569,12 @@ export default function InvestPage() {
 
                 <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl sm:rounded-[32px] p-4 sm:p-8 md:p-10 space-y-3 sm:space-y-5 shadow-inner">
                    <div className="flex justify-between items-center text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-zinc-600 px-1 sm:px-2 italic font-mono">
-                      <span>Protocol Fee ({feeRate * 100}%)</span>
+                      <span>Platform Fee ({feeRate * 100}%)</span>
                       <span className="text-brand-purple/70">+{formatCurrency(fee)}</span>
                    </div>
                    <div className="h-[2px] bg-zinc-800/40 w-full" />
                    <div className="flex justify-between items-center text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] sm:tracking-[0.4em] text-white px-1 sm:px-2">
-                      <span className="italic tracking-tighter text-zinc-400">Total Deployment Charge</span>
+                      <span className="italic tracking-tighter text-zinc-400">Total Deducted</span>
                       <span className="text-brand-purple text-base sm:text-xl font-mono tracking-tighter">{formatCurrency(totalCharge)}</span>
                    </div>
                 </div>
@@ -608,13 +608,13 @@ export default function InvestPage() {
              <button
                type="submit"
                disabled={isLoading || !amount || Number(amount) < currentMin}
-               className="w-full py-5 sm:py-8 md:py-10 bg-brand-purple text-black rounded-2xl sm:rounded-[32px] md:rounded-[40px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[10px] md:text-xs hover:bg-brand-purple-hover transition-all duration-300 disabled:opacity-30 disabled:grayscale shadow-[0_20px_50px_rgba(75,47,168,0.2)] flex items-center justify-center gap-3 sm:gap-4 group active:scale-[0.98] cursor-pointer"
+               className="w-full py-5 sm:py-8 md:py-10 bg-brand-purple text-black rounded-2xl sm:rounded-[32px] md:rounded-[40px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[10px] md:text-xs hover:bg-brand-purple-hover transition-all duration-300 disabled:opacity-30 disabled:grayscale shadow-[0_20px_50px_rgba(72,202,228,0.2)] flex items-center justify-center gap-3 sm:gap-4 group active:scale-[0.98] cursor-pointer"
              >
                {isLoading ? (
                  <Loader2 className="animate-spin" size={18} />
                ) : (
                  <>
-                   Commence Capital Deployment{' '}
+                   Confirm & Start Investment{' '}
                    <ArrowUpRight className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
                  </>
                )}
@@ -623,7 +623,7 @@ export default function InvestPage() {
              {totalCharge > (user?.balance || 0) && (
                <div className="flex items-center justify-center gap-2 text-zinc-500 text-[10px] font-mono uppercase tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
-                  <span>Available Liquidity Low — Auto-Liquidity Reserve Activated</span>
+                  <span>Account balance is low — please deposit funds to activate this plan</span>
                </div>
              )}
           </form>
@@ -634,15 +634,15 @@ export default function InvestPage() {
       <div className="space-y-12 font-sans">
          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-zinc-800/50 pb-8">
              <div>
-               <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase">Deployed <span className="text-zinc-600">History.</span></h2>
-               <p className="text-zinc-500 text-xs font-medium mt-1 font-mono tracking-widest uppercase italic">Archives of all previous capital deployment strings synchronized with GraphQL backend.</p>
+               <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase">Investment <span className="text-zinc-600">History.</span></h2>
+               <p className="text-zinc-500 text-xs font-medium mt-1 font-mono tracking-widest uppercase italic">All your active and completed investments.</p>
             </div>
             <div>
               <button 
                 onClick={() => setShowProgress(true)}
                 className="px-8 py-4 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase tracking-widest text-[9px] rounded-full hover:bg-zinc-800 transition-all flex items-center gap-3 shadow-xl cursor-pointer"
               >
-                 <Activity size={14} className="text-brand-purple" /> Active Progress Terminal
+                 <Activity size={14} className="text-brand-purple" /> View Live Progress
               </button>
             </div>
          </div>
@@ -659,7 +659,7 @@ export default function InvestPage() {
                          "text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full border",
                          inv.status === 'active' ? "bg-brand-purple/5 text-brand-purple border-brand-purple/20" : "bg-zinc-800 text-zinc-500 border-zinc-700"
                        )}>
-                         {inv.status} Protocol
+                         {inv.status}
                        </span>
                        <span className="text-[9px] font-mono font-bold text-zinc-600 uppercase italic">
                          {inv.startDate ? new Date(inv.startDate).toLocaleDateString() : 'Active'}
@@ -669,21 +669,21 @@ export default function InvestPage() {
                        <h4 className="text-xl font-black text-white uppercase italic tracking-tighter">{inv.planName}</h4>
                        <div className="flex items-center gap-2 mt-1.5">
                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                         <p className="text-[9px] font-black text-emerald-400/90 uppercase tracking-widest font-mono">Backend ID: {inv.id}</p>
+                         <p className="text-[9px] font-black text-emerald-400/90 uppercase tracking-widest font-mono">Plan ID: #{inv.id.slice(0, 8)}</p>
                        </div>
                     </div>
                     <div className="flex items-center justify-between pt-6 border-t border-zinc-800/50">
                        <div className="space-y-1">
-                          <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Entry</p>
+                          <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Invested</p>
                           <p className="text-lg font-bold text-white font-mono tracking-tighter">{formatCurrency(inv.amount)}</p>
                        </div>
                        <div className="text-right space-y-1">
-                          <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Yield</p>
+                          <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Profit Rate</p>
                           <p className="text-lg font-bold text-brand-purple font-mono tracking-tighter">{inv.roi}</p>
                        </div>
                     </div>
                     <button onClick={() => setShowProgress(true)} className="w-full py-4 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 group-hover:text-brand-purple group-hover:border-brand-purple/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                       Analyze Growth <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                       View Details <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                  </div>
               </div>
@@ -692,7 +692,7 @@ export default function InvestPage() {
             {investments.length === 0 && (
               <div className="col-span-full py-32 text-center bg-black border border-zinc-800 rounded-[56px] space-y-6">
                  <HistoryIcon size={48} className="text-zinc-800 mx-auto" />
-                 <p className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em] italic underline decoration-zinc-800/50 underline-offset-8">Intelligence Archives Clear</p>
+                 <p className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.4em] italic underline decoration-zinc-800/50 underline-offset-8">No Active Investments Found</p>
               </div>
             )}
 
@@ -702,7 +702,7 @@ export default function InvestPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
                   <div className="bg-brand-black-light border border-zinc-800 rounded-[48px] p-10 md:p-14 text-center max-w-md w-full relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 p-6">
-                      <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                      <div className="w-12 h-12 rounded-xl bg-brand-purple/10 border border-brand-purple/20 flex items-center justify-center text-brand-purple">
                         <ShieldCheck size={20} />
                       </div>
                     </div>
@@ -712,15 +712,15 @@ export default function InvestPage() {
                     </div>
                     
                     <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-4">
-                      Settlement Completed
+                      Profits Collected!
                     </h3>
                     
                     <p className="text-zinc-400 text-sm font-medium leading-relaxed mb-6">
-                      Decentralized protocol consensus achieved. Capital has been settled to your balance.
+                      Your investment profits have been transferred directly to your balance.
                     </p>
                     
                     <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-6 mb-8 text-center">
-                      <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest mb-1 font-mono">Credited Balance</p>
+                      <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest mb-1 font-mono">Collected Profit</p>
                       <p className="text-3xl font-black text-white font-mono tracking-tighter">{formatCurrency(withdrawnAmount)}</p>
                     </div>
                     
@@ -729,7 +729,7 @@ export default function InvestPage() {
                       onClick={() => setWithdrawnAmount(null)}
                       className="w-full py-5 bg-brand-purple text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] hover:bg-brand-purple-hover transition-all duration-300 shadow-xl shadow-brand-purple/20 active:scale-95 cursor-pointer"
                     >
-                      Sync Terminal Hub
+                      Done
                     </button>
                   </div>
                 </div>

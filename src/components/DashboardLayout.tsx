@@ -73,14 +73,14 @@ export default function DashboardLayout() {
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex w-72 flex-col border-r border-zinc-800/10 bg-brand-black p-8 sticky top-0 h-screen">
         <Link to="/" className="flex items-center gap-3 mb-12 px-2 group">
-          <div className="w-10 h-10 bg-brand-purple rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(75,47,168,0.2)] group-hover:scale-110 transition-transform duration-500">
+          <div className="w-10 h-10 bg-brand-purple rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(72,202,228,0.3)] group-hover:scale-110 transition-transform duration-500">
              <TrendingUp size={20} className="text-black" />
           </div>
           <span className="text-xl font-bold tracking-tight text-white   uppercase">ApexBridge<span className="text-brand-purple">Capital</span></span>
         </Link>
 
         <nav className="flex-1 space-y-1">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4 ml-4">Terminal Access</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4 ml-4">Account Menu</p>
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -187,7 +187,7 @@ export default function DashboardLayout() {
             </Link>
 
             <nav className="space-y-2 pb-24">
-              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-4 px-2">Protocol Navigation</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-4 px-2">Account Navigation</p>
               {navItems.map((item) => (
                 <NavLink
                   key={item.path}
@@ -215,7 +215,7 @@ export default function DashboardLayout() {
                     }}
                     className="flex justify-between items-center w-full px-5 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-black uppercase cursor-pointer"
                  >
-                    <span>Sign Out Terminal</span>
+                    <span>Sign Out</span>
                     <LogOut size={16} />
                  </button>
               </div>

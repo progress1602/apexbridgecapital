@@ -52,7 +52,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
     setErrorMessage(null);
 
     if (mode === 'signup' && !agreeTerms) {
-      setErrorMessage('Please acknowledge the protocol terms to proceed with account creation.');
+      setErrorMessage('Please accept the Terms of Service to create your account.');
       return;
     }
 
@@ -87,7 +87,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
       {/* Background Ambient Lighting */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[55%] h-[55%] bg-brand-purple/10 blur-[150px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-900/10 blur-[160px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-purple/10 blur-[160px] rounded-full" />
         <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:32px_32px] opacity-15" />
       </div>
 
@@ -115,34 +115,34 @@ export default function LoginPage({ mode }: LoginPageProps) {
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 text-brand-purple text-xs font-black uppercase tracking-[0.25em]">
               <Zap size={14} />
-              <span>Next-Gen Decentralized Liquidity</span>
+              <span>Next-Generation Investment Platform</span>
             </div>
             <h2 className="text-3xl xl:text-4xl font-black text-white tracking-tight leading-tight uppercase">
               {mode === 'login' ? (
                 <>
-                  Institutional Access <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple to-purple-300">
-                    To Prime Yield.
+                  Welcome Back <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple to-cyan-200">
+                    To Your Portfolio.
                   </span>
                 </>
               ) : (
                 <>
-                  Deploy Capital <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple to-purple-300">
-                    With Algorithmic Precision.
+                  Start Investing <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple to-cyan-200">
+                    With Confidence.
                   </span>
                 </>
               )}
             </h2>
             <p className="text-zinc-400 text-sm leading-relaxed max-w-md font-medium">
-              Seamless access to multi-sig staking vaults, institutional yield protocols, and sub-10ms decentralized liquidity pools.
+              Access your high-yield plans, view your accumulated earnings, and deposit or withdraw funds anytime with bank-grade security.
             </p>
           </div>
 
-          {/* Key Institutional Metrics */}
+          {/* Key Metrics */}
           <div className="grid grid-cols-3 gap-4 pt-2">
             <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md space-y-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">Total Liquidity</span>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">Total Managed</span>
               <p className="text-lg font-black text-white font-mono">$8.4B+</p>
             </div>
             <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md space-y-1">
@@ -163,7 +163,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
             <div className="space-y-1 text-xs">
               <p className="font-bold text-white uppercase tracking-wide">Enterprise-Grade Security</p>
               <p className="text-zinc-400 text-[11px] leading-relaxed">
-                Zero-knowledge authentication and multi-tier cryptographic isolation protect your capital at all times.
+                Advanced encryption and dedicated account protection safeguard your investments at all times.
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
 
         {/* Footer info */}
         <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono pt-6 border-t border-zinc-900/80">
-          <span>ApexBridge Protocol v2.4</span>
+          <span>ApexBridge Capital v2.4</span>
           <span className="flex items-center gap-1.5 text-zinc-400">
             <Activity size={12} className="text-emerald-400" /> 99.99% Uptime
           </span>
@@ -187,7 +187,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
             className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group text-xs font-bold tracking-wider uppercase cursor-pointer py-1"
           >
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform text-brand-purple shrink-0" />
-            <span className="truncate">Return to Gateway</span>
+            <span className="truncate">Back to Home</span>
           </Link>
 
           {/* Segmented Mode Switcher */}
@@ -240,15 +240,15 @@ export default function LoginPage({ mode }: LoginPageProps) {
             <div className="mb-6 sm:mb-8">
               <div className="inline-flex items-center gap-2 text-brand-purple text-[10px] font-black uppercase tracking-[0.25em] mb-2">
                 <KeyRound size={12} />
-                <span>{mode === 'login' ? 'Authentication Terminal' : 'Institutional Onboarding'}</span>
+                <span>{mode === 'login' ? 'User Login' : 'New Investor Registration'}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
-                {mode === 'login' ? 'Access Terminal' : 'Open Account'}
+                {mode === 'login' ? 'Sign In' : 'Create Account'}
               </h1>
               <p className="text-zinc-400 text-xs mt-1.5 font-medium">
                 {mode === 'login' 
-                  ? 'Enter your credentials to manage your portfolio.' 
-                  : 'Establish a new verified account to deploy institutional capital.'}
+                  ? 'Enter your credentials to access your investor dashboard.' 
+                  : 'Create a free account and start investing in minutes.'}
               </p>
             </div>
 
@@ -286,7 +286,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
                     <User size={12} className="text-brand-purple" />
-                    <span>Full Legal Name</span>
+                    <span>Full Name</span>
                   </label>
                   <div className="relative group">
                     <input
@@ -295,7 +295,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
                       autoComplete="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Alexander Vance"
+                      placeholder="e.g. John Doe"
                       className="w-full bg-zinc-950/80 border border-zinc-800 rounded-2xl py-3.5 px-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/20 transition-all text-base sm:text-sm font-medium shadow-inner"
                     />
                   </div>
@@ -306,7 +306,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
                   <Mail size={12} className="text-brand-purple" />
-                  <span>Account Email</span>
+                  <span>Email Address</span>
                 </label>
                 <div className="relative group">
                   <input
@@ -315,7 +315,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
                     autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="investor@apexbridge.cap"
+                    placeholder="you@example.com"
                     className="w-full bg-zinc-950/80 border border-zinc-800 rounded-2xl py-3.5 px-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/20 transition-all text-base sm:text-sm font-mono shadow-inner"
                   />
                 </div>
@@ -326,7 +326,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
                 <div className="flex items-center justify-between ml-1">
                   <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
                     <Lock size={12} className="text-brand-purple" />
-                    <span>Pass-Key</span>
+                    <span>Password</span>
                   </label>
                   <button
                     type="button"
@@ -353,7 +353,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
                     autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder={showPassword ? 'Enter pass-key' : '••••••••••••'}
+                    placeholder={showPassword ? 'Enter password' : '••••••••••••'}
                     className="w-full bg-zinc-950/80 border border-zinc-800 rounded-2xl py-3.5 pl-4 pr-11 text-white placeholder:text-zinc-600 focus:outline-none focus:border-brand-purple focus:ring-2 focus:ring-brand-purple/20 transition-all text-base sm:text-sm shadow-inner"
                   />
                   <button
@@ -394,10 +394,10 @@ export default function LoginPage({ mode }: LoginPageProps) {
                       onChange={(e) => setRememberMe(e.target.checked)}
                       className="w-4 h-4 rounded-md border-zinc-800 bg-zinc-950 text-brand-purple focus:ring-0 focus:ring-offset-0 cursor-pointer accent-brand-purple"
                     />
-                    <span className="text-[11px] font-medium">Keep terminal active</span>
+                    <span className="text-[11px] font-medium">Remember me</span>
                   </label>
                   <span className="text-[11px] text-zinc-500 hover:text-brand-purple transition-colors cursor-pointer select-none">
-                    Security assistance
+                    Forgot password?
                   </span>
                 </div>
               )}
@@ -413,7 +413,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
                       className="w-4 h-4 mt-0.5 rounded-md border-zinc-800 bg-zinc-950 text-brand-purple focus:ring-0 focus:ring-offset-0 cursor-pointer accent-brand-purple shrink-0"
                     />
                     <span className="text-[11px] leading-relaxed text-zinc-400">
-                      I agree to the <span className="text-white underline underline-offset-2">Protocol Operating Terms</span> and institutional security disclosures.
+                      I agree to the <span className="text-white underline underline-offset-2">Terms of Service</span> and Privacy Policy.
                     </span>
                   </label>
                 </div>
@@ -428,11 +428,11 @@ export default function LoginPage({ mode }: LoginPageProps) {
                 {isLoading ? (
                   <>
                     <Loader2 size={16} className="animate-spin text-black" />
-                    <span>{mode === 'login' ? 'Authenticating Terminal...' : 'Deploying Account...'}</span>
+                    <span>{mode === 'login' ? 'Signing in...' : 'Creating your account...'}</span>
                   </>
                 ) : (
                   <>
-                    <span>{mode === 'login' ? 'Enter Terminal' : 'Create Account'}</span>
+                    <span>{mode === 'login' ? 'Sign In' : 'Create Account'}</span>
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
@@ -442,12 +442,12 @@ export default function LoginPage({ mode }: LoginPageProps) {
             {/* Bottom Alternate Mode Link */}
             <div className="mt-8 pt-6 border-t border-zinc-800/80 text-center">
               <p className="text-zinc-400 text-xs font-medium">
-                {mode === 'login' ? "Don't have an account yet?" : "Already hold an active account?"}{' '}
+                {mode === 'login' ? "Don't have an account yet?" : "Already have an account?"}{' '}
                 <Link
                   to={mode === 'login' ? '/signup' : '/login'}
                   className="text-brand-purple hover:text-brand-purple-hover font-bold ml-1 transition-colors underline-offset-4 hover:underline"
                 >
-                  {mode === 'login' ? 'Register now' : 'Sign in to terminal'}
+                  {mode === 'login' ? 'Register now' : 'Sign in'}
                 </Link>
               </p>
             </div>
@@ -458,7 +458,7 @@ export default function LoginPage({ mode }: LoginPageProps) {
         <div className="text-center py-4">
           <div className="inline-flex items-center gap-2 text-[11px] text-zinc-500 font-mono">
             <ShieldCheck size={14} className="text-brand-purple" />
-            <span>256-Bit SSL Encrypted Protocol Connection</span>
+            <span>256-Bit SSL Secure Connection</span>
           </div>
         </div>
       </div>

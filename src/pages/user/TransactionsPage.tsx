@@ -203,7 +203,7 @@ export default function TransactionsPage() {
       );
     }
     return (
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center border bg-brand-purple/10 text-brand-purple border-brand-purple/20 shadow-[0_0_20px_rgba(124,58,237,0.1)]">
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center border bg-brand-purple/10 text-brand-purple border-brand-purple/20 shadow-[0_0_20px_rgba(72,202,228,0.2)]">
         <TrendingUp size={18} />
       </div>
     );
@@ -233,13 +233,13 @@ export default function TransactionsPage() {
         <div>
           <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-3">
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
-             Live Ledger Query Active
+             Transaction History Live
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-            Ledger <span className="text-zinc-600">History.</span>
+            Transaction <span className="text-zinc-600">History.</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium mt-2 leading-relaxed max-w-xl">
-             Immutable record of all protocol transactions fetched live from the backend ledger.
+             A complete and transparent record of all your deposits, investments, and withdrawals.
           </p>
         </div>
 
@@ -363,7 +363,7 @@ export default function TransactionsPage() {
                     <th className="px-8 py-6">Operation</th>
                     <th className="px-6 py-6 min-w-[180px] max-w-[280px]">Plan / Channel</th>
                     <th className="px-8 py-6">Timestamp</th>
-                    <th className="px-8 py-6 text-right">Quantum</th>
+                    <th className="px-8 py-6 text-right">Amount</th>
                     <th className="px-8 py-6 text-center">Status</th>
                     <th className="px-8 py-6 text-right">Action</th>
                   </tr>
@@ -439,12 +439,12 @@ export default function TransactionsPage() {
                <History size={28} />
             </div>
             <h3 className="text-white font-black uppercase text-sm tracking-[0.25em] mb-2">
-              No Ledger Records Found
+              No Transactions Found
             </h3>
             <p className="text-zinc-500 text-xs font-medium max-w-sm leading-relaxed mb-6">
               {searchQuery || activeFilter !== 'all' || statusFilter !== 'all'
                 ? 'No live transactions match your specified filter parameters.'
-                : 'Your ledger is currently clear. Transactions initiated via deposits, capital plans, or withdrawals will reflect here immediately.'}
+                : 'You have no transactions yet. When you make a deposit, start an investment, or withdraw funds, they will appear here.'}
             </p>
             {(searchQuery || activeFilter !== 'all' || statusFilter !== 'all') && (
               <button 
@@ -496,7 +496,7 @@ export default function TransactionsPage() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-zinc-900/60 p-3.5 rounded-2xl border border-zinc-800/50">
-                      <p className="text-[8px] font-black uppercase text-zinc-500 tracking-widest mb-1">Quantum</p>
+                      <p className="text-[8px] font-black uppercase text-zinc-500 tracking-widest mb-1">Amount</p>
                       <span className={cn("font-black font-mono text-base tracking-tight block", colorClass)}>
                         {prefix}{formatCurrency(tx.amount)}
                       </span>
@@ -504,7 +504,7 @@ export default function TransactionsPage() {
                     <div className="bg-zinc-900/60 p-3.5 rounded-2xl border border-zinc-800/50 min-w-0 flex flex-col justify-between">
                       <p className="text-[8px] font-black uppercase text-zinc-500 tracking-widest mb-1">Plan / Channel</p>
                       <p className="text-[11px] font-bold uppercase tracking-wide text-zinc-200 break-words leading-snug">
-                        {tx.plan || tx.method || 'Standard Clearance'}
+                        {tx.plan || tx.method || 'Standard Transfer'}
                       </p>
                     </div>
                   </div>
@@ -534,7 +534,7 @@ export default function TransactionsPage() {
                   <th className="px-8 py-6">Operation</th>
                   <th className="px-6 py-6 min-w-[180px] max-w-[280px]">Plan / Channel</th>
                   <th className="px-8 py-6">Timestamp</th>
-                  <th className="px-8 py-6 text-right">Quantum</th>
+                  <th className="px-8 py-6 text-right">Amount</th>
                   <th className="px-8 py-6 text-center">Status</th>
                   <th className="px-8 py-6 text-right">Action</th>
                 </tr>
@@ -571,7 +571,7 @@ export default function TransactionsPage() {
                       </td>
                       <td className="px-6 py-6 min-w-[180px] max-w-[280px] whitespace-normal">
                         <span className="text-zinc-300 font-bold uppercase tracking-wider text-[11px] px-3.5 py-1.5 bg-zinc-900/80 border border-zinc-800/80 rounded-xl inline-block max-w-full break-words leading-relaxed">
-                          {tx.plan || tx.method || 'Standard Clearance'}
+                          {tx.plan || tx.method || 'Standard Transfer'}
                         </span>
                       </td>
                       <td className="px-8 py-6 text-zinc-500 font-mono text-[11px]">
@@ -626,7 +626,7 @@ export default function TransactionsPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-black uppercase text-white tracking-tight">Transaction Detail</h3>
-                    <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Protocol Ledger Entry</p>
+                    <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Transaction Entry</p>
                   </div>
                 </div>
                 <button 
@@ -669,7 +669,7 @@ export default function TransactionsPage() {
                   </div>
                   <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/60 min-w-0">
                     <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1">Plan / Channel</p>
-                    <p className="font-bold text-zinc-200 text-xs break-words leading-relaxed">{selectedTx.plan || selectedTx.method || 'Standard Clearance'}</p>
+                    <p className="font-bold text-zinc-200 text-xs break-words leading-relaxed">{selectedTx.plan || selectedTx.method || 'Standard Transfer'}</p>
                   </div>
                 </div>
 
@@ -729,8 +729,8 @@ export default function TransactionsPage() {
                          <ShieldCheck className="text-white" size={24} />
                       </div>
                       <div>
-                         <h3 className="text-xl font-black italic font-serif tracking-tight uppercase">Protocol Audit Report</h3>
-                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-1">Ref ID: APEX-LEDGER-LIVE</p>
+                         <h3 className="text-xl font-black italic font-serif tracking-tight uppercase">Account Statement</h3>
+                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-1">Ref ID: APEX-STATEMENT</p>
                       </div>
                    </div>
                    <button 
@@ -747,9 +747,9 @@ export default function TransactionsPage() {
                       <div className="space-y-3">
                          <div className="text-3xl font-black font-serif italic uppercase tracking-tighter">ApexBridge<span className="text-brand-purple">Capital</span></div>
                          <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest leading-relaxed">
-                            Institutional Liquidity Hub<br />
+                            Global Investment & Custody Services<br />
                             Zürich, Switzerland • Registry No. 883.21<br />
-                            security@apexbridge.protocol
+                            support@apexbridge.com
                          </div>
                       </div>
                       <div className="text-right">
@@ -763,7 +763,7 @@ export default function TransactionsPage() {
                    {/* Stats Grid */}
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
-                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2">Total Ledger Volume</p>
+                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2">Total Transaction Volume</p>
                          <p className="text-2xl font-black italic tracking-tighter text-zinc-900">{formatCurrency(totalVolume)}</p>
                          <div className="mt-3 flex items-center gap-1.5 text-[9px] font-black text-brand-purple uppercase">
                             <TrendingUp size={12} /> Live Backend Feed
@@ -773,7 +773,7 @@ export default function TransactionsPage() {
                          <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2">Verified Operations</p>
                          <p className="text-2xl font-black italic tracking-tighter text-zinc-900">{transactions.length} Events</p>
                          <div className="mt-3 flex items-center gap-1.5 text-[9px] font-black text-emerald-600 uppercase">
-                            <BadgeCheck size={12} /> {transactions.length > 0 ? 'Backend Synchronized' : 'Clear Ledger'}
+                            <BadgeCheck size={12} /> {transactions.length > 0 ? 'Backend Synchronized' : 'No Records'}
                          </div>
                       </div>
                       <div className="p-6 bg-zinc-50 border border-zinc-100 rounded-3xl">
@@ -785,14 +785,14 @@ export default function TransactionsPage() {
                       </div>
                    </div>
 
-                   {/* Protocol Compliance */}
+                   {/* Account Compliance */}
                    <div className="space-y-6">
-                      <h4 className="text-xs font-black uppercase tracking-[0.2em] border-b border-zinc-100 pb-3">Protocol Compliance Summary</h4>
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] border-b border-zinc-100 pb-3">Account Compliance Summary</h4>
                       <div className="space-y-4">
                          {[
-                           { label: 'Backend Clearance', status: 'Live', desc: 'Direct GraphQL protocol queries without client synthetic data.' },
-                           { label: 'Security Handshake', status: 'Encrypted', desc: 'Token bearer validation and sanitized session telemetry.' },
-                           { label: 'Ledger Auditability', status: 'Compliant', desc: 'Full event tracking maintained on production database.' }
+                           { label: 'Backend Verification', status: 'Live', desc: 'Direct verified account data synchronized with your secure profile.' },
+                           { label: 'Secure Session', status: 'Encrypted', desc: 'Encrypted connection keeping your personal data safe.' },
+                           { label: 'Record Verification', status: 'Compliant', desc: 'All transaction history verified and safely recorded.' }
                          ].map((item, idx) => (
                            <div key={idx} className="flex gap-4 items-start">
                               <div className="w-8 h-8 rounded-full border border-zinc-900 flex items-center justify-center shrink-0 mt-0.5">
@@ -815,7 +815,7 @@ export default function TransactionsPage() {
                       <div className="space-y-1">
                          <div className="w-36 h-0.5 bg-zinc-900" />
                          <p className="text-[10px] font-black uppercase tracking-widest text-zinc-900">ApexBridge System Core</p>
-                         <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Automated Ledger Officer</p>
+                         <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">System Verification</p>
                       </div>
                       <div className="flex items-center gap-4">
                          <button 

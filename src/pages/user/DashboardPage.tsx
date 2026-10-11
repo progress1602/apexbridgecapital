@@ -244,26 +244,26 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center gap-2 text-brand-purple font-black uppercase tracking-[0.4em] text-[10px] mb-3">
              <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
-             Capital Matrix Active
+             Account Active
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
-            Portfolio <span className="text-zinc-600">Core.</span>
+            Investor <span className="text-zinc-600">Dashboard.</span>
           </h1>
           <p className="text-zinc-500 text-xs sm:text-sm font-medium mt-2">
-            Authenticated as <span className="text-white">{user?.name || user?.email || 'Investor'}</span> • {user?.tier || 'Institutional Tier'}
+            Welcome back, <span className="text-white">{user?.name || user?.email || 'Investor'}</span>
           </p>
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => loadDashboardData(true)}
-            title="Refresh Core Protocol Data"
+            title="Refresh Account Data"
             disabled={isLoading || isRefreshing}
             className="p-3.5 sm:p-4 rounded-2xl border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all active:scale-95 cursor-pointer bg-black/60 disabled:opacity-50 shrink-0"
           >
             <RefreshCw size={16} className={(isLoading || isRefreshing) ? 'animate-spin text-brand-purple' : ''} />
           </button>
           <Link to="/user/invest" className="flex-1 sm:flex-none text-center px-6 sm:px-8 py-3.5 sm:py-4 bg-brand-purple text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-purple-hover transition-all shadow-xl shadow-brand-purple/10 active:scale-95">
-            Deploy Capital
+            Invest Now
           </Link>
         </div>
       </div>
@@ -310,10 +310,10 @@ export default function DashboardPage() {
         <div className="lg:col-span-8 bg-brand-black-light border border-zinc-800 p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl md:rounded-[40px] shadow-2xl relative overflow-hidden group">
            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-purple/5 blur-[100px] rounded-full pointer-events-none" />
            <div className="flex justify-between items-start mb-6 sm:mb-8">
-              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">Total Portfolio Valuation</p>
+              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">Total Account Balance</p>
               <div className="flex items-center gap-2 px-3 py-1 bg-brand-black-light border border-zinc-800 rounded-full">
                  <div className="w-1.5 h-1.5 rounded-full bg-brand-purple animate-pulse" />
-                 <span className="text-[9px] font-black text-zinc-400 uppercase">Live GraphQL</span>
+                 <span className="text-[9px] font-black text-zinc-400 uppercase">Live Account</span>
               </div>
            </div>
            <div className="space-y-2">
@@ -324,51 +324,51 @@ export default function DashboardPage() {
                  <span className="flex items-center gap-1">
                    <TrendingUp size={14} /> {growthRate >= 0 ? `+${growthRate}%` : `${growthRate}%`}
                  </span>
-                 <span className="text-zinc-600">24H Protocol Growth</span>
+                 <span className="text-zinc-600">Daily Return Rate</span>
               </div>
            </div>
            <div className="mt-8 sm:mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 pt-6 sm:pt-8 border-t border-zinc-800/50">
               <div>
-                 <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Available Balance</p>
+                 <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Available Cash</p>
                  <p className="text-xs sm:text-sm font-bold text-zinc-200 font-mono tracking-tight truncate">{formatCurrency(availableBalance)}</p>
               </div>
               <div>
-                 <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Active Positions</p>
-                 <p className="text-xs sm:text-sm font-bold text-brand-purple font-mono tracking-tight">{activeInvestmentsCount} Positions</p>
+                 <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Active Investments</p>
+                 <p className="text-xs sm:text-sm font-bold text-brand-purple font-mono tracking-tight">{activeInvestmentsCount} Active</p>
               </div>
               <div>
-                 <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Total Yield Accrued</p>
+                 <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Total Profits Earned</p>
                  <p className="text-xs sm:text-sm font-bold text-emerald-400 font-mono tracking-tight truncate">{formatCurrency(totalEarnings)}</p>
               </div>
               <div>
-                 <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Base Currency</p>
+                 <p className="text-[8px] text-zinc-600 font-black uppercase tracking-widest mb-1">Currency</p>
                  <p className="text-xs sm:text-sm font-bold text-zinc-300 font-mono tracking-tight">{user?.currencyPreference || 'USD'}</p>
               </div>
            </div>
         </div>
 
-        <div className="lg:col-span-4 bg-brand-purple rounded-2xl sm:rounded-3xl md:rounded-[40px] p-5 sm:p-8 md:p-10 flex flex-col justify-between shadow-[0_20px_50px_rgba(75,47,168,0.1)] group">
+        <div className="lg:col-span-4 bg-brand-purple rounded-2xl sm:rounded-3xl md:rounded-[40px] p-5 sm:p-8 md:p-10 flex flex-col justify-between shadow-[0_20px_50px_rgba(72,202,228,0.15)] group">
            <div>
               <div className="w-12 h-12 bg-brand-black/10 rounded-2xl flex items-center justify-center text-black mb-6 sm:mb-10 group-hover:rotate-12 transition-transform">
                  <Zap size={24} />
               </div>
-              <h3 className="text-2xl font-black text-black uppercase leading-none">Instant <br /> Capital Refuel.</h3>
+              <h3 className="text-2xl font-black text-black uppercase leading-none">Add Funds <br /> To Your Wallet.</h3>
               <p className="text-black/60 text-[10px] font-black uppercase tracking-widest mt-4 leading-relaxed">
-                Fund your account with Bitcoin, Ethereum, Solana, or USDT for immediate automated allocation.
+                Deposit using Bitcoin or Ethereum to start earning returns right away.
               </p>
            </div>
            <Link to="/user/deposit" className="w-full py-4 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-[10px] text-center hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 mt-6 sm:mt-8">
-             Refuel Balance <ArrowUpRight size={14} />
+             Deposit Money <ArrowUpRight size={14} />
            </Link>
         </div>
       </div>
 
-      {/* Grid: Active Deployments & History */}
+      {/* Grid: Active Investments & History */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Active Deployments */}
+        {/* Active Investments */}
         <section className="lg:col-span-7 space-y-6">
           <div className="flex justify-between items-end mb-4">
-            <h3 className="text-xl font-bold text-white">Active <span className="text-zinc-600">Deployments.</span></h3>
+            <h3 className="text-xl font-bold text-white">Active <span className="text-zinc-600">Investments.</span></h3>
             <Link to="/user/invest" className="text-[10px] font-black uppercase tracking-widest text-brand-purple hover:underline">
               View All Plans
             </Link>
@@ -386,17 +386,17 @@ export default function DashboardPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="text-base sm:text-lg font-black text-white uppercase truncate">{inv.planName}</h4>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mt-0.5 truncate">Registry: #{inv.id.slice(0, 8)}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mt-0.5 truncate">Plan #{inv.id.slice(0, 8)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6 sm:gap-8 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-zinc-800/60 pt-3 sm:pt-0">
                    <div className="text-left sm:text-right">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Staked Value</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Amount Invested</p>
                       <p className="text-lg sm:text-xl font-bold text-white font-mono tracking-tighter">{formatCurrency(inv.amount)}</p>
                    </div>
                    <div className="h-8 sm:h-10 w-px bg-zinc-800 block" />
                    <div className="text-right">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Target ROI</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Estimated Profit</p>
                       <p className="text-lg sm:text-xl font-bold text-brand-purple font-mono tracking-tighter">+{inv.roi}</p>
                    </div>
                 </div>
@@ -404,21 +404,21 @@ export default function DashboardPage() {
             ))}
             {userInvestments.length === 0 && (
               <div className="p-8 sm:p-16 text-center border-2 border-dashed border-zinc-800 rounded-3xl sm:rounded-[40px] text-zinc-600 uppercase tracking-[0.2em] font-black text-xs space-y-4">
-                <p>Zero active positions in backend ledger.</p>
+                <p>You have no active investments right now.</p>
                 <Link to="/user/invest" className="inline-block px-6 py-3 bg-zinc-900 border border-zinc-700 text-white rounded-xl hover:border-brand-purple transition-all text-[10px]">
-                  Initialize Deployment Now
+                  Start Your First Investment
                 </Link>
               </div>
             )}
           </div>
         </section>
 
-        {/* Ledger Proxy */}
+        {/* Recent Transactions */}
         <section className="lg:col-span-5 space-y-6">
           <div className="flex justify-between items-end mb-4">
-            <h3 className="text-xl font-bold text-white">Ledger <span className="text-zinc-600">Proxy.</span></h3>
+            <h3 className="text-xl font-bold text-white">Recent <span className="text-zinc-600">Transactions.</span></h3>
             <Link to="/user/transactions" className="text-[10px] font-black uppercase tracking-widest text-brand-purple hover:underline">
-              Full Ledger
+              View All
             </Link>
           </div>
           <div className="bg-brand-black-light rounded-2xl sm:rounded-[40px] border border-zinc-800 p-5 sm:p-8 shadow-2xl relative overflow-hidden">

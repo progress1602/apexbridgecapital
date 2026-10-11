@@ -243,7 +243,7 @@ export default function ProfilePage() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
             My <span className="text-zinc-600">Profile.</span>
           </h1>
-          <p className="text-zinc-500 text-xs sm:text-sm font-medium mt-1 sm:mt-2">Manage your personal details and account settings via GraphQL protocol.</p>
+          <p className="text-zinc-500 text-xs sm:text-sm font-medium mt-1 sm:mt-2">Manage your personal details and account settings anytime.</p>
         </div>
         
         {!isEditing && (
@@ -274,7 +274,7 @@ export default function ProfilePage() {
           className="p-5 rounded-[24px] bg-brand-purple/10 border border-brand-purple/30 text-white flex items-center gap-4 text-xs font-black uppercase tracking-wider font-sans"
         >
           <CheckCircle size={20} className="text-brand-purple shrink-0" />
-          <span>Profile photo updated and synchronized across all terminal modules.</span>
+          <span>Profile photo updated and saved successfully.</span>
         </motion.div>
       )}
 
@@ -379,11 +379,11 @@ export default function ProfilePage() {
             <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Account Balance</p>
             <h3 className="text-3xl font-black text-white tracking-tight">{formattedBalance}</h3>
             <div className="mt-4 flex items-center gap-2 text-[10px] text-zinc-500 font-bold uppercase">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" /> Available Liquidity
+              <div className="w-2 h-2 rounded-full bg-emerald-500" /> Available Cash
             </div>
           </div>
 
-          {/* Security Protocols */}
+          {/* Security Settings */}
           <div className="bg-brand-black-light border border-zinc-800 p-8 rounded-[40px] space-y-6">
             <h4 className="text-xs font-black text-white uppercase tracking-wider pb-4 border-b border-zinc-800/60 flex items-center gap-2">
               <Key size={14} className="text-brand-purple" /> Security Settings
@@ -413,7 +413,7 @@ export default function ProfilePage() {
               <div>
                 <p className="text-[10px] text-zinc-400 font-black uppercase">Identity Status</p>
                 <p className="text-[9.5px] text-zinc-400 leading-relaxed mt-1">
-                  Your account is secured with end-to-end encryption and verified for protocol operations.
+                  Your account is secured with end-to-end encryption and verified for secure transactions.
                 </p>
               </div>
             </div>
@@ -429,7 +429,7 @@ export default function ProfilePage() {
             <div className="border-b border-zinc-800/60 pb-6 mb-8 flex justify-between items-center gap-2">
               <div>
                 <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-tight">Profile Details</h3>
-                <p className="text-zinc-500 text-[10px] font-black uppercase mt-1">GraphQL Synced Account Parameters</p>
+                <p className="text-zinc-500 text-[10px] font-black uppercase mt-1">Personal Account Information</p>
               </div>
               
               <div className="text-[10px] text-zinc-400 font-bold uppercase bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl shrink-0">
@@ -524,7 +524,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Secure Web3 Settlement Wallet */}
+                {/* Crypto Payout Wallet Address */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center pl-1">
                     <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Crypto Wallet Address</label>
@@ -557,7 +557,7 @@ export default function ProfilePage() {
                   >
                     {isSaving ? (
                       <>
-                        <Loader2 size={14} className="animate-spin" /> Saving to GraphQL...
+                        <Loader2 size={14} className="animate-spin" /> Saving Changes...
                       </>
                     ) : (
                       <>

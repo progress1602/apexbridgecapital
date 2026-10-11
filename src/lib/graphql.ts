@@ -427,7 +427,7 @@ export async function apiGetDepositMethods(): Promise<GraphQLDepositMethod[]> {
 export const DEFAULT_INVESTMENT_PLANS: GraphQLInvestmentPlan[] = [
   {
     id: 'starter',
-    name: 'Apex Starter Tier',
+    name: 'Starter Plan',
     roi: '15%',
     durationDays: 7,
     minAmount: 500,
@@ -437,7 +437,7 @@ export const DEFAULT_INVESTMENT_PLANS: GraphQLInvestmentPlan[] = [
   },
   {
     id: 'vault',
-    name: 'Quantum Yield Vault',
+    name: 'Growth Plan',
     roi: '35%',
     durationDays: 14,
     minAmount: 5000,
@@ -447,7 +447,7 @@ export const DEFAULT_INVESTMENT_PLANS: GraphQLInvestmentPlan[] = [
   },
   {
     id: 'institutional',
-    name: 'Sovereign Institutional Core',
+    name: 'Premium Plan',
     roi: '75%',
     durationDays: 30,
     minAmount: 25000,
@@ -755,7 +755,7 @@ mutation AdminAdjustUserBalance($email: String!, $amount: Float!, $action: Strin
 }
 `;
 
-export async function apiAdminAdjustUserBalance(email: string, amount: number, action = 'add', reason = 'Deployment liquidity provisioning') {
+export async function apiAdminAdjustUserBalance(email: string, amount: number, action = 'add', reason = 'Admin balance adjustment') {
   try {
     const data = await fetchGraphQL<{ adminAdjustUserBalance: { success: boolean; message: string } }>(
       ADMIN_ADJUST_USER_BALANCE_MUTATION,
