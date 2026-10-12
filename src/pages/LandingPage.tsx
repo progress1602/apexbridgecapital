@@ -319,8 +319,8 @@ export default function LandingPage() {
                         <span className="text-brand-purple uppercase tracking-widest text-[10px] font-black">Email Us</span>
                       </div>
                       <div className="hidden sm:block w-px h-4 bg-zinc-800" />
-                      <a href="mailto:apexbridgecapital1@gmail.com" className="text-zinc-300 font-bold tracking-tight text-[11px] hover:text-brand-purple transition-colors break-all">
-                        apexbridgecapital1@gmail.com
+                      <a href="mailto:apexbridgecapital11@gmail.com" className="text-zinc-300 font-bold tracking-tight text-[11px] hover:text-brand-purple transition-colors break-all">
+                        apexbridgecapital11@gmail.com
                       </a>
                     </div>
                   </div>
@@ -826,10 +826,15 @@ export default function LandingPage() {
                       The simple and secure platform for growing your wealth with automated daily returns. Engineered for modern investors.
                     </p>
                     <div className="flex gap-4 sm:gap-6 pt-2 sm:pt-4">
-                       {[Globe, Github, Linkedin, Mail].map((Icon, idx) => (
-                          <div key={idx} className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 hover:text-brand-purple hover:border-brand-purple/30 transition-all cursor-pointer group">
+                       {[
+                         { Icon: Globe, href: '#' },
+                         { Icon: Github, href: '#' },
+                         { Icon: Linkedin, href: '#' },
+                         { Icon: Mail, href: 'mailto:apexbridgecapital11@gmail.com' }
+                       ].map(({ Icon, href }, idx) => (
+                          <a key={idx} href={href} aria-label="Contact" className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 hover:text-brand-purple hover:border-brand-purple/30 transition-all cursor-pointer group">
                              <Icon size={18} className="group-hover:scale-110 transition-transform" />
-                          </div>
+                          </a>
                        ))}
                     </div>
                  </div>

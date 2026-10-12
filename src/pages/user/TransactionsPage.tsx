@@ -749,7 +749,7 @@ export default function TransactionsPage() {
                          <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest leading-relaxed">
                             Global Investment & Custody Services<br />
                             Zürich, Switzerland • Registry No. 883.21<br />
-                            support@apexbridge.com
+                            apexbridgecapital11@gmail.com
                          </div>
                       </div>
                       <div className="text-right">

@@ -6,7 +6,6 @@ import {
   ArrowDownCircle, 
   ArrowUpCircle, 
   Wallet, 
-  History, 
   Bell, 
   LogOut,
   TrendingUp,
@@ -24,7 +23,6 @@ const navItems = [
   { icon: ArrowDownCircle, label: 'Deposit', path: '/user/deposit' },
   { icon: ArrowUpCircle, label: 'Withdraw', path: '/user/withdraw' },
   { icon: TrendingUp, label: 'Invest', path: '/user/invest' },
-  { icon: History, label: 'Transactions', path: '/user/transactions' },
   { icon: Bell, label: 'Notifications', path: '/user/notifications', hasBadge: true },
   { icon: User, label: 'Profile', path: '/user/profile' },
 ];
@@ -227,7 +225,7 @@ export default function DashboardLayout() {
       {/* Main Content */}
       <main className="flex-1 min-w-0 flex flex-col p-4 sm:p-6 lg:p-14 pt-20 lg:pt-14 bg-brand-black relative">
         <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-brand-purple/5 blur-[120px] rounded-full pointer-events-none" />
-        <div className="max-w-7xl w-full mx-auto relative z-10">
+        <div className="max-w-7xl w-full mx-auto relative z-10 flex-1 flex flex-col min-h-0">
           <Outlet />
         </div>
       </main>

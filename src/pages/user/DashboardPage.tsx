@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { formatCurrency } from '../../lib/utils';
+import { formatCurrency, cn } from '../../lib/utils';
 import { 
   TrendingUp, 
-  ArrowDownCircle, 
-  ArrowUpCircle, 
   Wallet, 
   Activity, 
   ArrowUpRight,
@@ -27,11 +25,9 @@ import {
   apiGetWalletSummary, 
   apiGetAccountState,
   apiGetUserInvestments, 
-  apiGetTransactions, 
   apiGetMarketTickers,
   GraphQLWalletSummary,
   GraphQLUserInvestment,
-  GraphQLTransaction,
   GraphQLMarketTicker
 } from '../../lib/graphql';
 
@@ -40,7 +36,6 @@ export default function DashboardPage() {
   
   const [walletSummary, setWalletSummary] = useState<GraphQLWalletSummary | null>(null);
   const [userInvestments, setUserInvestments] = useState<GraphQLUserInvestment[]>([]);
-  const [transactions, setTransactions] = useState<GraphQLTransaction[]>([]);
   const [marketTickers, setMarketTickers] = useState<GraphQLMarketTicker[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -51,10 +46,9 @@ export default function DashboardPage() {
       setIsRefreshing(true);
     }
     try {
-      const [accountData, investmentsData, txData, tickersData] = await Promise.allSettled([
+      const [accountData, investmentsData, tickersData] = await Promise.allSettled([
         apiGetAccountState(),
         apiGetUserInvestments(),
-        apiGetTransactions({ type: '', status: '', page: 1, limit: 10 }),
         apiGetMarketTickers(),
       ]);
 
@@ -73,12 +67,6 @@ export default function DashboardPage() {
         setUserInvestments(investmentsData.value || []);
       } else {
         console.error('[Dashboard Investments Query Error]:', investmentsData.reason);
-      }
-
-      if (txData.status === 'fulfilled') {
-        setTransactions(txData.value || []);
-      } else {
-        console.error('[Dashboard Transactions Query Error]:', txData.reason);
       }
 
       if (tickersData.status === 'fulfilled') {
@@ -143,8 +131,6 @@ export default function DashboardPage() {
 
   const totalEarnings = walletSummary?.totalEarnings ?? 0;
   const growthRate = walletSummary?.growth24h ?? 0;
-
-  const recentTransactions = transactions.slice(0, 5);
 
   if (isLoading && !walletSummary) {
     return (
@@ -363,107 +349,63 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Grid: Active Investments & History */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Active Investments */}
-        <section className="lg:col-span-7 space-y-6">
-          <div className="flex justify-between items-end mb-4">
-            <h3 className="text-xl font-bold text-white">Active <span className="text-zinc-600">Investments.</span></h3>
-            <Link to="/user/invest" className="text-[10px] font-black uppercase tracking-widest text-brand-purple hover:underline">
-              View All Plans
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-4">
-            {userInvestments.map((inv) => (
-              <motion.div 
-                key={inv.id} 
-                whileHover={{ y: -4 }}
-                className="p-5 sm:p-8 bg-brand-black-light border border-zinc-800 rounded-2xl sm:rounded-[32px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 group transition-all hover:bg-brand-black hover:border-brand-purple/30"
-              >
-                <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto min-w-0">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-[24px] bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-brand-purple group-hover:scale-105 transition-all shadow-inner shrink-0">
-                    <Layers size={24} className="sm:size-7" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-base sm:text-lg font-black text-white uppercase truncate">{inv.planName}</h4>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mt-0.5 truncate">Plan #{inv.id.slice(0, 8)}</p>
+      {/* Active Investments */}
+      <section className="space-y-6">
+        <div className="flex justify-between items-end mb-4">
+          <h3 className="text-xl font-bold text-white">Active <span className="text-zinc-600">Investments.</span></h3>
+          <Link to="/user/invest" className="text-[10px] font-black uppercase tracking-widest text-brand-purple hover:underline">
+            View All Plans
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {userInvestments.map((inv) => (
+            <motion.div 
+              key={inv.id} 
+              whileHover={{ y: -4 }}
+              className="p-5 sm:p-8 bg-brand-black-light border border-zinc-800 rounded-2xl sm:rounded-[32px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6 group transition-all hover:bg-brand-black hover:border-brand-purple/30"
+            >
+              <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto min-w-0">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-[24px] bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-brand-purple group-hover:scale-105 transition-all shadow-inner shrink-0">
+                  <Layers size={24} className="sm:size-7" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-base sm:text-lg font-black text-white uppercase truncate">{inv.planName}</h4>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={cn(
+                      "text-[8px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border",
+                      inv.status === 'active' ? "bg-brand-purple/5 text-brand-purple border-brand-purple/20" :
+                      inv.status?.toLowerCase() === 'settled' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                      "bg-zinc-800 text-zinc-500 border-zinc-700"
+                    )}>
+                      {inv.status}
+                    </span>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 truncate">Plan #{inv.id.slice(0, 8)}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-6 sm:gap-8 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-zinc-800/60 pt-3 sm:pt-0">
-                   <div className="text-left sm:text-right">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Amount Invested</p>
-                      <p className="text-lg sm:text-xl font-bold text-white font-mono tracking-tighter">{formatCurrency(inv.amount)}</p>
-                   </div>
-                   <div className="h-8 sm:h-10 w-px bg-zinc-800 block" />
-                   <div className="text-right">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Estimated Profit</p>
-                      <p className="text-lg sm:text-xl font-bold text-brand-purple font-mono tracking-tighter">+{inv.roi}</p>
-                   </div>
-                </div>
-              </motion.div>
-            ))}
-            {userInvestments.length === 0 && (
-              <div className="p-8 sm:p-16 text-center border-2 border-dashed border-zinc-800 rounded-3xl sm:rounded-[40px] text-zinc-600 uppercase tracking-[0.2em] font-black text-xs space-y-4">
-                <p>You have no active investments right now.</p>
-                <Link to="/user/invest" className="inline-block px-6 py-3 bg-zinc-900 border border-zinc-700 text-white rounded-xl hover:border-brand-purple transition-all text-[10px]">
-                  Start Your First Investment
-                </Link>
               </div>
-            )}
-          </div>
-        </section>
-
-        {/* Recent Transactions */}
-        <section className="lg:col-span-5 space-y-6">
-          <div className="flex justify-between items-end mb-4">
-            <h3 className="text-xl font-bold text-white">Recent <span className="text-zinc-600">Transactions.</span></h3>
-            <Link to="/user/transactions" className="text-[10px] font-black uppercase tracking-widest text-brand-purple hover:underline">
-              View All
-            </Link>
-          </div>
-          <div className="bg-brand-black-light rounded-2xl sm:rounded-[40px] border border-zinc-800 p-5 sm:p-8 shadow-2xl relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-purple/20 to-transparent" />
-             <div className="space-y-px">
-                {recentTransactions.map((tx) => (
-                  <div key={tx.id} className="flex justify-between items-center py-5 border-b border-zinc-800/50 last:border-0 group cursor-default">
-                     <div className="flex gap-4 items-center">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                          tx.type === 'deposit' ? 'bg-emerald-500/10 text-emerald-400' :
-                          tx.type === 'withdrawal' ? 'bg-red-500/10 text-red-400' : 'bg-brand-purple/10 text-brand-purple'
-                        }`}>
-                           {tx.type === 'deposit' ? <ArrowDownCircle size={18} /> :
-                            tx.type === 'withdrawal' ? <ArrowUpCircle size={18} /> : <Zap size={18} />}
-                        </div>
-                        <div>
-                           <p className="text-xs font-black uppercase text-white tracking-wider">{tx.type} {tx.plan ? `• ${tx.plan}` : ''}</p>
-                           <p className="text-[9px] text-zinc-500 font-mono mt-0.5">{tx.date || tx.createdAt || 'Confirmed'}</p>
-                        </div>
-                     </div>
-                     <div className="text-right">
-                        <p className={`text-sm font-bold font-mono ${
-                          tx.type === 'deposit' ? 'text-emerald-400' :
-                          tx.type === 'withdrawal' ? 'text-red-400' : 'text-white'
-                        }`}>
-                          {tx.type === 'deposit' ? '+' : tx.type === 'withdrawal' ? '-' : ''}{formatCurrency(tx.amount)}
-                        </p>
-                        <span className={`text-[8px] font-black uppercase tracking-widest ${
-                          tx.status === 'approved' || tx.status === 'completed' || tx.status === 'success' ? 'text-emerald-400' :
-                          tx.status === 'pending' || tx.status === 'processing' ? 'text-brand-purple' : 'text-zinc-500'
-                        }`}>
-                          {tx.status}
-                        </span>
-                     </div>
-                  </div>
-                ))}
-                {recentTransactions.length === 0 && (
-                  <div className="py-16 text-center text-zinc-600 text-xs font-black uppercase tracking-widest">
-                    No transactions recorded yet
-                  </div>
-                )}
-             </div>
-          </div>
-        </section>
-      </div>
+              <div className="flex items-center gap-6 sm:gap-8 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-zinc-800/60 pt-3 sm:pt-0">
+                 <div className="text-left sm:text-right">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Amount Invested</p>
+                    <p className="text-lg sm:text-xl font-bold text-white font-mono tracking-tighter">{formatCurrency(inv.amount)}</p>
+                 </div>
+                 <div className="h-8 sm:h-10 w-px bg-zinc-800 block" />
+                 <div className="text-right">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-0.5">Estimated Profit</p>
+                    <p className="text-lg sm:text-xl font-bold text-brand-purple font-mono tracking-tighter">+{inv.roi}</p>
+                 </div>
+              </div>
+            </motion.div>
+          ))}
+          {userInvestments.length === 0 && (
+            <div className="col-span-full p-8 sm:p-16 text-center border-2 border-dashed border-zinc-800 rounded-3xl sm:rounded-[40px] text-zinc-600 uppercase tracking-[0.2em] font-black text-xs space-y-4">
+              <p>You have no active investments right now.</p>
+              <Link to="/user/invest" className="inline-block px-6 py-3 bg-zinc-900 border border-zinc-700 text-white rounded-xl hover:border-brand-purple transition-all text-[10px]">
+                Start Your First Investment
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

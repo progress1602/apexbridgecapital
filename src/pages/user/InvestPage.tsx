@@ -121,6 +121,8 @@ export default function InvestPage() {
       const result = await apiSettleInvestment(inv.id);
       if (result) {
         setWithdrawnAmount(result.payoutAmount || inv.projectedReturn || inv.amount);
+        setInvestments(prev => prev.map(item => item.id === inv.id ? { ...item, status: 'settled', progress: 100 } : item));
+        await refreshUser();
         await loadData();
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('apexbridge:notifications-updated'));
@@ -130,6 +132,7 @@ export default function InvestPage() {
       console.error('[Investment Payout Error]:', err);
       // If payout failed on server, calculate local display but inform user
       setWithdrawnAmount(inv.projectedReturn || inv.amount);
+      setInvestments(prev => prev.map(item => item.id === inv.id ? { ...item, status: 'settled', progress: 100 } : item));
       setErrorMessage(err?.message || 'Investment payout request could not be completed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -647,8 +650,10 @@ export default function InvestPage() {
             </div>
          </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {investments.map((inv) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {investments.map((inv) => {
+              const isSettled = inv.status?.toLowerCase() === 'settled';
+              return (
               <div key={inv.id} className="bg-black border border-zinc-800 rounded-[40px] p-10 hover:border-zinc-700 transition-all group relative overflow-hidden shadow-2xl">
                  <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                     <HistoryIcon size={40} className="text-zinc-500" />
@@ -657,19 +662,23 @@ export default function InvestPage() {
                     <div className="flex items-center justify-between">
                        <span className={cn(
                          "text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full border",
-                         inv.status === 'active' ? "bg-brand-purple/5 text-brand-purple border-brand-purple/20" : "bg-zinc-800 text-zinc-500 border-zinc-700"
+                         inv.status === 'active' 
+                           ? "bg-brand-purple/5 text-brand-purple border-brand-purple/20" 
+                           : isSettled 
+                             ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
+                             : "bg-zinc-800 text-zinc-500 border-zinc-700"
                        )}>
                          {inv.status}
                        </span>
                        <span className="text-[9px] font-mono font-bold text-zinc-600 uppercase italic">
-                         {inv.startDate ? new Date(inv.startDate).toLocaleDateString() : 'Active'}
+                         {inv.startDate ? new Date(inv.startDate).toLocaleDateString() : (isSettled ? 'Settled' : 'Active')}
                        </span>
                     </div>
                     <div>
                        <h4 className="text-xl font-black text-white uppercase italic tracking-tighter">{inv.planName}</h4>
                        <div className="flex items-center gap-2 mt-1.5">
-                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                         <p className="text-[9px] font-black text-emerald-400/90 uppercase tracking-widest font-mono">Plan ID: #{inv.id.slice(0, 8)}</p>
+                         <span className={cn("w-1.5 h-1.5 rounded-full", isSettled ? "bg-zinc-600" : "bg-emerald-400 animate-pulse")} />
+                         <p className={cn("text-[9px] font-black uppercase tracking-widest font-mono", isSettled ? "text-zinc-500" : "text-emerald-400/90")}>Plan ID: #{inv.id.slice(0, 8)}</p>
                        </div>
                     </div>
                     <div className="flex items-center justify-between pt-6 border-t border-zinc-800/50">
@@ -682,12 +691,29 @@ export default function InvestPage() {
                           <p className="text-lg font-bold text-brand-purple font-mono tracking-tighter">{inv.roi}</p>
                        </div>
                     </div>
-                    <button onClick={() => setShowProgress(true)} className="w-full py-4 border border-zinc-800 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 group-hover:text-brand-purple group-hover:border-brand-purple/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                       View Details <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                    <button 
+                      type="button"
+                      disabled={isSettled}
+                      onClick={() => !isSettled && setShowProgress(true)} 
+                      className={cn(
+                        "w-full py-4 border rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2 transition-all",
+                        isSettled 
+                          ? "border-zinc-800/80 bg-zinc-900/60 text-zinc-500 cursor-not-allowed select-none opacity-60" 
+                          : "border-zinc-800 text-zinc-600 group-hover:text-brand-purple group-hover:border-brand-purple/20 cursor-pointer"
+                      )}
+                    >
+                       {isSettled ? (
+                         <span>Settled</span>
+                       ) : (
+                         <>
+                           View Details <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                         </>
+                       )}
                     </button>
                  </div>
               </div>
-            ))}
+              );
+            })}
             
             {investments.length === 0 && (
               <div className="col-span-full py-32 text-center bg-black border border-zinc-800 rounded-[56px] space-y-6">

@@ -121,7 +121,7 @@ The frontend comprises 9 major pages. Below is the precise list of pages, their 
 ### 3.1 Main Public Space (`LandingPage.tsx`)
 * **Purpose:** Public landing page demonstrating trust badges, marketing, and the newly updated, highly polished hero section.
 * **Backend Interaction:** Static rendering on public loading.
-* **Visual Elements Context:** Features the high-contrast Hero background mask revealing the structural graphics, avatar arrays, core metrics (`$8.4B+` Platforms Liquidity, etc.), and the email contact card `apexbridgecapital1@gmail.com`.
+* **Visual Elements Context:** Features the high-contrast Hero background mask revealing the structural graphics, avatar arrays, core metrics (`$8.4B+` Platforms Liquidity, etc.), and the email contact card `apexbridgecapital11@gmail.com`.
 * **Action Hooks:** Clicking `DEPLOY CAPITAL NOW` routes the user to `/signup`. Clicking `Portal Access` routes to `/login`.
 
 ### 3.2 Secure Multi-Factor Authenticator (`LoginPage.tsx` / Signup)
